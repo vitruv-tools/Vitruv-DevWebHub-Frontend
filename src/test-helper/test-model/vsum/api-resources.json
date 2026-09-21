@@ -1,0 +1,206 @@
+{
+  "uri": "/example.model",
+  "content": {
+    "_id": "/",
+    "eClass": "http://vitruv.tools/testmetamodels06/model#//TestAll",
+    "testAttributes": [
+      {
+        "_id": "//@testAttributes.0"
+      },
+      {
+        "_id": "//@testAttributes.1",
+        "testString0To1": "Hello",
+        "testString1To1": "Hello",
+        "testString0To3": [
+          "Hello 1",
+          "Hello 2"
+        ],
+        "testString2To4": [
+          "Hello 1",
+          "Hello 2"
+        ]
+      }
+    ],
+    "testSimpleReferences": [
+      {
+        "_id": "//@testSimpleReferences.0"
+      },
+      {
+        "_id": "//@testSimpleReferences.1",
+        "testSimpleReference0To1": {
+          "eClass": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper01",
+          "$ref": "//@testContainmentReferences.1/@testContainmentReference0To1"
+        },
+        "testSimpleReference1To1": {
+          "eClass": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper02",
+          "$ref": "//@someHelpers.1/@someHelpers02.1"
+        },
+        "testSimpleReference0To3": [
+          {
+            "eClass": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper03",
+            "$ref": "//@someHelpers.1/@someHelpers03.0"
+          },
+          {
+            "eClass": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper03",
+            "$ref": "//@someHelpers.1/@someHelpers03.1"
+          }
+        ],
+        "testSimpleReference1To3": [
+          {
+            "eClass": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper04",
+            "$ref": "//@someHelpers.1/@someHelpers04.0"
+          },
+          {
+            "eClass": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper04",
+            "$ref": "//@someHelpers.1/@someHelpers04.1"
+          }
+        ]
+      }
+    ],
+    "testContainmentReferences": [
+      {
+        "_id": "//@testContainmentReferences.0"
+      },
+      {
+        "_id": "//@testContainmentReferences.1",
+        "testContainmentReference0To1": {
+          "_id": "//@testContainmentReferences.1/@testContainmentReference0To1",
+          "name": "Hello 1",
+          "value": 1
+        },
+        "testContainmentReference0To3": [
+          {
+            "_id": "//@testContainmentReferences.1/@testContainmentReference0To3.0",
+            "name": "Hello 2",
+            "value": 2
+          },
+          {
+            "_id": "//@testContainmentReferences.1/@testContainmentReference0To3.1",
+            "name": "Hello 3",
+            "value": 3
+          }
+        ]
+      }
+    ],
+    "testDataTypes": [
+      {
+        "_id": "//@testDataTypes.0"
+      },
+      {
+        "_id": "//@testDataTypes.1",
+        "testBoolean0To1": true,
+        "testChar0To1": "a",
+        "testByte0To1": 123,
+        "testShort0To1": 12312,
+        "testInt0To1": 1231231231,
+        "testLong0To1": 1231231231231231200,
+        "testBigInteger0To1": 1.2312312312312312e+23,
+        "testFloat0To1": 123.123,
+        "testDouble0To1": 123123.123123,
+        "testBigDecimal0To1": 123123123.12312312,
+        "testInt0ToInfinity": [
+          123,
+          123123,
+          123123123
+        ],
+        "testDouble0ToInfinity": [
+          123.123,
+          123
+        ]
+      }
+    ],
+    "testInheritance": [
+      {
+        "_id": "//@testInheritance.0"
+      },
+      {
+        "_id": "//@testInheritance.1",
+        "someClass01Level1s": [
+          {
+            "_id": "//@testInheritance.1/@someClass01Level1s.0"
+          },
+          {
+            "_id": "//@testInheritance.1/@someClass01Level1s.1"
+          },
+          {
+            "_id": "//@testInheritance.1/@someClass01Level1s.2"
+          },
+          {
+            "_id": "//@testInheritance.1/@someClass01Level1s.3"
+          },
+          {
+            "_id": "//@testInheritance.1/@someClass01Level1s.4"
+          },
+          {
+            "_id": "//@testInheritance.1/@someClass01Level1s.5"
+          }
+        ],
+        "someClass01Level3s": [
+          {
+            "_id": "//@testInheritance.1/@someClass01Level3s.0"
+          },
+          {
+            "_id": "//@testInheritance.1/@someClass01Level3s.1"
+          }
+        ]
+      }
+    ],
+    "someHelpers": [
+      {
+        "_id": "//@someHelpers.0"
+      },
+      {
+        "_id": "//@someHelpers.1",
+        "someHelpers01": [
+          {
+            "_id": "//@someHelpers.1/@someHelpers01.0"
+          },
+          {
+            "_id": "//@someHelpers.1/@someHelpers01.1"
+          }
+        ],
+        "someHelpers02": [
+          {
+            "_id": "//@someHelpers.1/@someHelpers02.0"
+          },
+          {
+            "_id": "//@someHelpers.1/@someHelpers02.1"
+          }
+        ],
+        "someHelpers03": [
+          {
+            "_id": "//@someHelpers.1/@someHelpers03.0"
+          },
+          {
+            "_id": "//@someHelpers.1/@someHelpers03.1"
+          }
+        ],
+        "someHelpers04": [
+          {
+            "_id": "//@someHelpers.1/@someHelpers04.0"
+          },
+          {
+            "_id": "//@someHelpers.1/@someHelpers04.1"
+          }
+        ],
+        "someHelpers05": [
+          {
+            "_id": "//@someHelpers.1/@someHelpers05.0"
+          },
+          {
+            "_id": "//@someHelpers.1/@someHelpers05.1"
+          }
+        ],
+        "someHelpers06": [
+          {
+            "_id": "//@someHelpers.1/@someHelpers06.0"
+          },
+          {
+            "_id": "//@someHelpers.1/@someHelpers06.1"
+          }
+        ]
+      }
+    ]
+  }
+}
+

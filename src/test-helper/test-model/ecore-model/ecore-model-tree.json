@@ -1,0 +1,574 @@
+[
+  {
+    "id": "http://vitruv.tools/testmetamodels06/model/",
+    "label": "model",
+    "type": "package",
+    "children": [
+      {
+        "id": "http://vitruv.tools/testmetamodels06/model#//TestAll",
+        "label": "TestAll",
+        "children": [
+          {
+            "id": "http://vitruv.tools/testmetamodels06/model#//TestAll::testAttributes",
+            "label": "testAttributes : TestAttributes[]",
+            "type": "reference",
+            "referencedId": "TestAttributes"
+          },
+          {
+            "id": "http://vitruv.tools/testmetamodels06/model#//TestAll::testSimpleReferences",
+            "label": "testSimpleReferences : TestSimpleReferences[]",
+            "type": "reference",
+            "referencedId": "TestSimpleReferences"
+          },
+          {
+            "id": "http://vitruv.tools/testmetamodels06/model#//TestAll::testContainmentReferences",
+            "label": "testContainmentReferences : TestContainmentReferences[]",
+            "type": "reference",
+            "referencedId": "TestContainmentReferences"
+          },
+          {
+            "id": "http://vitruv.tools/testmetamodels06/model#//TestAll::testDataTypes",
+            "label": "testDataTypes : TestDataTypes[]",
+            "type": "reference",
+            "referencedId": "TestDataTypes"
+          },
+          {
+            "id": "http://vitruv.tools/testmetamodels06/model#//TestAll::testInheritance",
+            "label": "testInheritance : TestInheritance[]",
+            "type": "reference",
+            "referencedId": "TestInheritance"
+          },
+          {
+            "id": "http://vitruv.tools/testmetamodels06/model#//TestAll::testEnums",
+            "label": "testEnums : TestEnums[]",
+            "type": "reference",
+            "referencedId": "TestEnums"
+          },
+          {
+            "id": "http://vitruv.tools/testmetamodels06/model#//TestAll::testOperations",
+            "label": "testOperations : TestOperations[]",
+            "type": "reference",
+            "referencedId": "TestOperations"
+          },
+          {
+            "id": "http://vitruv.tools/testmetamodels06/model#//TestAll::someHelpers",
+            "label": "someHelpers : SomeHelpers[]",
+            "type": "reference",
+            "referencedId": "SomeHelpers"
+          }
+        ],
+        "type": "class"
+      },
+      {
+        "id": "http://vitruv.tools/testmetamodels06/model/tests/",
+        "label": "tests",
+        "type": "package",
+        "children": [
+          {
+            "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestAttributes",
+            "label": "TestAttributes",
+            "children": [
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestAttributes::testString0To1",
+                "label": "testString0To1 : EString",
+                "type": "attribute"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestAttributes::testString1To1",
+                "label": "testString1To1 : EString",
+                "type": "attribute"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestAttributes::testString0To3",
+                "label": "testString0To3 : EString[;3]",
+                "type": "attribute"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestAttributes::testString2To4",
+                "label": "testString2To4 : EString[2;4]",
+                "type": "attribute"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestAttributes::testNotChangeable",
+                "label": "testNotChangeable : EInt",
+                "type": "attribute"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestAttributes::testDerived",
+                "label": "testDerived : EInt",
+                "type": "attribute"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestAttributes::testUnsettable",
+                "label": "testUnsettable : EInt",
+                "type": "attribute"
+              }
+            ],
+            "type": "class"
+          },
+          {
+            "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestSimpleReferences",
+            "label": "TestSimpleReferences",
+            "children": [
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestSimpleReferences::testSimpleReference0To1",
+                "label": "testSimpleReference0To1 : SomeHelper01",
+                "type": "reference",
+                "referencedId": "SomeHelper01"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestSimpleReferences::testSimpleReference1To1",
+                "label": "testSimpleReference1To1 : SomeHelper02",
+                "type": "reference",
+                "referencedId": "SomeHelper02"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestSimpleReferences::testSimpleReference0To3",
+                "label": "testSimpleReference0To3 : SomeHelper03[;3]",
+                "type": "reference",
+                "referencedId": "SomeHelper03"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestSimpleReferences::testSimpleReference1To3",
+                "label": "testSimpleReference1To3 : SomeHelper04[1;3]",
+                "type": "reference",
+                "referencedId": "SomeHelper04"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestSimpleReferences::testNotChangeable",
+                "label": "testNotChangeable : SomeHelper05",
+                "type": "reference",
+                "referencedId": "SomeHelper05"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestSimpleReferences::testUnsettable",
+                "label": "testUnsettable : SomeHelper06",
+                "type": "reference",
+                "referencedId": "SomeHelper06"
+              }
+            ],
+            "type": "class"
+          },
+          {
+            "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestContainmentReferences",
+            "label": "TestContainmentReferences",
+            "children": [
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestContainmentReferences::testContainmentReference0To1",
+                "label": "testContainmentReference0To1 : SomeHelper01",
+                "type": "reference",
+                "referencedId": "SomeHelper01"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestContainmentReferences::testContainmentReference1To1",
+                "label": "testContainmentReference1To1 : SomeHelper01",
+                "type": "reference",
+                "referencedId": "SomeHelper01"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestContainmentReferences::testContainmentReference0To3",
+                "label": "testContainmentReference0To3 : SomeHelper01[;3]",
+                "type": "reference",
+                "referencedId": "SomeHelper01"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestContainmentReferences::testContainmentReference1To3",
+                "label": "testContainmentReference1To3 : SomeHelper01[1;3]",
+                "type": "reference",
+                "referencedId": "SomeHelper01"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestContainmentReferences::testNotChangeable",
+                "label": "testNotChangeable : SomeHelper01",
+                "type": "reference",
+                "referencedId": "SomeHelper01"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestContainmentReferences::testUnsettable",
+                "label": "testUnsettable : SomeHelper01",
+                "type": "reference",
+                "referencedId": "SomeHelper01"
+              }
+            ],
+            "type": "class"
+          },
+          {
+            "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestDataTypes",
+            "label": "TestDataTypes",
+            "children": [
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestDataTypes::testBoolean0To1",
+                "label": "testBoolean0To1 : EBoolean",
+                "type": "attribute"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestDataTypes::testChar0To1",
+                "label": "testChar0To1 : EChar",
+                "type": "attribute"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestDataTypes::testByte0To1",
+                "label": "testByte0To1 : EByte",
+                "type": "attribute"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestDataTypes::testShort0To1",
+                "label": "testShort0To1 : EShort",
+                "type": "attribute"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestDataTypes::testInt0To1",
+                "label": "testInt0To1 : EInt",
+                "type": "attribute"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestDataTypes::testLong0To1",
+                "label": "testLong0To1 : ELong",
+                "type": "attribute"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestDataTypes::testBigInteger0To1",
+                "label": "testBigInteger0To1 : EBigInteger",
+                "type": "attribute"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestDataTypes::testFloat0To1",
+                "label": "testFloat0To1 : EFloat",
+                "type": "attribute"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestDataTypes::testDouble0To1",
+                "label": "testDouble0To1 : EDouble",
+                "type": "attribute"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestDataTypes::testBigDecimal0To1",
+                "label": "testBigDecimal0To1 : EBigDecimal",
+                "type": "attribute"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestDataTypes::testBoolean0ToInfinity",
+                "label": "testBoolean0ToInfinity : EBoolean",
+                "type": "attribute"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestDataTypes::testInt0ToInfinity",
+                "label": "testInt0ToInfinity : EInt[]",
+                "type": "attribute"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestDataTypes::testDouble0ToInfinity",
+                "label": "testDouble0ToInfinity : EDouble[]",
+                "type": "attribute"
+              }
+            ],
+            "type": "class"
+          },
+          {
+            "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestInheritance",
+            "label": "TestInheritance",
+            "children": [
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestInheritance::someClass01Level1s",
+                "label": "someClass01Level1s : SomeClass01Level1[]",
+                "type": "reference",
+                "referencedId": "SomeClass01Level1"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestInheritance::someClassInterface01Level1s",
+                "label": "someClassInterface01Level1s : SomeClassInterface01Level1[]",
+                "type": "reference",
+                "referencedId": "SomeClassInterface01Level1"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestInheritance::someClass01Level3s",
+                "label": "someClass01Level3s : SomeClass01Level3[]",
+                "type": "reference",
+                "referencedId": "SomeClass01Level3"
+              }
+            ],
+            "type": "class"
+          },
+          {
+            "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestEnums",
+            "label": "TestEnums",
+            "children": [
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestEnums::testEnums0To1",
+                "label": "testEnums0To1 : SomeEnum01",
+                "type": "attribute"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestEnums::testEnums0To3",
+                "label": "testEnums0To3 : SomeEnum01[;3]",
+                "type": "attribute"
+              }
+            ],
+            "type": "class"
+          },
+          {
+            "id": "http://vitruv.tools/testmetamodels06/model#//tests/TestOperations",
+            "label": "TestOperations",
+            "children": [],
+            "type": "class"
+          }
+        ]
+      },
+      {
+        "id": "http://vitruv.tools/testmetamodels06/model/helpers/",
+        "label": "helpers",
+        "type": "package",
+        "children": [
+          {
+            "id": "http://vitruv.tools/testmetamodels06/model/helpers/somesimplehelpers/",
+            "label": "somesimplehelpers",
+            "type": "package",
+            "children": [
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelpers",
+                "label": "SomeHelpers",
+                "children": [
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelpers::someHelpers01",
+                    "label": "someHelpers01 : SomeHelper01[]",
+                    "type": "reference",
+                    "referencedId": "SomeHelper01"
+                  },
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelpers::someHelpers02",
+                    "label": "someHelpers02 : SomeHelper02[]",
+                    "type": "reference",
+                    "referencedId": "SomeHelper02"
+                  },
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelpers::someHelpers03",
+                    "label": "someHelpers03 : SomeHelper03[]",
+                    "type": "reference",
+                    "referencedId": "SomeHelper03"
+                  },
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelpers::someHelpers04",
+                    "label": "someHelpers04 : SomeHelper04[]",
+                    "type": "reference",
+                    "referencedId": "SomeHelper04"
+                  },
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelpers::someHelpers05",
+                    "label": "someHelpers05 : SomeHelper05[]",
+                    "type": "reference",
+                    "referencedId": "SomeHelper05"
+                  },
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelpers::someHelpers06",
+                    "label": "someHelpers06 : SomeHelper06[]",
+                    "type": "reference",
+                    "referencedId": "SomeHelper06"
+                  }
+                ],
+                "type": "class"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper01",
+                "label": "SomeHelper01",
+                "children": [
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper01::name",
+                    "label": "name : EString",
+                    "type": "attribute"
+                  },
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper01::value",
+                    "label": "value : EInt",
+                    "type": "attribute"
+                  }
+                ],
+                "type": "class"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper02",
+                "label": "SomeHelper02",
+                "children": [
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper02::name",
+                    "label": "name : EString",
+                    "type": "attribute"
+                  },
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper02::value",
+                    "label": "value : EInt",
+                    "type": "attribute"
+                  }
+                ],
+                "type": "class"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper03",
+                "label": "SomeHelper03",
+                "children": [
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper03::name",
+                    "label": "name : EString",
+                    "type": "attribute"
+                  },
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper03::value",
+                    "label": "value : EInt",
+                    "type": "attribute"
+                  }
+                ],
+                "type": "class"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper04",
+                "label": "SomeHelper04",
+                "children": [
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper04::name",
+                    "label": "name : EString",
+                    "type": "attribute"
+                  },
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper04::value",
+                    "label": "value : EInt",
+                    "type": "attribute"
+                  }
+                ],
+                "type": "class"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper05",
+                "label": "SomeHelper05",
+                "children": [
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper05::name",
+                    "label": "name : EString",
+                    "type": "attribute"
+                  },
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper05::value",
+                    "label": "value : EInt",
+                    "type": "attribute"
+                  }
+                ],
+                "type": "class"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper06",
+                "label": "SomeHelper06",
+                "children": [
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper06::name",
+                    "label": "name : EString",
+                    "type": "attribute"
+                  },
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/somesimplehelpers/SomeHelper06::value",
+                    "label": "value : EInt",
+                    "type": "attribute"
+                  }
+                ],
+                "type": "class"
+              }
+            ]
+          },
+          {
+            "id": "http://vitruv.tools/testmetamodels06/model/helpers/someinheritancehelpers/",
+            "label": "someinheritancehelpers",
+            "type": "package",
+            "children": [
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//helpers/someinheritancehelpers/SomeClass01Level1",
+                "label": "SomeClass01Level1",
+                "children": [
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/someinheritancehelpers/SomeClass01Level1::name",
+                    "label": "name : EString",
+                    "type": "attribute"
+                  },
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/someinheritancehelpers/SomeClass01Level1::someHelper01Simple",
+                    "label": "someHelper01Simple : SomeHelper01",
+                    "type": "reference",
+                    "referencedId": "SomeHelper01"
+                  },
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/someinheritancehelpers/SomeClass01Level1::someHelper02Containment",
+                    "label": "someHelper02Containment : SomeHelper02",
+                    "type": "reference",
+                    "referencedId": "SomeHelper02"
+                  }
+                ],
+                "type": "class"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//helpers/someinheritancehelpers/SomeClassAbstract01Level2",
+                "label": "SomeClassAbstract01Level2 -> SomeClass01Level1",
+                "children": [],
+                "type": "class"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//helpers/someinheritancehelpers/SomeClass01Level2",
+                "label": "SomeClass01Level2 -> SomeClass01Level1",
+                "children": [],
+                "type": "class"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//helpers/someinheritancehelpers/SomeClassInterface01Level1",
+                "label": "SomeClassInterface01Level1",
+                "children": [
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/someinheritancehelpers/SomeClassInterface01Level1::value",
+                    "label": "value : EDouble",
+                    "type": "attribute"
+                  }
+                ],
+                "type": "class"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//helpers/someinheritancehelpers/SomeClassInterface01Level2",
+                "label": "SomeClassInterface01Level2 -> SomeClassInterface01Level1",
+                "children": [],
+                "type": "class"
+              },
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//helpers/someinheritancehelpers/SomeClass01Level3",
+                "label": "SomeClass01Level3 -> SomeClassAbstract01Level2,SomeClassInterface01Level2,SomeClass01Level2",
+                "children": [],
+                "type": "class"
+              }
+            ]
+          },
+          {
+            "id": "http://vitruv.tools/testmetamodels06/model/helpers/someenumhelpers/",
+            "label": "someenumhelpers",
+            "type": "package",
+            "children": [
+              {
+                "id": "http://vitruv.tools/testmetamodels06/model#//helpers/someenumhelpers/SomeEnum01",
+                "label": "SomeEnum01",
+                "children": [
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/someenumhelpers/SomeEnum01::literals::SomeLiteral01",
+                    "label": "SomeLiteral01",
+                    "type": "literal"
+                  },
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/someenumhelpers/SomeEnum01::literals::SomeLiteral02",
+                    "label": "SomeLiteral02",
+                    "type": "literal"
+                  },
+                  {
+                    "id": "http://vitruv.tools/testmetamodels06/model#//helpers/someenumhelpers/SomeEnum01::literals::SomeLiteral03",
+                    "label": "SomeLiteral03",
+                    "type": "literal"
+                  }
+                ],
+                "type": "class"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
