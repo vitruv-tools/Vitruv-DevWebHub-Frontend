@@ -1,4 +1,5 @@
 import type { OpenInconsistency } from '../types/open-inconsistency.ts'
+import type { UserInteractionPayload } from '../../model-editor/types/api-propagation-task.ts'
 
 /**
  * Formats the hub description block: original inconsistency prompt plus resolution record.
@@ -8,6 +9,15 @@ export function formatInconsistencyDescription(item: OpenInconsistency): string 
 
     if (item.message) {
         lines.push(item.message)
+    }
+
+    if (item.interaction && 'choices' in item.interaction && Array.isArray(item.interaction.choices)) {
+        lines.push('\nOptions:')
+        let i:number = 1
+        for (const option of item.interaction.choices) {
+            lines.push(i+":  "+option)
+            i = i+1
+        }
     }
 
     if (item.state === 'RESOLVED' && item.resolvedBy) {
