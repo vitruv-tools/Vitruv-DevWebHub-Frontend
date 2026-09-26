@@ -35,10 +35,10 @@ function resource(
     return {
         id,
         parentId: opts?.parentId,
-        type: type as StructuredResource['type'],
+        type: type as unknown as StructuredResource['type'],
         attributes: [
             {
-                info: type.attributes.name as StructuredResource['attributes'][0]['info'],
+                info: type.attributes.name as unknown as StructuredResource['attributes'][0]['info'],
                 value: opts?.name,
             },
         ],

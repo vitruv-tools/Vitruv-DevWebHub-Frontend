@@ -101,7 +101,7 @@ function listItemMeta(item: OpenInconsistency): string {
 }
 
 /**
- * Epic 2 Inconsistency Hub — overview + detail layout inspired by issue/PR review flows
+ * Inconsistency Hub — overview and detail layout
  * (title#ref, status, description, Comments / Commits / Files), without copying any vendor UI.
  */
 export function InconsistencyHubPage({ onBack }: Props) {

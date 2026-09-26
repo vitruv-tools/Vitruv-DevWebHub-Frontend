@@ -79,14 +79,15 @@ export function ModelManagerPage({ onOpenHub }: Props) {
         if (!element) {
             return
         }
+        const bar: HTMLElement = element
 
         function updateHeight() {
-            setTopBarHeight(element.offsetHeight)
+            setTopBarHeight(bar.offsetHeight)
         }
 
         updateHeight()
         const observer = new ResizeObserver(updateHeight)
-        observer.observe(element)
+        observer.observe(bar)
         return () => observer.disconnect()
     }, [user, selectedVsum, viewLogic.hasChanges, viewLogic.propagationUiState.isActive, hasErrors])
 

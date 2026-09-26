@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
     Box,
     Button,
@@ -37,27 +37,47 @@ export function UserInteractionModal({
     onDismiss,
     allowDismiss = true,
 }: Props) {
-    const kind = interaction ? getInteractionKind(interaction) : 'unknown'
+    if (!interaction) {
+        return null
+    }
+
+    const resetKey = `${interaction.eClass}|${interaction.message ?? ''}|${interaction.validationError ?? ''}`
+
+    return (
+        <UserInteractionModalForm
+            key={resetKey}
+            open={open}
+            interaction={interaction}
+            onSubmit={onSubmit}
+            onDismiss={onDismiss}
+            allowDismiss={allowDismiss}
+        />
+    )
+}
+
+type FormProps = {
+    open: boolean
+    interaction: UserInteractionPayload
+    onSubmit: (responseJson: string) => void
+    onDismiss?: () => void
+    allowDismiss?: boolean
+}
+
+function UserInteractionModalForm({
+    open,
+    interaction,
+    onSubmit,
+    onDismiss,
+    allowDismiss = true,
+}: FormProps) {
+    const kind = getInteractionKind(interaction)
 
     const [text, setText] = useState('')
     const [selectedIndex, setSelectedIndex] = useState(0)
     const [selectedIndices, setSelectedIndices] = useState<number[]>([])
 
-    const choices = useMemo(() => interaction?.choices ?? [], [interaction])
-    const validationError = interaction?.validationError
-
-    useEffect(() => {
-        if (!interaction) {
-            return
-        }
-        setText('')
-        setSelectedIndex(0)
-        setSelectedIndices([])
-    }, [interaction?.eClass, interaction?.message, interaction?.validationError])
-
-    if (!interaction) {
-        return null
-    }
+    const choices = useMemo(() => interaction.choices ?? [], [interaction])
+    const validationError = interaction.validationError
 
     function submitConfirmation(confirmed: boolean) {
         onSubmit(buildInteractionResponse(interaction, confirmed))

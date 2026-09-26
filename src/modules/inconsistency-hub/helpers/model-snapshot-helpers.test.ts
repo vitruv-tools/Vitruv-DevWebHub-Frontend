@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import type { StructuredEcoreModel } from '../../model-editor/types/structured-ecore-model.ts'
 import { ecoreModelsForResourceSet, parseEncodedResourceSet } from './model-snapshot-helpers.ts'
 
 describe('model-snapshot-helpers', () => {
@@ -17,7 +18,7 @@ describe('model-snapshot-helpers', () => {
         const ecoreModels = [
             { [rootType]: { id: rootType, name: 'System', attributes: {}, simpleReferences: {}, containmentReferences: {}, subTypes: [] } },
             { 'http://other#//X': { id: 'http://other#//X', name: 'X', attributes: {}, simpleReferences: {}, containmentReferences: {}, subTypes: [] } },
-        ]
+        ] as unknown as StructuredEcoreModel[]
         const matched = ecoreModelsForResourceSet(resourceSet, ecoreModels)
         expect(matched).toHaveLength(1)
         expect(matched[0][rootType].name).toBe('System')
