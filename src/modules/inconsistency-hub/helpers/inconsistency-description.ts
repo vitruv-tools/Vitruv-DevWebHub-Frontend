@@ -1,5 +1,4 @@
 import type { OpenInconsistency } from '../types/open-inconsistency.ts'
-import type { UserInteractionPayload } from '../../model-editor/types/api-propagation-task.ts'
 
 /**
  * Formats the hub description block: original inconsistency prompt plus resolution record.
