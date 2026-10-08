@@ -5,6 +5,7 @@ import { ConfirmDialogProvider } from '../common/systems/confirm-dialog/ConfirmD
 import { NotificationProvider } from '../common/systems/notification/NotificationProvider.tsx'
 import { AuthProvider } from '../modules/auth/context/AuthContext.tsx'
 import { RequireAuth } from '../modules/auth/view/components/RequireAuth.tsx'
+import { ModelKnowledgeProvider } from '../modules/users/context/ModelKnowledgeContext.tsx'
 import { ErrorBoundary } from './ErrorBoundary.tsx'
 
 type AppPage = 'editor' | 'hub'
@@ -18,11 +19,13 @@ export function App() {
                 <ConfirmDialogProvider>
                     <NotificationProvider>
                         <RequireAuth>
-                            {page === 'hub' ? (
-                                <InconsistencyHubPage onBack={() => setPage('editor')} />
-                            ) : (
-                                <ModelManagerPage onOpenHub={() => setPage('hub')} />
-                            )}
+                            <ModelKnowledgeProvider>
+                                {page === 'hub' ? (
+                                    <InconsistencyHubPage onBack={() => setPage('editor')} />
+                                ) : (
+                                    <ModelManagerPage onOpenHub={() => setPage('hub')} />
+                                )}
+                            </ModelKnowledgeProvider>
                         </RequireAuth>
                     </NotificationProvider>
                 </ConfirmDialogProvider>

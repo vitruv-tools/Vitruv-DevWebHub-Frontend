@@ -36,6 +36,7 @@ import { PropagationProgressOverlay } from '../management/PropagationProgressOve
 import { UserInteractionModal } from '../management/UserInteractionModal.tsx'
 import { ALLOW_MULTIPLE_SELECTED_OBJECTS, VITRUVIUS_SERVER_BASE_URL } from '../../../../../base.ts'
 import { useAuth } from '../../../../auth/context/AuthContext.tsx'
+import { useModelKnowledge } from '../../../../users/context/ModelKnowledgeContext.tsx'
 import { isPropagationDeferredError } from '../../../types/api-propagation-task.ts'
 import { AppNavButton } from '../../../../../common/components/AppNavButton.tsx'
 
@@ -59,6 +60,7 @@ export function ModelManagerPage({ onOpenHub }: Props) {
 
     const notify = useNotify()
     const { user, signOut } = useAuth()
+    const { openSettings } = useModelKnowledge()
     const clientRef = useRef(new VitruviusClientImpl(VITRUVIUS_SERVER_BASE_URL, message => notify(message, 'error')))
     const client = clientRef.current
 
@@ -257,6 +259,9 @@ export function ModelManagerPage({ onOpenHub }: Props) {
                             {user && (
                                 <Chip size='small' label={user.name || user.username || user.email || 'User'} />
                             )}
+                            <Button size='small' onClick={openSettings}>
+                                Model knowledge
+                            </Button>
                             <Button
                                 size='small'
                                 onClick={() => {

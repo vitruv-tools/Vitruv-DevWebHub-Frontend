@@ -14,6 +14,10 @@ const KEYS = {
     user: 'auth.user',
 } as const
 
+function profileTokenKey(username: string): string {
+    return `profile.token.${username.trim().toLowerCase()}`
+}
+
 /**
  * localStorage helpers for JWT access/refresh tokens (Methodologist-compatible keys).
  */
@@ -37,6 +41,17 @@ export const tokenStorage = {
         for (const key of Object.values(KEYS)) {
             localStorage.removeItem(key)
         }
+        // Keep profile.token.* keys. They prove ownership of a hub profile and
+        // are not reissued on sign-in, so clearing them would lock the user out
+        // of their own settings.
+    },
+
+    getProfileToken(username: string): string | null {
+        return localStorage.getItem(profileTokenKey(username))
+    },
+
+    setProfileToken(username: string, token: string): void {
+        localStorage.setItem(profileTokenKey(username), token)
     },
 
     getAccessToken(): string | null {
