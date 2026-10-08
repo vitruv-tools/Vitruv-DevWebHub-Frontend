@@ -40,6 +40,7 @@ import { describeInteractionChoice } from '../../helpers/describe-interaction-ch
 import { formatInconsistencyDescription } from '../../helpers/inconsistency-description.ts'
 import { formatSourceTargetRelation } from '../../helpers/source-target-relation.ts'
 import { isRelevantToUser } from '../../helpers/relevant-to-user.ts'
+import { keepSelectedIfVisible } from '../../helpers/selected-if-visible.ts'
 import { useModelKnowledge } from '../../../users/context/ModelKnowledgeContext.tsx'
 import type { InconsistencyListFilter, OpenInconsistency, OpenInconsistencyState } from '../../types/open-inconsistency.ts'
 import { CommentsTab } from './tabs/CommentsTab.tsx'
@@ -302,6 +303,16 @@ export function InconsistencyHubPage({ onBack }: Props) {
             return true
         })
     }, [items, modelFilter, relevantOnly, knownMetamodels])
+
+    useEffect(() => {
+        if (keepSelectedIfVisible(selected, visibleItems) === selected) {
+            return
+        }
+        setSelected(null)
+        setAnswerOpen(false)
+        setCommentDialogOpen(false)
+        setPendingAnswer(null)
+    }, [selected, visibleItems])
 
     const metaLine = useMemo(() => {
         if (!selected) {

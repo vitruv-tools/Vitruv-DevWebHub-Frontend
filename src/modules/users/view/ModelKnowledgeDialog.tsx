@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import {
+    Box,
     Button,
     Checkbox,
+    CircularProgress,
     Dialog,
     DialogActions,
     DialogContent,
@@ -16,12 +18,24 @@ import type { KnowledgeMetamodel } from '../api/user-api.ts'
 type Props = {
     open: boolean
     catalog: KnowledgeMetamodel[]
+    catalogLoading: boolean
+    catalogError: string | null
     knownMetamodels: string[]
     onClose: () => void
+    onRetry: () => void
     onSave: (metamodels: string[]) => Promise<void>
 }
 
-export function ModelKnowledgeDialog({ open, catalog, knownMetamodels, onClose, onSave }: Props) {
+export function ModelKnowledgeDialog({
+    open,
+    catalog,
+    catalogLoading,
+    catalogError,
+    knownMetamodels,
+    onClose,
+    onRetry,
+    onSave,
+}: Props) {
     const notify = useNotify()
     const [selected, setSelected] = useState<string[]>([])
     const [saving, setSaving] = useState(false)
@@ -53,6 +67,8 @@ export function ModelKnowledgeDialog({ open, catalog, knownMetamodels, onClose, 
         }
     }
 
+    const emptyCatalog = !catalogLoading && !catalogError && catalog.length === 0
+
     return (
         <Dialog open={open} onClose={saving ? () => undefined : onClose} fullWidth maxWidth='xs'>
             <DialogTitle>Model knowledge</DialogTitle>
@@ -61,7 +77,23 @@ export function ModelKnowledgeDialog({ open, catalog, knownMetamodels, onClose, 
                     Choose the metamodels you know. The Hub can then show inconsistencies
                     where you know the source or the target.
                 </Typography>
-                {catalog.length === 0 && (
+                {catalogLoading && catalog.length === 0 && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, my: 1 }}>
+                        <CircularProgress size={18} />
+                        <Typography variant='body2'>Loading metamodels…</Typography>
+                    </Box>
+                )}
+                {catalogError && (
+                    <Box sx={{ mb: 1.5 }}>
+                        <Typography variant='body2' color='error' sx={{ mb: 1 }}>
+                            Could not load metamodels.
+                        </Typography>
+                        <Button size='small' variant='outlined' onClick={onRetry} disabled={catalogLoading}>
+                            Retry
+                        </Button>
+                    </Box>
+                )}
+                {emptyCatalog && (
                     <Typography variant='body2'>No metamodels are available.</Typography>
                 )}
                 <FormGroup>
@@ -81,7 +113,11 @@ export function ModelKnowledgeDialog({ open, catalog, knownMetamodels, onClose, 
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose} disabled={saving}>Cancel</Button>
-                <Button variant='contained' onClick={() => { void save() }} disabled={saving || catalog.length === 0}>
+                <Button
+                    variant='contained'
+                    onClick={() => { void save() }}
+                    disabled={saving || catalog.length === 0}
+                >
                     Save
                 </Button>
             </DialogActions>

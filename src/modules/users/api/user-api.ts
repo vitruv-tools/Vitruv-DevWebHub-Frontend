@@ -37,11 +37,20 @@ function profileHeaders(username: string): HeadersInit {
     return token ? { 'X-Profile-Token': token } : {}
 }
 
-export function syncUserSession(user: {
-    username: string
-    name?: string
-    email?: string
-}): Promise<UserProfile> {
+export function persistProfileToken(profile: UserProfile): void {
+    if (profile.profileToken) {
+        tokenStorage.setProfileToken(profile.username, profile.profileToken)
+    }
+}
+
+export function syncUserSession(
+    user: {
+        username: string
+        name?: string
+        email?: string
+    },
+    signal?: AbortSignal,
+): Promise<UserProfile> {
     return request<UserProfile>('/v1/users/session', {
         method: 'POST',
         headers: profileHeaders(user.username),
@@ -50,11 +59,7 @@ export function syncUserSession(user: {
             displayName: user.name || user.username,
             email: user.email ?? null,
         }),
-    }).then(profile => {
-        if (profile.profileToken) {
-            tokenStorage.setProfileToken(profile.username, profile.profileToken)
-        }
-        return profile
+        signal,
     })
 }
 
@@ -64,8 +69,8 @@ export function getUserProfile(username: string): Promise<UserProfile> {
     })
 }
 
-export function listKnowledgeMetamodels(): Promise<KnowledgeMetamodel[]> {
-    return request<KnowledgeMetamodel[]>('/v1/users/knowledge-metamodels')
+export function listKnowledgeMetamodels(signal?: AbortSignal): Promise<KnowledgeMetamodel[]> {
+    return request<KnowledgeMetamodel[]>('/v1/users/knowledge-metamodels', { signal })
 }
 
 export function updateUserMetamodels(username: string, metamodels: string[]): Promise<UserProfile> {

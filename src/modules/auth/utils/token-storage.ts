@@ -41,16 +41,9 @@ export const tokenStorage = {
         for (const key of Object.values(KEYS)) {
             localStorage.removeItem(key)
         }
-        const profileKeys: string[] = []
-        for (let index = 0; index < localStorage.length; index += 1) {
-            const key = localStorage.key(index)
-            if (key?.startsWith('profile.token.')) {
-                profileKeys.push(key)
-            }
-        }
-        for (const key of profileKeys) {
-            localStorage.removeItem(key)
-        }
+        // Keep profile.token.* keys. They prove ownership of a hub profile and
+        // are not reissued on sign-in, so clearing them would lock the user out
+        // of their own settings.
     },
 
     getProfileToken(username: string): string | null {

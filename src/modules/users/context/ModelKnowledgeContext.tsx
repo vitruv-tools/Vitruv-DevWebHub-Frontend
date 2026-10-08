@@ -10,6 +10,7 @@ import {
 import { useAuth } from '../../auth/context/AuthContext.tsx'
 import {
     listKnowledgeMetamodels,
+    persistProfileToken,
     syncUserSession,
     updateUserMetamodels,
     type KnowledgeMetamodel,
@@ -18,10 +19,13 @@ import { ModelKnowledgeDialog } from '../view/ModelKnowledgeDialog.tsx'
 
 type ModelKnowledgeContextValue = {
     catalog: KnowledgeMetamodel[]
+    catalogLoading: boolean
+    catalogError: string | null
     knownMetamodels: string[]
     settingsOpen: boolean
     openSettings: () => void
     closeSettings: () => void
+    reloadCatalog: () => Promise<void>
     saveMetamodels: (metamodels: string[]) => Promise<void>
 }
 
@@ -31,19 +35,57 @@ type Props = {
     children: ReactNode
 }
 
+function isAbortError(error: unknown): boolean {
+    return error instanceof Error && error.name === 'AbortError'
+}
+
+function errorMessage(error: unknown): string {
+    if (error instanceof Error && error.message.trim()) {
+        return error.message
+    }
+    return 'Request failed'
+}
+
 export function ModelKnowledgeProvider({ children }: Props) {
     const { user } = useAuth()
     const [catalog, setCatalog] = useState<KnowledgeMetamodel[]>([])
+    const [catalogLoading, setCatalogLoading] = useState(true)
+    const [catalogError, setCatalogError] = useState<string | null>(null)
     const [knownMetamodels, setKnownMetamodels] = useState<string[]>([])
     const [settingsOpen, setSettingsOpen] = useState(false)
+
+    const loadCatalog = useCallback(async (signal?: AbortSignal) => {
+        setCatalogLoading(true)
+        setCatalogError(null)
+        try {
+            const available = await listKnowledgeMetamodels(signal)
+            if (signal?.aborted) {
+                return
+            }
+            setCatalog(available)
+        } catch (error) {
+            if (isAbortError(error) || signal?.aborted) {
+                return
+            }
+            console.error('Could not load metamodels:', error)
+            setCatalogError(errorMessage(error))
+        } finally {
+            if (!signal?.aborted) {
+                setCatalogLoading(false)
+            }
+        }
+    }, [])
 
     useEffect(() => {
         if (!user?.username) {
             setKnownMetamodels([])
+            setCatalog([])
+            setCatalogError(null)
+            setCatalogLoading(false)
             return
         }
 
-        let cancelled = false
+        const controller = new AbortController()
         const current = user
 
         async function load() {
@@ -52,29 +94,27 @@ export function ModelKnowledgeProvider({ children }: Props) {
                     username: current.username,
                     name: current.name,
                     email: current.email,
-                })
-                if (!cancelled) {
-                    setKnownMetamodels(profile.metamodels ?? [])
+                }, controller.signal)
+                if (controller.signal.aborted) {
+                    return
                 }
+                persistProfileToken(profile)
+                setKnownMetamodels(profile.metamodels ?? [])
             } catch (error) {
+                if (isAbortError(error) || controller.signal.aborted) {
+                    return
+                }
                 console.error('Could not store the user profile:', error)
             }
 
-            try {
-                const available = await listKnowledgeMetamodels()
-                if (!cancelled) {
-                    setCatalog(available)
-                }
-            } catch (error) {
-                console.error('Could not load metamodels:', error)
-            }
+            await loadCatalog(controller.signal)
         }
 
         void load()
         return () => {
-            cancelled = true
+            controller.abort()
         }
-    }, [user])
+    }, [user, loadCatalog])
 
     const saveMetamodels = useCallback(async (metamodels: string[]) => {
         if (!user?.username) {
@@ -86,12 +126,15 @@ export function ModelKnowledgeProvider({ children }: Props) {
 
     const value = useMemo<ModelKnowledgeContextValue>(() => ({
         catalog,
+        catalogLoading,
+        catalogError,
         knownMetamodels,
         settingsOpen,
         openSettings: () => setSettingsOpen(true),
         closeSettings: () => setSettingsOpen(false),
+        reloadCatalog: () => loadCatalog(),
         saveMetamodels,
-    }), [catalog, knownMetamodels, settingsOpen, saveMetamodels])
+    }), [catalog, catalogLoading, catalogError, knownMetamodels, settingsOpen, loadCatalog, saveMetamodels])
 
     return (
         <ModelKnowledgeContext.Provider value={value}>
@@ -99,8 +142,11 @@ export function ModelKnowledgeProvider({ children }: Props) {
             <ModelKnowledgeDialog
                 open={settingsOpen}
                 catalog={catalog}
+                catalogLoading={catalogLoading}
+                catalogError={catalogError}
                 knownMetamodels={knownMetamodels}
                 onClose={() => setSettingsOpen(false)}
+                onRetry={() => { void loadCatalog() }}
                 onSave={saveMetamodels}
             />
         </ModelKnowledgeContext.Provider>
