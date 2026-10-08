@@ -437,6 +437,7 @@ export function InconsistencyHubPage({ onBack }: Props) {
                             <Chip
                                 size='small'
                                 label='Relevant to me'
+                                aria-pressed={relevantOnly}
                                 color={relevantOnly ? 'primary' : 'default'}
                                 variant={relevantOnly ? 'filled' : 'outlined'}
                                 onClick={() => {

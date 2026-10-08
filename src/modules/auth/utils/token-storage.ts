@@ -14,6 +14,10 @@ const KEYS = {
     user: 'auth.user',
 } as const
 
+function profileTokenKey(username: string): string {
+    return `profile.token.${username.trim().toLowerCase()}`
+}
+
 /**
  * localStorage helpers for JWT access/refresh tokens (Methodologist-compatible keys).
  */
@@ -37,6 +41,24 @@ export const tokenStorage = {
         for (const key of Object.values(KEYS)) {
             localStorage.removeItem(key)
         }
+        const profileKeys: string[] = []
+        for (let index = 0; index < localStorage.length; index += 1) {
+            const key = localStorage.key(index)
+            if (key?.startsWith('profile.token.')) {
+                profileKeys.push(key)
+            }
+        }
+        for (const key of profileKeys) {
+            localStorage.removeItem(key)
+        }
+    },
+
+    getProfileToken(username: string): string | null {
+        return localStorage.getItem(profileTokenKey(username))
+    },
+
+    setProfileToken(username: string, token: string): void {
+        localStorage.setItem(profileTokenKey(username), token)
     },
 
     getAccessToken(): string | null {

@@ -54,7 +54,7 @@ export function ModelKnowledgeDialog({ open, catalog, knownMetamodels, onClose, 
     }
 
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth='xs'>
+        <Dialog open={open} onClose={saving ? () => undefined : onClose} fullWidth maxWidth='xs'>
             <DialogTitle>Model knowledge</DialogTitle>
             <DialogContent>
                 <Typography variant='body2' color='text.secondary' sx={{ mb: 1.5 }}>
