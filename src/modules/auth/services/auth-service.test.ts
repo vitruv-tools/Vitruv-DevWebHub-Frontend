@@ -46,9 +46,11 @@ describe('AuthService token validity', () => {
 
     it('clears session on signOut', async () => {
         tokenStorage.persistTokens(sampleTokens())
+        tokenStorage.setProfileToken('ada', 'profile-secret')
         await AuthService.signOut()
         expect(AuthService.isAuthenticated()).toBe(false)
         expect(AuthService.getAccessToken()).toBeNull()
+        expect(tokenStorage.getProfileToken('ada')).toBe('profile-secret')
     })
 
     it('registers and signs in a local user when auth API is offline', async () => {

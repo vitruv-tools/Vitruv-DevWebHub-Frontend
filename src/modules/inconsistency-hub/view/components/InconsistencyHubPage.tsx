@@ -39,6 +39,9 @@ import {
 import { describeInteractionChoice } from '../../helpers/describe-interaction-choice.ts'
 import { formatInconsistencyDescription } from '../../helpers/inconsistency-description.ts'
 import { formatSourceTargetRelation } from '../../helpers/source-target-relation.ts'
+import { isRelevantToUser } from '../../helpers/relevant-to-user.ts'
+import { keepSelectedIfVisible } from '../../helpers/selected-if-visible.ts'
+import { useModelKnowledge } from '../../../users/context/ModelKnowledgeContext.tsx'
 import type { InconsistencyListFilter, OpenInconsistency, OpenInconsistencyState } from '../../types/open-inconsistency.ts'
 import { CommentsTab } from './tabs/CommentsTab.tsx'
 import { CommitsTab } from './tabs/CommitsTab.tsx'
@@ -107,11 +110,13 @@ function listItemMeta(item: OpenInconsistency): string {
 export function InconsistencyHubPage({ onBack }: Props) {
     const notify = useNotify()
     const { user, signOut } = useAuth()
+    const { knownMetamodels, openSettings } = useModelKnowledge()
     const clientRef = useRef(new VitruviusClientImpl(VITRUVIUS_SERVER_BASE_URL, message => notify(message, 'error')))
     const client = clientRef.current
 
     const [filter, setFilter] = useState<InconsistencyListFilter>('OPEN')
     const [modelFilter, setModelFilter] = useState<string | 'ALL'>('ALL')
+    const [relevantOnly, setRelevantOnly] = useState(false)
     const [modelFilterAnchor, setModelFilterAnchor] = useState<null | HTMLElement>(null)
     const [items, setItems] = useState<OpenInconsistency[]>([])
     const [selected, setSelected] = useState<OpenInconsistency | null>(null)
@@ -288,11 +293,26 @@ export function InconsistencyHubPage({ onBack }: Props) {
     }, [items])
 
     const visibleItems = useMemo(() => {
-        if (modelFilter === 'ALL') {
-            return items
+        return items.filter(item => {
+            if (modelFilter !== 'ALL' && item.metamodelName !== modelFilter) {
+                return false
+            }
+            if (relevantOnly && !isRelevantToUser(item.involvedMetamodels, knownMetamodels)) {
+                return false
+            }
+            return true
+        })
+    }, [items, modelFilter, relevantOnly, knownMetamodels])
+
+    useEffect(() => {
+        if (keepSelectedIfVisible(selected, visibleItems) === selected) {
+            return
         }
-        return items.filter(item => item.metamodelName === modelFilter)
-    }, [items, modelFilter])
+        setSelected(null)
+        setAnswerOpen(false)
+        setCommentDialogOpen(false)
+        setPendingAnswer(null)
+    }, [selected, visibleItems])
 
     const metaLine = useMemo(() => {
         if (!selected) {
@@ -318,6 +338,9 @@ export function InconsistencyHubPage({ onBack }: Props) {
                     {user && (
                         <Chip size='small' label={user.name || user.username || user.email || 'User'} />
                     )}
+                    <Button size='small' onClick={openSettings}>
+                        Model knowledge
+                    </Button>
                     <Button
                         size='small'
                         onClick={() => {
@@ -422,7 +445,23 @@ export function InconsistencyHubPage({ onBack }: Props) {
                                     }}
                                 />
                             ))}
+                            <Chip
+                                size='small'
+                                label='Relevant to me'
+                                aria-pressed={relevantOnly}
+                                color={relevantOnly ? 'primary' : 'default'}
+                                variant={relevantOnly ? 'filled' : 'outlined'}
+                                onClick={() => {
+                                    setRelevantOnly(current => !current)
+                                    setSelected(null)
+                                }}
+                            />
                         </Box>
+                        {relevantOnly && knownMetamodels.length === 0 && (
+                            <Typography variant='caption' color='text.secondary' sx={{ display: 'block', mt: 0.75 }}>
+                                No model knowledge selected, so every inconsistency is shown.
+                            </Typography>
+                        )}
                         {modelFilter !== 'ALL' && (
                             <Typography variant='caption' color='text.secondary' sx={{ display: 'block', mt: 0.75 }}>
                                 Model: {modelFilter}

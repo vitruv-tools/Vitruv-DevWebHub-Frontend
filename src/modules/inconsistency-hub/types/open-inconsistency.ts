@@ -20,6 +20,8 @@ export type OpenInconsistency = {
     resolvedBy?: string | null
     resolutionChoice?: string | null
     resolutionComment?: string | null
+    /** Individual packages involved, such as amalthea and ascet. */
+    involvedMetamodels?: string[] | null
 }
 
 export type InconsistencyComment = {
