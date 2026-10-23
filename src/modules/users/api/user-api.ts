@@ -69,6 +69,11 @@ export function getUserProfile(username: string): Promise<UserProfile> {
     })
 }
 
+/** Directory of users: username and display name only. */
+export function listUsers(signal?: AbortSignal): Promise<UserProfile[]> {
+    return request<UserProfile[]>('/v1/users', { signal })
+}
+
 export function listKnowledgeMetamodels(signal?: AbortSignal): Promise<KnowledgeMetamodel[]> {
     return request<KnowledgeMetamodel[]>('/v1/users/knowledge-metamodels', { signal })
 }

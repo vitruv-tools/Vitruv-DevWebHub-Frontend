@@ -24,12 +24,24 @@ export type OpenInconsistency = {
     involvedMetamodels?: string[] | null
 }
 
+export type MentionKind = 'USER' | 'METAMODEL'
+
+/** A tag the server found in a comment. `users` is who it reaches. */
+export type CommentMention = {
+    kind: MentionKind
+    /** What follows the @ in the text: a username or a metamodel name. */
+    name: string
+    label: string
+    users: string[]
+}
+
 export type InconsistencyComment = {
     id: string
     inconsistencyId: string
     author: string
     body: string
     createdAt?: string
+    mentions?: CommentMention[]
 }
 
 export type ViewUpdateSummary = {
