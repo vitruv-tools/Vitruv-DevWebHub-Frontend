@@ -23,6 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 coverage
+eslint-report.json
 
 ### NetBeans ###
 /nbproject/private/

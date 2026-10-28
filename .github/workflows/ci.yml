@@ -1,0 +1,136 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: 22
+
+jobs:
+  lint:
+    name: Lint & format
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prettier (format check)
+        run: npm run format:check
+
+      # Errors fail the job. Warnings do not, but they are shown as
+      # annotations and in the job summary.
+      - name: ESLint
+        if: ${{ !cancelled() }}
+        run: |
+          set +e
+          npx eslint . --format json --output-file eslint-report.json
+          status=$?
+          node .github/scripts/lint-summary.mjs eslint-report.json
+          exit $status
+
+  build:
+    name: Type check & build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (tsc -b && vite build)
+        run: npm run build
+
+  test:
+    name: Tests & coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+      - name: Coverage summary
+        if: ${{ !cancelled() }}
+        run: node .github/scripts/coverage-summary.mjs
+
+      - name: Upload coverage report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
+          if-no-files-found: ignore
+
+  sonar:
+    name: SonarQube Cloud
+    needs: test
+    # Secrets are not available to fork PRs and Dependabot PRs
+    if: >-
+      ${{ github.actor != 'dependabot[bot]' &&
+      (github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history gives Sonar accurate blame and new-code detection
+          fetch-depth: 0
+
+      - name: Check for SONAR_TOKEN
+        id: token
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          if [ -n "$SONAR_TOKEN" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice title=SonarQube Cloud skipped::SONAR_TOKEN is not configured for this repository."
+          fi
+
+      - name: Download coverage report
+        if: steps.token.outputs.available == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage
+
+      - name: SonarQube scan
+        if: steps.token.outputs.available == 'true'
+        uses: SonarSource/sonarqube-scan-action@v8.3.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
