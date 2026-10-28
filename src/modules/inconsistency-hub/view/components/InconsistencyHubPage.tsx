@@ -42,7 +42,11 @@ import { formatSourceTargetRelation } from '../../helpers/source-target-relation
 import { isRelevantToUser } from '../../helpers/relevant-to-user.ts'
 import { keepSelectedIfVisible } from '../../helpers/selected-if-visible.ts'
 import { useModelKnowledge } from '../../../users/context/ModelKnowledgeContext.tsx'
-import type { InconsistencyListFilter, OpenInconsistency, OpenInconsistencyState } from '../../types/open-inconsistency.ts'
+import type {
+    InconsistencyListFilter,
+    OpenInconsistency,
+    OpenInconsistencyState,
+} from '../../types/open-inconsistency.ts'
 import { CommentsTab } from './tabs/CommentsTab.tsx'
 import { CommitsTab } from './tabs/CommitsTab.tsx'
 import { FilesChangedTab } from './tabs/FilesChangedTab.tsx'
@@ -54,7 +58,7 @@ type Props = {
 
 type DetailTab = 'comments' | 'commits' | 'files'
 
-const FILTERS: { value: InconsistencyListFilter, label: string }[] = [
+const FILTERS: { value: InconsistencyListFilter; label: string }[] = [
     { value: 'OPEN', label: 'Open' },
     { value: 'RESOLVED', label: 'Resolved' },
     { value: 'FAILED', label: 'Failed' },
@@ -111,7 +115,9 @@ export function InconsistencyHubPage({ onBack }: Props) {
     const notify = useNotify()
     const { user, signOut } = useAuth()
     const { knownMetamodels, openSettings } = useModelKnowledge()
-    const clientRef = useRef(new VitruviusClientImpl(VITRUVIUS_SERVER_BASE_URL, message => notify(message, 'error')))
+    const clientRef = useRef(
+        new VitruviusClientImpl(VITRUVIUS_SERVER_BASE_URL, (message) => notify(message, 'error')),
+    )
     const client = clientRef.current
 
     const [filter, setFilter] = useState<InconsistencyListFilter>('OPEN')
@@ -123,7 +129,10 @@ export function InconsistencyHubPage({ onBack }: Props) {
     const [detailTab, setDetailTab] = useState<DetailTab>('comments')
     const [answerOpen, setAnswerOpen] = useState(false)
     const [commentDialogOpen, setCommentDialogOpen] = useState(false)
-    const [pendingAnswer, setPendingAnswer] = useState<{ responseJson: string, choiceLabel: string } | null>(null)
+    const [pendingAnswer, setPendingAnswer] = useState<{
+        responseJson: string
+        choiceLabel: string
+    } | null>(null)
     const [loading, setLoading] = useState(true)
     const [resolving, setResolving] = useState(false)
     const [taskAlive, setTaskAlive] = useState<boolean | null>(null)
@@ -136,7 +145,9 @@ export function InconsistencyHubPage({ onBack }: Props) {
         try {
             const listed = await listInconsistencies(client, filter)
             setItems(listed)
-            setSelected(prev => (prev ? listed.find(item => item.id === prev.id) ?? null : null))
+            setSelected((prev) =>
+                prev ? (listed.find((item) => item.id === prev.id) ?? null) : null,
+            )
         } catch (error) {
             notify(error instanceof Error ? error.message : String(error), 'error')
         } finally {
@@ -205,7 +216,9 @@ export function InconsistencyHubPage({ onBack }: Props) {
             return
         }
         const current = selected
-        const answeredKey = interactionKey(current.interaction as UserInteractionPayload | undefined)
+        const answeredKey = interactionKey(
+            current.interaction as UserInteractionPayload | undefined,
+        )
         setResolving(true)
         setCommentDialogOpen(false)
         setStatusMessage('Submitting answer…')
@@ -213,7 +226,7 @@ export function InconsistencyHubPage({ onBack }: Props) {
             await submitTaskInteraction(client, current.taskId, responseJson)
             const status = await pollUntilCompleteOrNextInteraction(client, current.taskId, {
                 answeredInteractionKey: answeredKey,
-                onProgress: message => setStatusMessage(message),
+                onProgress: (message) => setStatusMessage(message),
             })
 
             if (status.state === 'WAITING_USER_INTERACTION' && status.interaction) {
@@ -256,7 +269,9 @@ export function InconsistencyHubPage({ onBack }: Props) {
             setFilter('RESOLVED')
             setDetailTab('comments')
             await refresh()
-            const resolved = (await listInconsistencies(client, 'RESOLVED')).find(item => item.id === current.id)
+            const resolved = (await listInconsistencies(client, 'RESOLVED')).find(
+                (item) => item.id === current.id,
+            )
             if (resolved) {
                 setSelected(resolved)
             } else {
@@ -293,7 +308,7 @@ export function InconsistencyHubPage({ onBack }: Props) {
     }, [items])
 
     const visibleItems = useMemo(() => {
-        return items.filter(item => {
+        return items.filter((item) => {
             if (modelFilter !== 'ALL' && item.metamodelName !== modelFilter) {
                 return false
             }
@@ -326,23 +341,52 @@ export function InconsistencyHubPage({ onBack }: Props) {
     }, [selected])
 
     return (
-        <ColumnLayout sx={{ padding: 0.5, gap: 0.5, height: '100%', width: '100%', boxSizing: 'border-box' }}>
-            <RowLayout sx={{ height: 'unset', alignItems: 'center', justifyContent: 'flex-end', gap: 1 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 1, flex: 1 }}>
-                    <AppNavButton label='Editor' onClick={onBack} />
+        <ColumnLayout
+            sx={{ padding: 0.5, gap: 0.5, height: '100%', width: '100%', boxSizing: 'border-box' }}
+        >
+            <RowLayout
+                sx={{ height: 'unset', alignItems: 'center', justifyContent: 'flex-end', gap: 1 }}
+            >
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-start',
+                        gap: 1,
+                        flex: 1,
+                    }}
+                >
+                    <AppNavButton label="Editor" onClick={onBack} />
                 </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1, flex: 1 }}>
-                    <Button size='small' onClick={() => { void refresh() }} disabled={loading}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        gap: 1,
+                        flex: 1,
+                    }}
+                >
+                    <Button
+                        size="small"
+                        onClick={() => {
+                            void refresh()
+                        }}
+                        disabled={loading}
+                    >
                         Refresh
                     </Button>
                     {user && (
-                        <Chip size='small' label={user.name || user.username || user.email || 'User'} />
+                        <Chip
+                            size="small"
+                            label={user.name || user.username || user.email || 'User'}
+                        />
                     )}
-                    <Button size='small' onClick={openSettings}>
+                    <Button size="small" onClick={openSettings}>
                         Model knowledge
                     </Button>
                     <Button
-                        size='small'
+                        size="small"
                         onClick={() => {
                             void signOut()
                         }}
@@ -376,20 +420,33 @@ export function InconsistencyHubPage({ onBack }: Props) {
                     }}
                 >
                     <Box sx={{ px: 1.5, pt: 1.5, pb: 1 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                            <Typography variant='subtitle1' sx={{ fontWeight: 700 }}>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                mb: 1,
+                            }}
+                        >
+                            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
                                 Inconsistencies
                             </Typography>
-                            <Tooltip title={modelFilter === 'ALL' ? 'Filter by model' : `Model: ${modelFilter}`}>
+                            <Tooltip
+                                title={
+                                    modelFilter === 'ALL'
+                                        ? 'Filter by model'
+                                        : `Model: ${modelFilter}`
+                                }
+                            >
                                 <IconButton
-                                    size='small'
-                                    aria-label='Filter by model'
-                                    aria-haspopup='menu'
+                                    size="small"
+                                    aria-label="Filter by model"
+                                    aria-haspopup="menu"
                                     aria-expanded={Boolean(modelFilterAnchor)}
                                     color={modelFilter === 'ALL' ? 'default' : 'primary'}
-                                    onClick={event => setModelFilterAnchor(event.currentTarget)}
+                                    onClick={(event) => setModelFilterAnchor(event.currentTarget)}
                                 >
-                                    <FilterListIcon fontSize='small' />
+                                    <FilterListIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
                             <Menu
@@ -408,11 +465,13 @@ export function InconsistencyHubPage({ onBack }: Props) {
                                     }}
                                 >
                                     <ListItemIcon sx={{ minWidth: 28 }}>
-                                        {modelFilter === 'ALL' ? <CheckIcon fontSize='small' /> : null}
+                                        {modelFilter === 'ALL' ? (
+                                            <CheckIcon fontSize="small" />
+                                        ) : null}
                                     </ListItemIcon>
-                                    <ListItemText primary='All models' />
+                                    <ListItemText primary="All models" />
                                 </MenuItem>
-                                {modelOptions.map(name => (
+                                {modelOptions.map((name) => (
                                     <MenuItem
                                         key={name}
                                         selected={modelFilter === name}
@@ -423,7 +482,9 @@ export function InconsistencyHubPage({ onBack }: Props) {
                                         }}
                                     >
                                         <ListItemIcon sx={{ minWidth: 28 }}>
-                                            {modelFilter === name ? <CheckIcon fontSize='small' /> : null}
+                                            {modelFilter === name ? (
+                                                <CheckIcon fontSize="small" />
+                                            ) : null}
                                         </ListItemIcon>
                                         <ListItemText primary={name} />
                                     </MenuItem>
@@ -431,10 +492,10 @@ export function InconsistencyHubPage({ onBack }: Props) {
                             </Menu>
                         </Box>
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                            {FILTERS.map(option => (
+                            {FILTERS.map((option) => (
                                 <Chip
                                     key={option.value}
-                                    size='small'
+                                    size="small"
                                     label={option.label}
                                     color={filter === option.value ? 'primary' : 'default'}
                                     variant={filter === option.value ? 'filled' : 'outlined'}
@@ -446,24 +507,32 @@ export function InconsistencyHubPage({ onBack }: Props) {
                                 />
                             ))}
                             <Chip
-                                size='small'
-                                label='Relevant to me'
+                                size="small"
+                                label="Relevant to me"
                                 aria-pressed={relevantOnly}
                                 color={relevantOnly ? 'primary' : 'default'}
                                 variant={relevantOnly ? 'filled' : 'outlined'}
                                 onClick={() => {
-                                    setRelevantOnly(current => !current)
+                                    setRelevantOnly((current) => !current)
                                     setSelected(null)
                                 }}
                             />
                         </Box>
                         {relevantOnly && knownMetamodels.length === 0 && (
-                            <Typography variant='caption' color='text.secondary' sx={{ display: 'block', mt: 0.75 }}>
+                            <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                sx={{ display: 'block', mt: 0.75 }}
+                            >
                                 No model knowledge selected, so every inconsistency is shown.
                             </Typography>
                         )}
                         {modelFilter !== 'ALL' && (
-                            <Typography variant='caption' color='text.secondary' sx={{ display: 'block', mt: 0.75 }}>
+                            <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                sx={{ display: 'block', mt: 0.75 }}
+                            >
                                 Model: {modelFilter}
                             </Typography>
                         )}
@@ -471,19 +540,23 @@ export function InconsistencyHubPage({ onBack }: Props) {
                     <Divider />
                     <Box sx={{ flex: 1, overflow: 'auto' }}>
                         {loading && (
-                            <Typography color='text.secondary' sx={{ p: 1.5 }}>Loading…</Typography>
+                            <Typography color="text.secondary" sx={{ p: 1.5 }}>
+                                Loading…
+                            </Typography>
                         )}
                         {!loading && visibleItems.length === 0 && (
-                            <Typography color='text.secondary' sx={{ p: 1.5 }} variant='body2'>
+                            <Typography color="text.secondary" sx={{ p: 1.5 }} variant="body2">
                                 No inconsistencies for this filter.
                             </Typography>
                         )}
                         <List dense disablePadding>
-                            {visibleItems.map(item => (
+                            {visibleItems.map((item) => (
                                 <ListItemButton
                                     key={item.id}
                                     selected={selected?.id === item.id}
-                                    onClick={() => { void selectInconsistency(item) }}
+                                    onClick={() => {
+                                        void selectInconsistency(item)
+                                    }}
                                     sx={{
                                         alignItems: 'flex-start',
                                         borderBottom: 1,
@@ -493,20 +566,41 @@ export function InconsistencyHubPage({ onBack }: Props) {
                                 >
                                     <ListItemText
                                         primary={
-                                            <Typography variant='body2' sx={{ color: 'text.primary', fontWeight: 600 }}>
+                                            <Typography
+                                                variant="body2"
+                                                sx={{ color: 'text.primary', fontWeight: 600 }}
+                                            >
                                                 {(item.title || 'Inconsistency').slice(0, 80)}
                                             </Typography>
                                         }
                                         secondary={
-                                            <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 0.75, mt: 0.35 }}>
+                                            <Box
+                                                sx={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    flexWrap: 'wrap',
+                                                    gap: 0.75,
+                                                    mt: 0.35,
+                                                }}
+                                            >
                                                 <Chip
-                                                    size='small'
+                                                    size="small"
                                                     label={statusLabel(item.state)}
                                                     color={statusChipColor(item.state)}
-                                                    variant='outlined'
-                                                    sx={{ height: 20, '& .MuiChip-label': { px: 0.75, fontSize: 11 } }}
+                                                    variant="outlined"
+                                                    sx={{
+                                                        height: 20,
+                                                        '& .MuiChip-label': {
+                                                            px: 0.75,
+                                                            fontSize: 11,
+                                                        },
+                                                    }}
                                                 />
-                                                <Typography variant='caption' color='text.secondary' component='span'>
+                                                <Typography
+                                                    variant="caption"
+                                                    color="text.secondary"
+                                                    component="span"
+                                                >
                                                     {listItemMeta(item)}
                                                 </Typography>
                                             </Box>
@@ -531,7 +625,7 @@ export function InconsistencyHubPage({ onBack }: Props) {
                 >
                     {!selected && (
                         <Box sx={{ maxWidth: 520, pt: 4 }}>
-                            <Typography variant='h5' sx={{ fontWeight: 700 }}>
+                            <Typography variant="h5" sx={{ fontWeight: 700 }}>
                                 Inconsistency Hub
                             </Typography>
                         </Box>
@@ -549,14 +643,22 @@ export function InconsistencyHubPage({ onBack }: Props) {
                                 maxWidth: detailTab === 'files' ? 'none' : 960,
                             }}
                         >
-                            <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, flexShrink: 0 }}>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'flex-start',
+                                    gap: 1.5,
+                                    flexShrink: 0,
+                                }}
+                            >
                                 <Box sx={{ flex: 1, minWidth: 0 }}>
                                     <Typography
-                                        component='h1'
+                                        component="h1"
                                         sx={{
-                                            fontSize: detailTab === 'files'
-                                                ? { xs: '1.05rem', md: '1.25rem' }
-                                                : { xs: '1.35rem', md: '1.75rem' },
+                                            fontSize:
+                                                detailTab === 'files'
+                                                    ? { xs: '1.05rem', md: '1.25rem' }
+                                                    : { xs: '1.35rem', md: '1.75rem' },
                                             fontWeight: 700,
                                             lineHeight: 1.25,
                                             wordBreak: 'break-word',
@@ -564,14 +666,22 @@ export function InconsistencyHubPage({ onBack }: Props) {
                                     >
                                         {displayTitle(selected)}
                                     </Typography>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1, mt: detailTab === 'files' ? 0.5 : 1 }}>
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            flexWrap: 'wrap',
+                                            gap: 1,
+                                            mt: detailTab === 'files' ? 0.5 : 1,
+                                        }}
+                                    >
                                         <Chip
-                                            size='small'
+                                            size="small"
                                             label={statusLabel(selected.state)}
                                             color={statusChipColor(selected.state)}
-                                            variant='outlined'
+                                            variant="outlined"
                                         />
-                                        <Typography variant='body2' color='text.secondary'>
+                                        <Typography variant="body2" color="text.secondary">
                                             {metaLine}
                                         </Typography>
                                     </Box>
@@ -589,14 +699,14 @@ export function InconsistencyHubPage({ onBack }: Props) {
                                     // Keep Visualization tall: shrink description and scroll its content.
                                     ...(detailTab === 'files'
                                         ? {
-                                            maxHeight: { xs: 96, md: 112 },
-                                            overflow: 'auto',
-                                            p: 1,
-                                        }
+                                              maxHeight: { xs: 96, md: 112 },
+                                              overflow: 'auto',
+                                              p: 1,
+                                          }
                                         : {}),
                                 }}
                             >
-                                <Typography variant='subtitle2' sx={{ mb: 0.5 }}>
+                                <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
                                     Description
                                 </Typography>
                                 <Typography
@@ -608,17 +718,23 @@ export function InconsistencyHubPage({ onBack }: Props) {
                                     {formatInconsistencyDescription(selected)}
                                 </Typography>
                                 {detailTab !== 'files' && (
-                                    <Typography variant='caption' color='text.secondary' display='block' sx={{ mt: 1 }}>
+                                    <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                        display="block"
+                                        sx={{ mt: 1 }}
+                                    >
                                         Task {selected.taskId}
                                     </Typography>
                                 )}
                             </Box>
 
                             {selected.state === 'OPEN' && taskAlive === false && (
-                                <Alert severity='warning' sx={{ flexShrink: 0 }}>
-                                    This inconsistency cannot be resolved anymore because its propagation task
-                                    is no longer active (typically after a server restart). Click Refresh —
-                                    it will move to Failed — then park a new inconsistency from the editor.
+                                <Alert severity="warning" sx={{ flexShrink: 0 }}>
+                                    This inconsistency cannot be resolved anymore because its
+                                    propagation task is no longer active (typically after a server
+                                    restart). Click Refresh — it will move to Failed — then park a
+                                    new inconsistency from the editor.
                                 </Alert>
                             )}
 
@@ -648,15 +764,15 @@ export function InconsistencyHubPage({ onBack }: Props) {
                                         },
                                     }}
                                 >
-                                    <Tab value='comments' label='Comments' />
-                                    <Tab value='commits' label='Commits' />
-                                    <Tab value='files' label='Visualization' />
+                                    <Tab value="comments" label="Comments" />
+                                    <Tab value="commits" label="Commits" />
+                                    <Tab value="files" label="Visualization" />
                                 </Tabs>
 
                                 {selected.state === 'OPEN' && detailTab !== 'comments' && (
                                     <Button
-                                        variant='contained'
-                                        size='small'
+                                        variant="contained"
+                                        size="small"
                                         disabled={!canAnswer || resolving}
                                         onClick={() => setAnswerOpen(true)}
                                         sx={{
@@ -675,7 +791,8 @@ export function InconsistencyHubPage({ onBack }: Props) {
                                 sx={{
                                     pt: 0.5,
                                     flex: detailTab === 'files' ? 1 : undefined,
-                                    minHeight: detailTab === 'files' ? { xs: 420, md: 520 } : undefined,
+                                    minHeight:
+                                        detailTab === 'files' ? { xs: 420, md: 520 } : undefined,
                                     display: detailTab === 'files' ? 'flex' : 'block',
                                     flexDirection: 'column',
                                     overflow: detailTab === 'files' ? 'hidden' : undefined,
@@ -709,7 +826,7 @@ export function InconsistencyHubPage({ onBack }: Props) {
                 open={Boolean(answerOpen && selected && interaction && !resolving)}
                 interaction={interaction}
                 allowDismiss={false}
-                onSubmit={responseJson => {
+                onSubmit={(responseJson) => {
                     handleInteractionChosen(responseJson)
                 }}
             />
@@ -718,11 +835,15 @@ export function InconsistencyHubPage({ onBack }: Props) {
                 open={Boolean(commentDialogOpen && pendingAnswer && !resolving)}
                 choiceLabel={pendingAnswer?.choiceLabel ?? ''}
                 onCancel={handleCommentDialogCancel}
-                onConfirm={comment => {
+                onConfirm={(comment) => {
                     if (!pendingAnswer) {
                         return
                     }
-                    void handleResolve(pendingAnswer.responseJson, pendingAnswer.choiceLabel, comment)
+                    void handleResolve(
+                        pendingAnswer.responseJson,
+                        pendingAnswer.choiceLabel,
+                        comment,
+                    )
                 }}
             />
         </ColumnLayout>

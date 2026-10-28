@@ -19,7 +19,7 @@ interface Props {
     inputErrors: InputError[] | undefined
     onSubmit: (value: string | string[] | undefined, ignoreErrors: boolean) => boolean
     value: string | string[] | undefined
-    options?: { key: string, label: string }[]
+    options?: { key: string; label: string }[]
     disabled?: boolean
 }
 
@@ -41,9 +41,9 @@ export function PropertyInput({ disabled, isArray, inputErrors, onSubmit, value,
     function getArrayValue() {
         return match(
             value,
-            nil => undefined,
-            single => undefined,
-            array => array.map(it => ensureStringValue(it)),
+            (nil) => undefined,
+            (single) => undefined,
+            (array) => array.map((it) => ensureStringValue(it)),
             isArray,
         )
     }
@@ -51,9 +51,9 @@ export function PropertyInput({ disabled, isArray, inputErrors, onSubmit, value,
     function getSingleValue() {
         return match(
             value,
-            nil => undefined,
-            single => ensureStringValue(single),
-            array => undefined,
+            (nil) => undefined,
+            (single) => ensureStringValue(single),
+            (array) => undefined,
             isArray,
         )
     }
@@ -75,51 +75,68 @@ export function PropertyInput({ disabled, isArray, inputErrors, onSubmit, value,
         <>
             <ColumnLayout sx={{ width: '100%', overflow: 'hidden' }}>
                 <RowLayout sx={{ alignItems: 'center', gap: 1, width: '100%', overflow: 'hidden' }}>
-
                     <Box sx={{ flex: 1, minWidth: 0 }}>
-                        {
-                            isArray
-                                ? isNil(options)
-                                    ? <ArraySimpleInput disabled={disabled} value={arrayValue} onSubmit={onSubmit} />
-                                    : <ArrayOptionsInput
-                                        disabled={disabled} value={arrayValue} onSubmit={onSubmit} options={options}
-                                    />
-                                : isNil(options)
-                                    ? <SingleSimpleInput disabled={disabled} value={singleValue} onSubmit={onSubmit} />
-                                    : <SingleOptionsInput
-                                        disabled={disabled} value={singleValue} onSubmit={onSubmit} options={options}
-                                    />
-                        }
+                        {isArray ? (
+                            isNil(options) ? (
+                                <ArraySimpleInput
+                                    disabled={disabled}
+                                    value={arrayValue}
+                                    onSubmit={onSubmit}
+                                />
+                            ) : (
+                                <ArrayOptionsInput
+                                    disabled={disabled}
+                                    value={arrayValue}
+                                    onSubmit={onSubmit}
+                                    options={options}
+                                />
+                            )
+                        ) : isNil(options) ? (
+                            <SingleSimpleInput
+                                disabled={disabled}
+                                value={singleValue}
+                                onSubmit={onSubmit}
+                            />
+                        ) : (
+                            <SingleOptionsInput
+                                disabled={disabled}
+                                value={singleValue}
+                                onSubmit={onSubmit}
+                                options={options}
+                            />
+                        )}
                     </Box>
 
                     {isNil(options) && (
-                        <IconButton onClick={() => setShowModal(true)} size='small' tabIndex={-1}>
+                        <IconButton onClick={() => setShowModal(true)} size="small" tabIndex={-1}>
                             <MoreHorizIcon />
                         </IconButton>
                     )}
                 </RowLayout>
                 <InputErrorList inputErrors={inputErrors ?? []} />
             </ColumnLayout>
-            {
-                isArray
-                    ? isNil(options)
-                        ? <ArraySimpleInputModal
-                            open={showModal}
-                            close={() => setShowModal(false)}
-                            value={arrayValue}
-                            onSubmit={onSubmit}
-                        />
-                        : <></>
-                    : isNil(options)
-                        ? <SingleSimpleInputModal
-                            open={showModal}
-                            close={() => setShowModal(false)}
-                            value={singleValue}
-                            inputErrors={inputErrors ?? []}
-                            onSubmit={onSubmit}
-                        />
-                        : <></>
-            }
+            {isArray ? (
+                isNil(options) ? (
+                    <ArraySimpleInputModal
+                        open={showModal}
+                        close={() => setShowModal(false)}
+                        value={arrayValue}
+                        onSubmit={onSubmit}
+                    />
+                ) : (
+                    <></>
+                )
+            ) : isNil(options) ? (
+                <SingleSimpleInputModal
+                    open={showModal}
+                    close={() => setShowModal(false)}
+                    value={singleValue}
+                    inputErrors={inputErrors ?? []}
+                    onSubmit={onSubmit}
+                />
+            ) : (
+                <></>
+            )}
         </>
     )
 }

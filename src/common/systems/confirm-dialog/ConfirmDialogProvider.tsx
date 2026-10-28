@@ -77,15 +77,13 @@ export function ConfirmDialogProvider({ children }: ConfirmDialogProviderProps) 
                 <Dialog fullScreen={fullScreen} open={open} onClose={handleCancel}>
                     <DialogTitle>{options.title}</DialogTitle>
                     <DialogContent>
-                        <DialogContentText>
-                            {options.text}
-                        </DialogContentText>
+                        <DialogContentText>{options.text}</DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleCancel} color='primary'>
+                        <Button onClick={handleCancel} color="primary">
                             Cancel
                         </Button>
-                        <Button onClick={handleConfirm} color='error'>
+                        <Button onClick={handleConfirm} color="error">
                             {options.confirmLabel}
                         </Button>
                     </DialogActions>
@@ -94,4 +92,3 @@ export function ConfirmDialogProvider({ children }: ConfirmDialogProviderProps) 
         </ConfirmDialogContext.Provider>
     )
 }
-

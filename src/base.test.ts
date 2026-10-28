@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { ALLOW_MULTIPLE_SELECTED_OBJECTS, AUTH_API_BASE_URL, VITRUVIUS_SERVER_BASE_URL } from './base'
+import {
+    ALLOW_MULTIPLE_SELECTED_OBJECTS,
+    AUTH_API_BASE_URL,
+    VITRUVIUS_SERVER_BASE_URL,
+} from './base'
 
 describe('test if base.ts constants are loaded correctly', () => {
     it('should have correct VITRUVIUS_SERVER_BASE_URL value', () => {

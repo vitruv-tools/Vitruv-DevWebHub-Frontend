@@ -29,14 +29,14 @@ export function buildInferredCorrespondencePairs(
         pairs.push([a, b])
     }
 
-    const system = all.find(resource => resource.type.name === 'System')
-    const root = all.find(resource => resource.type.name === 'Root')
+    const system = all.find((resource) => resource.type.name === 'System')
+    const root = all.find((resource) => resource.type.name === 'Root')
     if (system && root) {
         addPair(system.id, root.id)
     }
 
-    const entities = all.filter(resource => resource.type.name === 'Entity')
-    const components = all.filter(resource => SYSTEM_COMPONENT_TYPES.has(resource.type.name))
+    const entities = all.filter((resource) => resource.type.name === 'Entity')
+    const components = all.filter((resource) => SYSTEM_COMPONENT_TYPES.has(resource.type.name))
     for (const entity of entities) {
         const entityName = resourceName(entity)
         if (!entityName) {
@@ -49,7 +49,7 @@ export function buildInferredCorrespondencePairs(
         }
     }
 
-    const links = all.filter(resource => resource.type.name === 'Link')
+    const links = all.filter((resource) => resource.type.name === 'Link')
     for (let i = 0; i < links.length; i++) {
         const left = links[i]
         const leftName = resourceName(left)
@@ -63,7 +63,7 @@ export function buildInferredCorrespondencePairs(
     }
 
     // Typical demo: one unnamed Link under Root and one under System.
-    const unnamedLinks = links.filter(link => !resourceName(link))
+    const unnamedLinks = links.filter((link) => !resourceName(link))
     if (unnamedLinks.length === 2) {
         addPair(unnamedLinks[0].id, unnamedLinks[1].id)
     }
@@ -97,10 +97,7 @@ export function resolveHubCorrespondencePairs(
     return merged
 }
 
-export function linkedResourceIdsFor(
-    resourceId: string,
-    pairs: Array<[string, string]>,
-): string[] {
+export function linkedResourceIdsFor(resourceId: string, pairs: Array<[string, string]>): string[] {
     const linked: string[] = []
     for (const [a, b] of pairs) {
         if (a === resourceId) {
@@ -125,17 +122,18 @@ function correspondencePairsFromContext(
 
     for (const edge of context.correspondences) {
         const source = findResourceForContextElement(
-            context.elements.find(element => element.id === edge.sourceId),
+            context.elements.find((element) => element.id === edge.sourceId),
             structuredResources,
         )
         const target = findResourceForContextElement(
-            context.elements.find(element => element.id === edge.targetId),
+            context.elements.find((element) => element.id === edge.targetId),
             structuredResources,
         )
         if (!source || !target || source.id === target.id) {
             continue
         }
-        const key = source.id < target.id ? `${source.id}|${target.id}` : `${target.id}|${source.id}`
+        const key =
+            source.id < target.id ? `${source.id}|${target.id}` : `${target.id}|${source.id}`
         if (seen.has(key)) {
             continue
         }
@@ -147,7 +145,7 @@ function correspondencePairsFromContext(
 }
 
 function resourceName(resource: StructuredResource): string | undefined {
-    const nameAttr = resource.attributes.find(attr => attr.info.name === 'name')
+    const nameAttr = resource.attributes.find((attr) => attr.info.name === 'name')
     const value = nameAttr?.value
     if (typeof value !== 'string' || value === 'null' || value.trim() === '') {
         return undefined

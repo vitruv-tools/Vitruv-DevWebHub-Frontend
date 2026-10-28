@@ -3,12 +3,15 @@ import type { Property, StructuredResource } from '../types/structured-resource.
 import type { EditViewAction } from './edit-view-actions.ts'
 import { randomString } from '../../../common/utils/string-utils.ts'
 import { isNil, isNotNil } from '../../../common/utils/nil-utils.ts'
-import { findStructuredResourceById, getAllStructuredResources } from '../helpers/structured-resource-helpers.ts'
+import {
+    findStructuredResourceById,
+    getAllStructuredResources,
+} from '../helpers/structured-resource-helpers.ts'
 import type { View } from '../types/structured-vitruvius-model.ts'
 import { checkInput } from './input-checker/check-input.ts'
 import { requireOwnerIsNotNil, requirePropertyIsNotNil } from './input-checker/helpers.ts'
 
-type ReducerType = { view: View, success: boolean }
+type ReducerType = { view: View; success: boolean }
 
 /**
  * Reducer function for handling various edit actions on a view's state.
@@ -27,7 +30,9 @@ export function editViewReducer(state: ReducerType, action: EditViewAction): Red
                 const ownerRes = findStructuredResourceById(draftRoots, action.ownerId)
                 requireOwnerIsNotNil(ownerRes, action.ownerId)
 
-                const editAttr = ownerRes.attributes.find((attr) => attr.info.id === action.attributeId)
+                const editAttr = ownerRes.attributes.find(
+                    (attr) => attr.info.id === action.attributeId,
+                )
                 requirePropertyIsNotNil(editAttr, action.attributeId, action.ownerId, 'attribute')
 
                 const inputErrors = checkInput(editAttr.info, action.newValue)
@@ -54,17 +59,25 @@ export function editViewReducer(state: ReducerType, action: EditViewAction): Red
                 const ownerRes = findStructuredResourceById(draftRoots, action.ownerId)
                 requireOwnerIsNotNil(ownerRes, action.ownerId)
 
-                const editSref = ownerRes.simpleReferences.find((sref) => sref.info.id === action.simpleReferenceId)
-                requirePropertyIsNotNil(editSref, action.simpleReferenceId, action.ownerId, 'simple reference')
+                const editSref = ownerRes.simpleReferences.find(
+                    (sref) => sref.info.id === action.simpleReferenceId,
+                )
+                requirePropertyIsNotNil(
+                    editSref,
+                    action.simpleReferenceId,
+                    action.ownerId,
+                    'simple reference',
+                )
 
                 const inputErrors = checkInput(editSref.info, action.newValue)
 
                 if (inputErrors.length === 0 || action.ignoreInputErrors) {
-
                     if (isNil(action.newValue)) {
                         editSref.value = undefined
                     } else if (Array.isArray(action.newValue)) {
-                        editSref.value = action.newValue.map((id) => findStructuredResourceById(draftRoots, id)!)
+                        editSref.value = action.newValue.map((id) =>
+                            findStructuredResourceById(draftRoots, id)!,
+                        )
                     } else {
                         editSref.value = findStructuredResourceById(draftRoots, action.newValue)
                     }
@@ -88,30 +101,41 @@ export function editViewReducer(state: ReducerType, action: EditViewAction): Red
                 const ownerRes = findStructuredResourceById(draftRoots, action.ownerId)
                 requireOwnerIsNotNil(ownerRes, action.ownerId)
 
-                const editCref = ownerRes.containmentReferences.find((cref) => cref.info.id === action.containmentReferenceId)
-                requirePropertyIsNotNil(editCref, action.containmentReferenceId, action.ownerId, 'containment reference')
+                const editCref = ownerRes.containmentReferences.find(
+                    (cref) => cref.info.id === action.containmentReferenceId,
+                )
+                requirePropertyIsNotNil(
+                    editCref,
+                    action.containmentReferenceId,
+                    action.ownerId,
+                    'containment reference',
+                )
 
-                const type = editCref.info.type.subTypes.find(it => it.id === action.dataTypeId)
+                const type = editCref.info.type.subTypes.find((it) => it.id === action.dataTypeId)
 
                 if (isNil(type)) {
-                    throw new Error(`Could not find type ${action.dataTypeId} for containment reference ${editCref.info.id}`)
+                    throw new Error(
+                        `Could not find type ${action.dataTypeId} for containment reference ${editCref.info.id}`,
+                    )
                 }
 
                 const newChild: StructuredResource = {
                     id: randomString(64),
                     type,
-                    attributes: Object.values(type.attributes).map(attrInfo => ({
+                    attributes: Object.values(type.attributes).map((attrInfo) => ({
                         info: attrInfo,
                         value: undefined,
                     })),
-                    simpleReferences: Object.values(type.simpleReferences).map(srefInfo => ({
+                    simpleReferences: Object.values(type.simpleReferences).map((srefInfo) => ({
                         info: srefInfo,
                         value: undefined,
                     })),
-                    containmentReferences: Object.values(type.containmentReferences).map(crefInfo => ({
-                        info: crefInfo,
-                        value: undefined,
-                    })),
+                    containmentReferences: Object.values(type.containmentReferences).map(
+                        (crefInfo) => ({
+                            info: crefInfo,
+                            value: undefined,
+                        }),
+                    ),
                     resourceSetInfo: undefined,
                     propertiesWithErrors: [],
                     parentId: ownerRes.id,
@@ -159,7 +183,6 @@ export function editViewReducer(state: ReducerType, action: EditViewAction): Red
     })
 }
 
-
 function removeByIdFromRoots(roots: StructuredResource[], childId: string): boolean {
     for (const root of roots) {
         if (removeById(root, childId)) return true
@@ -199,9 +222,13 @@ function removeById(node: StructuredResource, childId: string): boolean {
     return false
 }
 
-function addPropertyWithError(resId: string | undefined, property: Property<unknown>, allRes: StructuredResource[]) {
+function addPropertyWithError(
+    resId: string | undefined,
+    property: Property<unknown>,
+    allRes: StructuredResource[],
+) {
     if (isNotNil(resId)) {
-        const res = allRes.find(it => it.id === resId)!
+        const res = allRes.find((it) => it.id === resId)!
 
         if (!res.propertiesWithErrors.includes(property.info.id)) {
             res.propertiesWithErrors = [...res.propertiesWithErrors, property.info.id]
@@ -210,10 +237,14 @@ function addPropertyWithError(resId: string | undefined, property: Property<unkn
     }
 }
 
-function removePropertyWithError(resId: string | undefined, property: Property<unknown>, allRes: StructuredResource[]) {
+function removePropertyWithError(
+    resId: string | undefined,
+    property: Property<unknown>,
+    allRes: StructuredResource[],
+) {
     if (isNotNil(resId)) {
-        const res = allRes.find(it => it.id === resId)!
-        res.propertiesWithErrors = res.propertiesWithErrors.filter(it => it !== property.info.id)
+        const res = allRes.find((it) => it.id === resId)!
+        res.propertiesWithErrors = res.propertiesWithErrors.filter((it) => it !== property.info.id)
         removePropertyWithError(res.parentId, property, allRes)
     }
 }

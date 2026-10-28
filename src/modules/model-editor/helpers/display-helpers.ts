@@ -30,7 +30,10 @@ export function structuredResourceLabel(resource: StructuredResource): string {
  * @return {string} A short label, which is a combination of the resource's truncated name and its type name.
  * If the name is unavailable, only the type name is returned.
  */
-export function structuredResourceShortLabel(resource: StructuredResource, maxNameLength: number = Infinity): string {
+export function structuredResourceShortLabel(
+    resource: StructuredResource,
+    maxNameLength: number = Infinity,
+): string {
     const name = getName(resource.attributes)
     return name ? `${truncate(name, maxNameLength)} : ${resource.type.name}` : resource.type.name
 }
@@ -41,7 +44,9 @@ export function structuredResourceShortLabel(resource: StructuredResource, maxNa
  * @param {InputErrorSeverity | undefined} severity - The severity level of the input error, or undefined if none.
  * @return {'error' | 'warn' | undefined} The color associated with the specified severity, or undefined if no mapping exists.
  */
-export function colorOfInputErrorSeverity(severity: InputErrorSeverity | undefined): 'error' | 'warn' | undefined {
+export function colorOfInputErrorSeverity(
+    severity: InputErrorSeverity | undefined,
+): 'error' | 'warn' | undefined {
     if (isNil(severity)) return undefined
 
     const colorMap = {
@@ -72,7 +77,7 @@ export function getTypeOutput(info: StructuredEcorePropertyInfo): string {
 function getName(attributes: StructuredAttribute[]): string | undefined {
     const nameKeys = ['name', 'title', 'label', 'header', 'heading', 'caption']
     for (const key of nameKeys) {
-        const name = attributes.find(attr => attr.info.name === key)?.value
+        const name = attributes.find((attr) => attr.info.name === key)?.value
         if (name != undefined && typeof name == 'string') return name
     }
 
@@ -82,7 +87,7 @@ function getName(attributes: StructuredAttribute[]): string | undefined {
 function getValue(attributes: StructuredAttribute[]): string | number | boolean | undefined {
     const valueKeys = ['value']
     for (const key of valueKeys) {
-        const value = attributes.find(attr => attr.info.name === key)?.value
+        const value = attributes.find((attr) => attr.info.name === key)?.value
         if (value != undefined && typeof value != 'object') return value
     }
 

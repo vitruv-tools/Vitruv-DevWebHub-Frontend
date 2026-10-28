@@ -75,6 +75,13 @@ export function useVsumApi(client: VitruviusClient) {
         return selector
     }
 
-
-    return { loadMetamodels, createVsum, updateVsumInfo, deleteVsum, loadVsums, loadViewTypes, createSelector }
+    return {
+        loadMetamodels,
+        createVsum,
+        updateVsumInfo,
+        deleteVsum,
+        loadVsums,
+        loadViewTypes,
+        createSelector,
+    }
 }

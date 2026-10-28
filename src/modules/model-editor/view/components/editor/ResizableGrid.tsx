@@ -4,15 +4,15 @@ import { styled } from '@mui/material/styles'
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface ResizableGridProps {
-    cell11: React.ReactNode;
-    cell12: React.ReactNode;
-    cell21: React.ReactNode;
-    cell22: React.ReactNode;
+    cell11: React.ReactNode
+    cell12: React.ReactNode
+    cell21: React.ReactNode
+    cell22: React.ReactNode
 }
 
 interface Sizes {
-    colWidths: number[];
-    rowHeights: number[][];
+    colWidths: number[]
+    rowHeights: number[][]
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -81,27 +81,25 @@ const Cell = styled('div')`
     align-items: center;
     justify-content: center;
     overflow: hidden;
-
 `
 
 const ColDivider = styled('div')`
-    width: ${props => props.theme.spacing(0.5)};
+    width: ${(props) => props.theme.spacing(0.5)};
     flex-shrink: 0;
-    background: ${props => props.theme.palette.background.default};
+    background: ${(props) => props.theme.palette.background.default};
     position: relative;
     cursor: ew-resize;
 `
 
 const RowDivider = styled('div')`
-    height: ${props => props.theme.spacing(0.5)};
+    height: ${(props) => props.theme.spacing(0.5)};
     flex-shrink: 0;
-    background: ${props => props.theme.palette.background.default};
+    background: ${(props) => props.theme.palette.background.default};
     position: relative;
     cursor: ns-resize;
 `
 
 // ─── Component ────────────────────────────────────────────────────────────────
-
 
 /**
  * A resizable grid component that allows dynamic resizing of rows and columns
@@ -113,12 +111,7 @@ const RowDivider = styled('div')`
  * @param {React.ReactNode} props.cell21 The React node to render in the top-right cell (2nd column, 1st row).
  * @param {React.ReactNode} props.cell22 The React node to render in the bottom-right cell (2nd column, 2nd row).
  */
-export function ResizableGrid({
-                                  cell11,
-                                  cell12,
-                                  cell21,
-                                  cell22,
-                              }: ResizableGridProps) {
+export function ResizableGrid({ cell11, cell12, cell21, cell22 }: ResizableGridProps) {
     // Map props to a 2D array indexed [colIdx][rowIdx]
     const cells: React.ReactNode[][] = [
         [cell11, cell12],
@@ -130,9 +123,9 @@ export function ResizableGrid({
 
     // Track which divider is being dragged: { type, colIdx, rowIdx? }
     const dragRef = useRef<{
-        type: 'col' | 'row';
-        colIdx: number;
-        rowIdx?: number;
+        type: 'col' | 'row'
+        colIdx: number
+        rowIdx?: number
     } | null>(null)
 
     // Force re-render on drag so isDragging props update
@@ -230,12 +223,12 @@ export function ResizableGrid({
                     <ColStrip style={{ flex: `${colW} 1 0` }}>
                         {sizes.rowHeights[colIdx].map((rowH, rowIdx) => (
                             <React.Fragment key={rowIdx}>
-                                <Cell style={{ flex: `${rowH} 1 0` }}>
-                                    {cells[colIdx][rowIdx]}
-                                </Cell>
+                                <Cell style={{ flex: `${rowH} 1 0` }}>{cells[colIdx][rowIdx]}</Cell>
 
                                 {rowIdx < ROWS - 1 && (
-                                    <RowDivider onMouseDown={(e) => startRowDrag(colIdx, rowIdx, e)} />
+                                    <RowDivider
+                                        onMouseDown={(e) => startRowDrag(colIdx, rowIdx, e)}
+                                    />
                                 )}
                             </React.Fragment>
                         ))}

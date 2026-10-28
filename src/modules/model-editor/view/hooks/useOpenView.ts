@@ -6,18 +6,18 @@ import { useViewConfigCache } from './useViewConfigCache.ts'
 import { isNil, isNotNil } from '../../../../common/utils/nil-utils.ts'
 
 export type OpenViewLogic = {
-    mode: 'loading' | 'select',
-    metamodels: string[],
-    vsums: VsumDto[],
-    selectVsum: (vsumId: string) => Promise<void>,
-    selectedVsum: VsumDto | undefined,
-    createVsum: (metamodel: string, name: string, description: string) => Promise<void>,
-    viewTypes: string[],
-    selectedViewType: string | undefined,
-    selectViewType: (vsumId: string, viewType: string) => Promise<void>,
-    selectableObjects: SelectableObjectDto[],
-    openView: (selectedObjectIds: string[]) => void,
-    openViewFromCache: () => Promise<void>,
+    mode: 'loading' | 'select'
+    metamodels: string[]
+    vsums: VsumDto[]
+    selectVsum: (vsumId: string) => Promise<void>
+    selectedVsum: VsumDto | undefined
+    createVsum: (metamodel: string, name: string, description: string) => Promise<void>
+    viewTypes: string[]
+    selectedViewType: string | undefined
+    selectViewType: (vsumId: string, viewType: string) => Promise<void>
+    selectableObjects: SelectableObjectDto[]
+    openView: (selectedObjectIds: string[]) => void
+    openViewFromCache: () => Promise<void>
 }
 
 /**
@@ -32,7 +32,6 @@ export function useOpenView(
     onSubmit: (vsum: VsumDto, selectorId: string, selectedObjectIds: string[]) => void,
     open: boolean,
 ): OpenViewLogic {
-
     const [mode, setMode] = useState<'loading' | 'select'>('loading')
 
     const vsumApi = useVsumApi(client)
@@ -44,9 +43,15 @@ export function useOpenView(
     const [selector, setSelector] = useState<SelectorDto>()
 
     const [selectedVsumId, setSelectedVsumId] = useState<string>()
-    const selectedVsum = useMemo(() => vsums.find(it => it.id === selectedVsumId), [vsums, selectedVsumId])
+    const selectedVsum = useMemo(
+        () => vsums.find((it) => it.id === selectedVsumId),
+        [vsums, selectedVsumId],
+    )
     const [selectedViewType, setSelectedViewType] = useState<string>()
-    const selectableObjects = useMemo(() => selector?.selectableObjects ?? [], [selector?.selectableObjects])
+    const selectableObjects = useMemo(
+        () => selector?.selectableObjects ?? [],
+        [selector?.selectableObjects],
+    )
 
     /* ----------------------- Preparation ----------------------- */
 
@@ -135,10 +140,12 @@ export function useOpenView(
             return
         }
 
-        const selectedObjectsEClasses =
-            selectedObjectIds
-                .map(it => selector.selectableObjects.find(selectable => selectable._id === it)?.eClass)
-                .filter(isNotNil)
+        const selectedObjectsEClasses = selectedObjectIds
+            .map(
+                (it) =>
+                    selector.selectableObjects.find((selectable) => selectable._id === it)?.eClass,
+            )
+            .filter(isNotNil)
 
         if (selectedObjectsEClasses.length !== selectedObjectIds.length) {
             throw new Error('Could not find all selected objects')
@@ -165,7 +172,7 @@ export function useOpenView(
             }
 
             const vsums = await vsumApi.loadVsums()
-            const vsum = vsums.find(it => it.id === cache.vsumId)
+            const vsum = vsums.find((it) => it.id === cache.vsumId)
             if (isNil(vsum)) {
                 viewConfigCache.clear()
                 setMode('select')
@@ -173,7 +180,7 @@ export function useOpenView(
             }
 
             const viewTypes = await vsumApi.loadViewTypes(vsum.id)
-            const viewType = viewTypes.find(it => it === cache.viewType)
+            const viewType = viewTypes.find((it) => it === cache.viewType)
             if (isNil(viewType)) {
                 viewConfigCache.clear()
                 setMode('select')
@@ -182,9 +189,7 @@ export function useOpenView(
 
             const selector = await vsumApi.createSelector(vsum.id, viewType)
             const selectedObjectsIds = cache.selectedObjectsEClasses
-                .map(eClass =>
-                    selector.selectableObjects.find(it => it.eClass === eClass)?._id,
-                )
+                .map((eClass) => selector.selectableObjects.find((it) => it.eClass === eClass)?._id)
                 .filter(isNotNil)
 
             if (selectedObjectsIds.length !== cache.selectedObjectsEClasses.length) {
@@ -209,7 +214,6 @@ export function useOpenView(
         setSelectedViewType(undefined)
         setSelector(undefined)
     }
-
 
     return {
         mode,

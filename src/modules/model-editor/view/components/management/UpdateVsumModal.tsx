@@ -70,31 +70,40 @@ export function UpdateVsumModal({ open, vsum, client, close, afterSave, afterDel
     return (
         <BaseFullscreenModal open={open}>
             <ColumnLayout gap={2} sx={{ padding: 2 }}>
-                <Typography variant='h5'>VSUM Info</Typography>
+                <Typography variant="h5">VSUM Info</Typography>
                 <Divider />
 
                 <TextField
                     fullWidth
-                    label='Name'
+                    label="Name"
                     value={name}
-                    onChange={event => setName(event.target.value)}
+                    onChange={(event) => setName(event.target.value)}
                 />
                 <TextField
                     fullWidth
                     multiline
                     minRows={3}
                     maxRows={10}
-                    label='Description'
+                    label="Description"
                     value={description}
-                    onChange={event => setDescription(event.target.value)}
+                    onChange={(event) => setDescription(event.target.value)}
                 />
                 <Spacer />
                 <Divider sx={{ my: 1 }} />
-                <RowLayout gap={1} sx={{ height: 'unset', justifyContent: 'flex-end', alignItems: 'center' }}>
-                    <Button color='error' variant='outlined' onClick={handleDelete}>Delete</Button>
+                <RowLayout
+                    gap={1}
+                    sx={{ height: 'unset', justifyContent: 'flex-end', alignItems: 'center' }}
+                >
+                    <Button color="error" variant="outlined" onClick={handleDelete}>
+                        Delete
+                    </Button>
                     <Spacer />
-                    <Button variant='outlined' onClick={close}>Cancel</Button>
-                    <Button variant='contained' onClick={handleSubmit}>Update</Button>
+                    <Button variant="outlined" onClick={close}>
+                        Cancel
+                    </Button>
+                    <Button variant="contained" onClick={handleSubmit}>
+                        Update
+                    </Button>
                 </RowLayout>
             </ColumnLayout>
         </BaseFullscreenModal>

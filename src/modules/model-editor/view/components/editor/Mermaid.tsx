@@ -99,8 +99,7 @@ export function Mermaid({ structuredResource }: MermaidDiagramProps) {
                     instance.pan(savedViewState.pan)
                 }
             } catch (err) {
-                const message =
-                    err instanceof Error ? err.message : 'Unknown Mermaid render error'
+                const message = err instanceof Error ? err.message : 'Unknown Mermaid render error'
 
                 container.innerHTML = `<pre style='white-space:pre-wrap'>${escapeHtml(
                     code,
@@ -158,5 +157,5 @@ function escapeHtml(input: string): string {
         .replaceAll('<', '&lt;')
         .replaceAll('>', '&gt;')
         .replaceAll('"', '&quot;')
-        .replaceAll('\'', '&#039;')
+        .replaceAll("'", '&#039;')
 }

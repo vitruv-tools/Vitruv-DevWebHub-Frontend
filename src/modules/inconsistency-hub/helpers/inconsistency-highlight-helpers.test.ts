@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import type { StructuredResource } from '../../model-editor/types/structured-resource.ts'
 import type { ModelElementNode, OpenInconsistency } from '../types/open-inconsistency.ts'
-import { findResourceForContextElement, resolveInconsistencyHighlight } from './inconsistency-highlight-helpers.ts'
+import {
+    findResourceForContextElement,
+    resolveInconsistencyHighlight,
+} from './inconsistency-highlight-helpers.ts'
 
 function stubType(name: string) {
     return {
@@ -29,7 +32,7 @@ function stubType(name: string) {
 function resource(
     id: string,
     typeName: string,
-    opts?: { name?: string, parentId?: string, uri?: string },
+    opts?: { name?: string; parentId?: string; uri?: string },
 ): StructuredResource {
     const type = stubType(typeName)
     return {
@@ -38,7 +41,8 @@ function resource(
         type: type as unknown as StructuredResource['type'],
         attributes: [
             {
-                info: type.attributes.name as unknown as StructuredResource['attributes'][0]['info'],
+                info: type.attributes
+                    .name as unknown as StructuredResource['attributes'][0]['info'],
                 value: opts?.name,
             },
         ],
@@ -173,7 +177,11 @@ describe('findResourceForContextElement', () => {
         const entity = resource('e', 'Entity', { name: 'Brake', uri: 'model.model#e' })
         const decoy = resource('d', 'Entity', { name: 'Brake' })
         const found = findResourceForContextElement(
-            contextElement({ eClassName: 'Entity', displayName: 'Something else', uri: 'model.model#e' }),
+            contextElement({
+                eClassName: 'Entity',
+                displayName: 'Something else',
+                uri: 'model.model#e',
+            }),
             [decoy, entity],
         )
         expect(found?.id).toBe('e')

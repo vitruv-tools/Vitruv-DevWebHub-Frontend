@@ -46,17 +46,17 @@ interface CustomTreeViewProps {
  * @param {function} props.onSelectItem A callback function invoked when the selected item changes. Receives the new item's ID as an argument.
  */
 export function CustomTreeView({
-                                   items,
-                                   icons,
-                                   onItemClick,
-                                   selectedItem: selectedItemProp,
-                                   onSelectItem,
-                                   highlightedItemIds = [],
-                                   rootHighlightItemId = null,
-                                   rootHighlightItemIds = [],
-                                   defaultExpandAll = false,
-                                   fitContainer = false,
-                               }: CustomTreeViewProps) {
+    items,
+    icons,
+    onItemClick,
+    selectedItem: selectedItemProp,
+    onSelectItem,
+    highlightedItemIds = [],
+    rootHighlightItemId = null,
+    rootHighlightItemIds = [],
+    defaultExpandAll = false,
+    fitContainer = false,
+}: CustomTreeViewProps) {
     const [expandedItems, setExpandedItems] = useState<string[]>([])
 
     const [selectedItem, setSelectedItem] = useControllableState<string | null>({
@@ -122,7 +122,12 @@ export function CustomTreeView({
     }
 
     return (
-        <ColumnLayout sx={{ overflow: fitContainer ? 'hidden auto' : 'auto', width: fitContainer ? '100%' : undefined }}>
+        <ColumnLayout
+            sx={{
+                overflow: fitContainer ? 'hidden auto' : 'auto',
+                width: fitContainer ? '100%' : undefined,
+            }}
+        >
             <RichTreeView
                 items={items}
                 onItemClick={handleItemClick}
@@ -130,14 +135,17 @@ export function CustomTreeView({
                 onSelectedItemsChange={(_event, itemId) => setSelectedItem(itemId)}
                 expandedItems={expandedItems}
                 onExpandedItemsChange={(_event, ids) => setExpandedItems(ids)}
-                slots={{ item: (props) => CustomTreeItem(
-                    props,
-                    icons,
-                    highlightedItemIds,
-                    rootHighlightItemId,
-                    rootHighlightItemIds,
-                    fitContainer,
-                ) }}
+                slots={{
+                    item: (props) =>
+                        CustomTreeItem(
+                            props,
+                            icons,
+                            highlightedItemIds,
+                            rootHighlightItemId,
+                            rootHighlightItemIds,
+                            fitContainer,
+                        ),
+                }}
                 sx={{
                     width: fitContainer ? '100%' : 'max-content',
                     minWidth: fitContainer ? 0 : '100%',
@@ -168,14 +176,16 @@ function CustomTreeItem(
 
     if (isNil(item)) return null
 
-    const icon = (item.type != undefined) ? icons?.[item.type] : undefined
+    const icon = item.type != undefined ? icons?.[item.type] : undefined
     const inputErrorSeverity = item?.inputErrorSeverity
-    const isRootHighlight = rootHighlightItemId === item.id
-        || rootHighlightItemIds.includes(item.id)
+    const isRootHighlight =
+        rootHighlightItemId === item.id || rootHighlightItemIds.includes(item.id)
     const isPathHighlight = highlightedItemIds.includes(item.id) && !isRootHighlight
 
-    const menuItems = item.options?.map(option => (
-        <MenuItem key={option.key} onClick={option.onClick} disabled={option.disabled}>{option.label}</MenuItem>
+    const menuItems = item.options?.map((option) => (
+        <MenuItem key={option.key} onClick={option.onClick} disabled={option.disabled}>
+            {option.label}
+        </MenuItem>
     ))
 
     return (
@@ -218,7 +228,6 @@ function CustomLabel({
     fitContainer = false,
     ...rest
 }: CustomLabelProps) {
-
     return (
         <LabelWrapper
             {...rest}
@@ -226,20 +235,24 @@ function CustomLabel({
                 borderRadius: 1,
                 px: 0.5,
                 minWidth: 0,
-                ...(isRootHighlight ? {
-                    outline: '2px solid #ff6f00',
-                    backgroundColor: 'rgba(255, 111, 0, 0.12)',
-                } : {}),
-                ...(isPathHighlight ? {
-                    outline: '1px solid #ff9800',
-                    backgroundColor: 'rgba(255, 152, 0, 0.08)',
-                } : {}),
+                ...(isRootHighlight
+                    ? {
+                          outline: '2px solid #ff6f00',
+                          backgroundColor: 'rgba(255, 111, 0, 0.12)',
+                      }
+                    : {}),
+                ...(isPathHighlight
+                    ? {
+                          outline: '1px solid #ff9800',
+                          backgroundColor: 'rgba(255, 152, 0, 0.08)',
+                      }
+                    : {}),
             }}
         >
             {icon}
             <Typography
                 color={colorOfInputErrorSeverity(inputErrorSeverity)}
-                component='span'
+                component="span"
                 sx={{
                     flex: 1,
                     minWidth: 0,
@@ -253,13 +266,11 @@ function CustomLabel({
 
             {menuItems && menuItems.length > 0 && (
                 <BasicMenu
-                    buttonContent={<AddIcon fontSize='small' />}
-                    buttonType='icon-button'
+                    buttonContent={<AddIcon fontSize="small" />}
+                    buttonType="icon-button"
                     items={menuItems}
-                >
-                </BasicMenu>
+                ></BasicMenu>
             )}
-
         </LabelWrapper>
     )
 }
@@ -278,7 +289,6 @@ const LabelWrapper = styled(Box)`
         visibility: visible;
     }
 `
-
 
 function buildParentMap(items: TreeNode[]): Map<string, string> {
     const parentById = new Map<string, string>()

@@ -20,7 +20,9 @@ async function readErrorMessage(response: Response): Promise<string> {
     }
     try {
         const parsed = JSON.parse(errorText) as { message?: string; error?: string }
-        return parsed.message || parsed.error || errorText || response.statusText || 'Request failed'
+        return (
+            parsed.message || parsed.error || errorText || response.statusText || 'Request failed'
+        )
     } catch {
         return errorText || response.statusText || 'Request failed'
     }
@@ -137,14 +139,26 @@ export class AuthService {
         if (!response.ok) {
             const message = await readErrorMessage(response)
             const normalized = message.toLowerCase()
-            if (normalized.includes('username') && (normalized.includes('already') || normalized.includes('exists') || normalized.includes('used'))) {
+            if (
+                normalized.includes('username') &&
+                (normalized.includes('already') ||
+                    normalized.includes('exists') ||
+                    normalized.includes('used'))
+            ) {
                 throw new Error('Username is already used. Please choose another username.')
             }
-            if (normalized.includes('email') && (normalized.includes('already') || normalized.includes('exists') || normalized.includes('used'))) {
+            if (
+                normalized.includes('email') &&
+                (normalized.includes('already') ||
+                    normalized.includes('exists') ||
+                    normalized.includes('used'))
+            ) {
                 throw new Error('Email is already used. Please use another email or sign in.')
             }
             if (response.status === 409) {
-                throw new Error('This username or email is already registered. Please sign in instead.')
+                throw new Error(
+                    'This username or email is already registered. Please sign in instead.',
+                )
             }
             throw new Error(message)
         }
@@ -174,7 +188,10 @@ export class AuthService {
         }
 
         // Demo session: extend locally (no Methodologist API).
-        if (refreshToken === 'demo-refresh-token' || tokenStorage.getAccessToken() === 'demo-access-token') {
+        if (
+            refreshToken === 'demo-refresh-token' ||
+            tokenStorage.getAccessToken() === 'demo-access-token'
+        ) {
             const user = tokenStorage.getUser()
             return this.issueDemoSession(user?.username ?? 'demo')
         }
@@ -197,11 +214,14 @@ export class AuthService {
 
         try {
             const body: RefreshTokenRequest = { refreshToken }
-            const response = await fetch(`${this.apiBase()}/api/v1/users/access-token/by-refresh-token`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
-            })
+            const response = await fetch(
+                `${this.apiBase()}/api/v1/users/access-token/by-refresh-token`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                },
+            )
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`)

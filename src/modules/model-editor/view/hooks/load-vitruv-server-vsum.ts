@@ -9,7 +9,6 @@ import { stringAsBoolean } from '../../../../common/utils/string-utils.ts'
  * @return {Promise<VsumDto | undefined>} A promise that resolves to the VsumDto object if the server is available, or `undefined` if the server is unavailable or an error occurs.
  */
 export async function loadVitruvServerVsum(client: VitruviusClient) {
-
     const vsumId = '00000000-0000-0000-0000-000000000001'
     const vsumName = 'VitruvServerVsum'
     const metamodelName = 'VitruvServerVsum'

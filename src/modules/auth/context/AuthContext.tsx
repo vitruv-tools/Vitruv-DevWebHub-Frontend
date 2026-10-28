@@ -149,7 +149,10 @@ export function AuthProvider({ children }: Props) {
                 id: String(data.id),
                 username: data.email?.split('@')[0] || username,
                 email: data.email,
-                name: `${data.firstName ?? ''} ${data.lastName ?? ''}`.trim() || data.email || username,
+                name:
+                    `${data.firstName ?? ''} ${data.lastName ?? ''}`.trim() ||
+                    data.email ||
+                    username,
                 givenName: data.firstName,
                 familyName: data.lastName,
                 emailVerified: data.emailVerified === true || data.verified === true,
@@ -162,18 +165,18 @@ export function AuthProvider({ children }: Props) {
             const tokenData = accessToken ? parseJwtToken(accessToken) : null
             const mapped = tokenData
                 ? (() => {
-                    const extracted = extractUserFromToken(tokenData)
-                    return {
-                        id: Date.now().toString(),
-                        username: extracted.username || username,
-                        email: extracted.email,
-                        name: extracted.name,
-                        givenName: extracted.givenName,
-                        familyName: extracted.familyName,
-                        emailVerified: extracted.emailVerified === true,
-                        scope: extracted.scope,
-                    } satisfies AuthUser
-                })()
+                      const extracted = extractUserFromToken(tokenData)
+                      return {
+                          id: Date.now().toString(),
+                          username: extracted.username || username,
+                          email: extracted.email,
+                          name: extracted.name,
+                          givenName: extracted.givenName,
+                          familyName: extracted.familyName,
+                          emailVerified: extracted.emailVerified === true,
+                          scope: extracted.scope,
+                      } satisfies AuthUser
+                  })()
                 : userFromAccessToken(username)
 
             AuthService.setCurrentUser(mapped)
@@ -182,20 +185,23 @@ export function AuthProvider({ children }: Props) {
         }
     }, [])
 
-    const signUp = useCallback(async (credentials: SignUpCredentials): Promise<SignUpResponse> => {
-        const response = await AuthService.signUp(credentials)
+    const signUp = useCallback(
+        async (credentials: SignUpCredentials): Promise<SignUpResponse> => {
+            const response = await AuthService.signUp(credentials)
 
-        const cached = AuthService.getCurrentUser()
-        if (cached) {
-            setUser(cached)
+            const cached = AuthService.getCurrentUser()
+            if (cached) {
+                setUser(cached)
+                return response
+            }
+
+            const user = await signIn(credentials.username, credentials.password)
+            AuthService.setCurrentUser(user)
+            setUser(user)
             return response
-        }
-
-        const user = await signIn(credentials.username, credentials.password)
-        AuthService.setCurrentUser(user)
-        setUser(user)
-        return response
-    }, [signIn])
+        },
+        [signIn],
+    )
 
     const signOut = useCallback(async () => {
         await AuthService.signOut()

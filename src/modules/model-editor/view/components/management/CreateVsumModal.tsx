@@ -1,13 +1,21 @@
 import { BaseFullscreenModal } from '../../../../../common/components/BaseFullscreenModal.tsx'
-import { Button, Divider, FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material'
+import {
+    Button,
+    Divider,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    Typography,
+} from '@mui/material'
 import TextField from '@mui/material/TextField'
 import { useState } from 'react'
 import { ColumnLayout, RowLayout, Spacer } from '../../../../../common/components/flex.tsx'
 
 interface Props {
-    open: boolean,
-    onSubmit: (metamodel: string, name: string, description: string) => void,
-    onCancel: () => void,
+    open: boolean
+    onSubmit: (metamodel: string, name: string, description: string) => void
+    onCancel: () => void
     metamodels: string[]
 }
 
@@ -34,46 +42,56 @@ export function CreateVsumModal({ open, onSubmit, onCancel, metamodels }: Props)
     return (
         <BaseFullscreenModal open={open}>
             <ColumnLayout gap={2} sx={{ padding: 2 }}>
-                <Typography variant='h5'>Create VSUM</Typography>
+                <Typography variant="h5">Create VSUM</Typography>
                 <Divider />
 
                 <TextField
                     fullWidth
-                    label='Name'
+                    label="Name"
                     value={name}
-                    onChange={event => setName(event.target.value)}
+                    onChange={(event) => setName(event.target.value)}
                 />
                 <TextField
                     fullWidth
                     multiline
                     minRows={3}
                     maxRows={10}
-                    label='Description'
+                    label="Description"
                     value={description}
-                    onChange={event => setDescription(event.target.value)}
+                    onChange={(event) => setDescription(event.target.value)}
                 />
 
                 <FormControl fullWidth>
-                    <InputLabel id='metamodel-label'>Metamodel</InputLabel>
+                    <InputLabel id="metamodel-label">Metamodel</InputLabel>
                     <Select
                         value={metamodel}
-                        labelId='metamodel-label'
-                        label='Metamodel'
-                        onChange={event => setMetamodel(event.target.value)}
+                        labelId="metamodel-label"
+                        label="Metamodel"
+                        onChange={(event) => setMetamodel(event.target.value)}
                     >
-                        {metamodels.map(it => <MenuItem key={it} value={it}>{it}</MenuItem>)}
+                        {metamodels.map((it) => (
+                            <MenuItem key={it} value={it}>
+                                {it}
+                            </MenuItem>
+                        ))}
                     </Select>
                 </FormControl>
 
                 <Spacer />
 
                 <Divider sx={{ my: 1 }} />
-                <RowLayout gap={1} sx={{ height: 'unset', justifyContent: 'flex-end', alignItems: 'center' }}>
-                    <Button variant='outlined' onClick={onCancel}>Cancel</Button>
-                    <Button variant='contained' onClick={handleSubmit}>Create</Button>
+                <RowLayout
+                    gap={1}
+                    sx={{ height: 'unset', justifyContent: 'flex-end', alignItems: 'center' }}
+                >
+                    <Button variant="outlined" onClick={onCancel}>
+                        Cancel
+                    </Button>
+                    <Button variant="contained" onClick={handleSubmit}>
+                        Create
+                    </Button>
                 </RowLayout>
             </ColumnLayout>
-
         </BaseFullscreenModal>
     )
 }

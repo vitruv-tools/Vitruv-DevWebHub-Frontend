@@ -102,11 +102,10 @@ export function findResourceIdFromPointer(
     clientY: number,
     svg?: SVGSVGElement | null,
 ): string | null {
-    const stack = typeof document !== 'undefined'
-        ? document.elementsFromPoint(clientX, clientY)
-        : []
+    const stack =
+        typeof document !== 'undefined' ? document.elementsFromPoint(clientX, clientY) : []
 
-    let best: { resourceId: string, area: number } | null = null
+    let best: { resourceId: string; area: number } | null = null
     const seen = new Set<Element>()
 
     for (const element of stack) {
@@ -199,8 +198,8 @@ export function applyInconsistencyHighlightOverlays(
 
         const mermaidId = resourceIdToMermaidId[resourceId]
         const resource = resourcesById?.get(resourceId)
-        const nodeGroup = findTaggedNode(svg, resourceId)
-            ?? findMermaidNodeGroup(svg, mermaidId, resource)
+        const nodeGroup =
+            findTaggedNode(svg, resourceId) ?? findMermaidNodeGroup(svg, mermaidId, resource)
 
         if (!nodeGroup) {
             return null
@@ -211,7 +210,7 @@ export function applyInconsistencyHighlightOverlays(
             return null
         }
 
-        const padding = paddingOverride ?? (style.strokeWidth / 2 + HIGHLIGHT_GAP)
+        const padding = paddingOverride ?? style.strokeWidth / 2 + HIGHLIGHT_GAP
         const frame = expandBounds(bounds, padding)
         appendHighlightFrame(layer, frame, style)
         return frame
@@ -223,9 +222,10 @@ export function applyInconsistencyHighlightOverlays(
     const selectedIsInconsistency = selectedId != null && rootIds.includes(selectedId)
 
     for (const rootId of rootIds) {
-        const style = selectedIsInconsistency && selectedId === rootId
-            ? INNER_INCONSISTENCY_STYLE
-            : INCONSISTENCY_STYLE
+        const style =
+            selectedIsInconsistency && selectedId === rootId
+                ? INNER_INCONSISTENCY_STYLE
+                : INCONSISTENCY_STYLE
         const padding = selectedIsInconsistency && selectedId === rootId ? 3 : undefined
         const frame = drawForResource(rootId, style, padding)
         if (frame) {
@@ -287,8 +287,12 @@ function collectCandidateGroups(svg: SVGSVGElement): SVGGElement[] {
     return [...groups]
 }
 
-function findResourceIdByHitTest(svg: SVGSVGElement, clientX: number, clientY: number): string | null {
-    let best: { resourceId: string, area: number } | null = null
+function findResourceIdByHitTest(
+    svg: SVGSVGElement,
+    clientX: number,
+    clientY: number,
+): string | null {
+    let best: { resourceId: string; area: number } | null = null
 
     for (const node of svg.querySelectorAll(`[${RESOURCE_ATTR}]`)) {
         if (!(node instanceof Element)) {
@@ -298,7 +302,12 @@ function findResourceIdByHitTest(svg: SVGSVGElement, clientX: number, clientY: n
         if (rect.width <= 0 || rect.height <= 0) {
             continue
         }
-        if (clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom) {
+        if (
+            clientX < rect.left ||
+            clientX > rect.right ||
+            clientY < rect.top ||
+            clientY > rect.bottom
+        ) {
             continue
         }
         const resourceId = node.getAttribute(RESOURCE_ATTR)
@@ -344,14 +353,14 @@ function resolveResourceIdByLabel(
     resourcesById: Map<string, StructuredResource>,
 ): string | null {
     const title = normalizeText(
-        group.querySelector('.label-group, .nodeLabel, .classTitle, .label, .labelText')?.textContent
-        ?? '',
+        group.querySelector('.label-group, .nodeLabel, .classTitle, .label, .labelText')
+            ?.textContent ?? '',
     )
     const candidates = title
-        ? [...resourcesById.values()].filter(resource => {
-            const label = normalizeText(structuredResourceShortLabel(resource, 40))
-            return label !== '' && (title === label || title.startsWith(label))
-        })
+        ? [...resourcesById.values()].filter((resource) => {
+              const label = normalizeText(structuredResourceShortLabel(resource, 40))
+              return label !== '' && (title === label || title.startsWith(label))
+          })
         : []
 
     if (candidates.length === 1) {
@@ -360,9 +369,12 @@ function resolveResourceIdByLabel(
 
     // Exact short-label match on full node text (no loose includes — avoids System matching a parent).
     const text = normalizeText(group.textContent ?? '')
-    const exact = [...resourcesById.values()].filter(resource => {
+    const exact = [...resourcesById.values()].filter((resource) => {
         const label = normalizeText(structuredResourceShortLabel(resource, 40))
-        return label !== '' && (text === label || text.startsWith(`${label} `) || text.startsWith(`${label}:`))
+        return (
+            label !== '' &&
+            (text === label || text.startsWith(`${label} `) || text.startsWith(`${label}:`))
+        )
     })
     return exact.length === 1 ? exact[0].id : null
 }
@@ -391,7 +403,7 @@ function findMermaidNodeGroup(
     resource: StructuredResource | undefined,
 ): SVGGElement | null {
     if (mermaidId) {
-        const matches = collectCandidateGroups(svg).filter(group =>
+        const matches = collectCandidateGroups(svg).filter((group) =>
             groupIdMatchesMermaidId(group.id, mermaidId),
         )
         if (matches.length === 1) {
@@ -407,7 +419,7 @@ function findMermaidNodeGroup(
     }
 
     const label = normalizeText(structuredResourceShortLabel(resource, 40))
-    const matches = collectCandidateGroups(svg).filter(group => nodeTitleMatches(group, label))
+    const matches = collectCandidateGroups(svg).filter((group) => nodeTitleMatches(group, label))
     return matches.length === 1 ? matches[0] : pickSmallestNode(matches)
 }
 
@@ -491,13 +503,13 @@ function transformRect(bbox: DOMRect, matrix: DOMMatrix): Bounds {
         { x: bbox.x + bbox.width, y: bbox.y },
         { x: bbox.x + bbox.width, y: bbox.y + bbox.height },
         { x: bbox.x, y: bbox.y + bbox.height },
-    ].map(point => {
+    ].map((point) => {
         const transformed = new DOMPoint(point.x, point.y).matrixTransform(matrix)
         return { x: transformed.x, y: transformed.y }
     })
 
-    const xs = corners.map(point => point.x)
-    const ys = corners.map(point => point.y)
+    const xs = corners.map((point) => point.x)
+    const ys = corners.map((point) => point.y)
 
     return {
         x: Math.min(...xs),
@@ -590,7 +602,11 @@ function readBaseViewBox(svg: SVGSVGElement): Bounds {
     const stored = svg.getAttribute('data-hub-base-viewbox')
     if (stored) {
         const [x, y, width, height] = stored.split(' ').map(Number)
-        if ([x, y, width, height].every(value => Number.isFinite(value)) && width > 0 && height > 0) {
+        if (
+            [x, y, width, height].every((value) => Number.isFinite(value)) &&
+            width > 0 &&
+            height > 0
+        ) {
             return { x, y, width, height }
         }
     }

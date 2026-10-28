@@ -14,18 +14,18 @@ import type { DeferredPropagation, PropagationUiState } from '../../types/api-pr
 import { isPropagationDeferredError } from '../../types/api-propagation-task.ts'
 
 export type ViewLogic = {
-    openView: (vsum: Vsum, selectorId: string, selectedObjectIds: string[]) => Promise<void>,
-    closeView: () => Promise<void>,
-    dispatchEditViewAction: (editViewAction: EditViewAction) => boolean,
-    updateView: () => Promise<void>,
-    view: View | undefined,
-    allStructuredResources: StructuredResource[],
-    hasChanges: boolean,
-    propagationUiState: PropagationUiState,
-    submitInteractionResponse: (responseJson: string) => void,
-    deferPendingPropagation: () => Promise<DeferredPropagation | null>,
-    unloadClientView: () => void,
-    closeViewWithoutReload: () => Promise<void>,
+    openView: (vsum: Vsum, selectorId: string, selectedObjectIds: string[]) => Promise<void>
+    closeView: () => Promise<void>
+    dispatchEditViewAction: (editViewAction: EditViewAction) => boolean
+    updateView: () => Promise<void>
+    view: View | undefined
+    allStructuredResources: StructuredResource[]
+    hasChanges: boolean
+    propagationUiState: PropagationUiState
+    submitInteractionResponse: (responseJson: string) => void
+    deferPendingPropagation: () => Promise<DeferredPropagation | null>
+    unloadClientView: () => void
+    closeViewWithoutReload: () => Promise<void>
 }
 
 /**
@@ -43,11 +43,16 @@ export type ViewLogic = {
  *   - `hasChanges`: A boolean indicating whether there are unsaved changes in the view.
  */
 export function useViewLogic(client: VitruviusClient): ViewLogic {
-
     const viewApi = useViewApi(client)
     const asyncPropagation = useAsyncPropagation(client)
-    const [{ view, success }, dispatch] = useReducer(manageViewReducer, { view: undefined, success: true })
-    const allStructuredResources = useMemo(() => getAllStructuredResources(view?.structuredResources), [view])
+    const [{ view, success }, dispatch] = useReducer(manageViewReducer, {
+        view: undefined,
+        success: true,
+    })
+    const allStructuredResources = useMemo(
+        () => getAllStructuredResources(view?.structuredResources),
+        [view],
+    )
     const [hasChanges, setHasChanges] = useState(false)
 
     const viewConfigCache = useViewConfigCache()
@@ -63,7 +68,9 @@ export function useViewLogic(client: VitruviusClient): ViewLogic {
             return
         }
 
-        const resourceSet = new ResourcesStructuredToApiConverter().convert(view.structuredResources)
+        const resourceSet = new ResourcesStructuredToApiConverter().convert(
+            view.structuredResources,
+        )
 
         try {
             let updatedResourceSet = await asyncPropagation.applyUpdateAsync(view.id, resourceSet)
@@ -76,7 +83,12 @@ export function useViewLogic(client: VitruviusClient): ViewLogic {
                 return
             }
 
-            dispatch({ type: 'SET_VIEW', id: view.id, resourceSet: updatedResourceSet, ecoreModels: view.ecoreModels })
+            dispatch({
+                type: 'SET_VIEW',
+                id: view.id,
+                resourceSet: updatedResourceSet,
+                ecoreModels: view.ecoreModels,
+            })
             setHasChanges(false)
         } catch (error) {
             if (isPropagationDeferredError(error)) {

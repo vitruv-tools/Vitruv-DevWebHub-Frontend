@@ -15,12 +15,10 @@ export function PropagationProgressOverlay({ open, message }: Props) {
     }
 
     return (
-        <Backdrop open={open} sx={{ zIndex: theme => theme.zIndex.modal + 1, color: '#fff' }}>
+        <Backdrop open={open} sx={{ zIndex: (theme) => theme.zIndex.modal + 1, color: '#fff' }}>
             <ColumnLayout sx={{ alignItems: 'center', gap: 2 }}>
-                <CircularProgress color='inherit' />
-                <Typography variant='body1'>
-                    {message ?? 'Propagating changes…'}
-                </Typography>
+                <CircularProgress color="inherit" />
+                <Typography variant="body1">{message ?? 'Propagating changes…'}</Typography>
             </ColumnLayout>
         </Backdrop>
     )

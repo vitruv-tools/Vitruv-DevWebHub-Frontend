@@ -18,11 +18,9 @@ export function describeInteractionChoice(
         }
         case 'multiSelection': {
             const indices = Array.isArray(response.selectedIndices)
-                ? response.selectedIndices.map(value => Number(value))
+                ? response.selectedIndices.map((value) => Number(value))
                 : []
-            return indices
-                .map(index => interaction.choices?.[index] ?? String(index))
-                .join(', ')
+            return indices.map((index) => interaction.choices?.[index] ?? String(index)).join(', ')
         }
         case 'confirmation':
             return response.confirmed ? 'Yes' : 'No'

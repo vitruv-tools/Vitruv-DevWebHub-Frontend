@@ -27,7 +27,6 @@ export function BasicMenu({ items, buttonContent, buttonType }: Props) {
     const handleClose = (e: React.MouseEvent<HTMLDivElement>) => {
         e.stopPropagation()
         setAnchorEl(null)
-
     }
 
     const buttonIdRef = useRef('button-id-' + Math.random())
@@ -35,32 +34,29 @@ export function BasicMenu({ items, buttonContent, buttonType }: Props) {
 
     return (
         <MenuWrapper forceButtonVisible={open}>
-            {buttonType === 'icon-button'
-                ? (
-                    <IconButton
-                        id={buttonIdRef.current}
-                        aria-controls={open ? menuIdRef.current : undefined}
-                        aria-haspopup='true'
-                        aria-expanded={open ? 'true' : undefined}
-                        onClick={handleClick}
-                        size='small'
-                    >
-                        {buttonContent}
-                    </IconButton>
-                )
-                : (
-                    <Button
-                        id={buttonIdRef.current}
-                        aria-controls={open ? menuIdRef.current : undefined}
-                        aria-haspopup='true'
-                        aria-expanded={open ? 'true' : undefined}
-                        onClick={handleClick}
-                        size='small'
-                    >
-                        {buttonContent}
-                    </Button>
-                )
-            }
+            {buttonType === 'icon-button' ? (
+                <IconButton
+                    id={buttonIdRef.current}
+                    aria-controls={open ? menuIdRef.current : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={open ? 'true' : undefined}
+                    onClick={handleClick}
+                    size="small"
+                >
+                    {buttonContent}
+                </IconButton>
+            ) : (
+                <Button
+                    id={buttonIdRef.current}
+                    aria-controls={open ? menuIdRef.current : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={open ? 'true' : undefined}
+                    onClick={handleClick}
+                    size="small"
+                >
+                    {buttonContent}
+                </Button>
+            )}
 
             <Menu
                 id={menuIdRef.current}
@@ -74,17 +70,15 @@ export function BasicMenu({ items, buttonContent, buttonType }: Props) {
                     },
                 }}
             >
-                {items.map((item, index) => (
-                    item
-                ))}
+                {items.map((item, index) => item)}
             </Menu>
         </MenuWrapper>
     )
 }
 
-const MenuWrapper = styled(
-    Box, { shouldForwardProp: (prop) => prop !== 'forceButtonVisible' },
-)<{ forceButtonVisible?: boolean }>`
+const MenuWrapper = styled(Box, { shouldForwardProp: (prop) => prop !== 'forceButtonVisible' })<{
+    forceButtonVisible?: boolean
+}>`
     & button {
         ${({ forceButtonVisible }) => forceButtonVisible && 'visibility: visible !important;'}
     }

@@ -1,6 +1,6 @@
 export function removeKeys(keys: string[], object: any): any {
     if (Array.isArray(object)) {
-        return object.map(item => removeKeys(keys, item))
+        return object.map((item) => removeKeys(keys, item))
     }
 
     if (object !== null && typeof object === 'object') {
@@ -14,18 +14,19 @@ export function removeKeys(keys: string[], object: any): any {
     return object
 }
 
-export function replaceByKey(replacements: { [key: string]: (value: any) => any }[], object: any): any {
+export function replaceByKey(
+    replacements: { [key: string]: (value: any) => any }[],
+    object: any,
+): any {
     if (Array.isArray(object)) {
-        return object.map(item => replaceByKey(replacements, item))
+        return object.map((item) => replaceByKey(replacements, item))
     }
 
     if (object !== null && typeof object === 'object') {
         return Object.fromEntries(
             Object.entries(object).map(([key, value]) => {
-                const match = replacements.find(r => r[key] !== undefined)
-                return match
-                    ? [key, match[key](value)]
-                    : [key, replaceByKey(replacements, value)]
+                const match = replacements.find((r) => r[key] !== undefined)
+                return match ? [key, match[key](value)] : [key, replaceByKey(replacements, value)]
             }),
         )
     }

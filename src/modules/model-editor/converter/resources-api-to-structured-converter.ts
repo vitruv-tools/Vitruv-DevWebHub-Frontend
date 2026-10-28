@@ -17,7 +17,7 @@ import { match } from '../helpers/structured-resource-helpers.ts'
 type StructuredResourceMap = Record<string, StructuredResource>
 type SimpleReferenceKeysMap = Record<
     string,
-    { value: string | string [] | undefined, info: StructuredEcorePropertyInfo }[]
+    { value: string | string[] | undefined; info: StructuredEcorePropertyInfo }[]
 >
 
 /**
@@ -25,15 +25,14 @@ type SimpleReferenceKeysMap = Record<
  * based on structured Ecore models.
  */
 export class ResourcesApiToStructuredConverter {
-
     convert(resourceSet: any[], ecoreModels: StructuredEcoreModel[]): StructuredResource[] {
         const foundStructuredResources: StructuredResourceMap = {}
         const foundSimpleReferenceKeys: SimpleReferenceKeysMap = {}
 
         const structuredResources = resourceSet.flatMap((root, index) => {
             const resource = root.content
-            const type = Object.values(ecoreModels[index]).find(ecoreClass =>
-                ecoreClass.id === resource.eClass,
+            const type = Object.values(ecoreModels[index]).find(
+                (ecoreClass) => ecoreClass.id === resource.eClass,
             )!
             return this.convertSome(
                 `.${index}`,
@@ -50,9 +49,9 @@ export class ResourcesApiToStructuredConverter {
 
         return match(
             structuredResources,
-            nil => [],
-            single => [single],
-            array => array,
+            (nil) => [],
+            (single) => [single],
+            (array) => array,
         )
     }
 
@@ -65,16 +64,33 @@ export class ResourcesApiToStructuredConverter {
         foundSimpleReferenceKeys: SimpleReferenceKeysMap,
         uri?: string,
     ): StructuredResource | StructuredResource[] {
-
         return match<StructuredResource | StructuredResource[]>(
             resources,
-            nil => {
+            (nil) => {
                 throw new Error(`No resources for type ${type.id}`)
             },
-            single => this.convertOne(rootId, type, single, ecoreModel, foundStructuredResources, foundSimpleReferenceKeys, uri),
-            array => array.map(single =>
-                this.convertOne(rootId, type, single, ecoreModel, foundStructuredResources, foundSimpleReferenceKeys, uri),
-            ),
+            (single) =>
+                this.convertOne(
+                    rootId,
+                    type,
+                    single,
+                    ecoreModel,
+                    foundStructuredResources,
+                    foundSimpleReferenceKeys,
+                    uri,
+                ),
+            (array) =>
+                array.map((single) =>
+                    this.convertOne(
+                        rootId,
+                        type,
+                        single,
+                        ecoreModel,
+                        foundStructuredResources,
+                        foundSimpleReferenceKeys,
+                        uri,
+                    ),
+                ),
         )
     }
 
@@ -93,15 +109,19 @@ export class ResourcesApiToStructuredConverter {
             uri,
         }
 
-
         const type = resource.eClass ? ecoreModel[resource.eClass] : defaultType
 
         const id = `${rootId}/${resource._id}`
 
-        const {
-            attributes,
-            containmentReferences,
-        } = this.convertProperties(rootId, id, type, resource, ecoreModel, foundStructuredResources, foundSimpleReferenceKeys)
+        const { attributes, containmentReferences } = this.convertProperties(
+            rootId,
+            id,
+            type,
+            resource,
+            ecoreModel,
+            foundStructuredResources,
+            foundSimpleReferenceKeys,
+        )
 
         const structuredResource: StructuredResource = {
             id,
@@ -128,69 +148,80 @@ export class ResourcesApiToStructuredConverter {
         foundStructuredResources: StructuredResourceMap,
         foundSimpleReferenceKeys: SimpleReferenceKeysMap,
     ) {
+        const attributes: StructuredAttribute[] = Object.values(type.attributes).map(
+            (attrInfo) => ({
+                value: resource[attrInfo.name],
+                info: attrInfo,
+            }),
+        )
 
-        const attributes: StructuredAttribute[] = Object.values(type.attributes).map(attrInfo => ({
-            value: resource[attrInfo.name],
-            info: attrInfo,
-        }))
+        foundSimpleReferenceKeys[structuredResourceId] = Object.values(type.simpleReferences)
+            .map((srefInfo) => {
+                const res = resource[srefInfo.name]
 
-        foundSimpleReferenceKeys[structuredResourceId] = Object.values(type.simpleReferences).map(srefInfo => {
+                const getValue = (res: any | any[] | undefined) => {
+                    if (isNil(res)) {
+                        return undefined
+                    }
 
-            const res = resource[srefInfo.name]
+                    if (!srefInfo.isArray && !Array.isArray(res)) {
+                        return `${rootId}/${res.$ref}`
+                    }
 
-            const getValue = (res: any | any[] | undefined) => {
-                if (isNil(res)) {
-                    return undefined
-                }
+                    if (srefInfo.isArray && Array.isArray(res)) {
+                        return res.map((it) => `${rootId}/${it.$ref}`)
+                    }
 
-                if (!srefInfo.isArray && !Array.isArray(res)) {
-                    return `${rootId}/${res.$ref}`
-                }
-
-                if (srefInfo.isArray && Array.isArray(res)) {
-                    return res.map(it => `${rootId}/${it.$ref}`)
-                }
-
-                throw new Error(
-                    `Error in resource ${srefInfo.id} (${srefInfo.name}: Value should be Array: ${srefInfo.isArray}; Value is Array: ${Array.isArray(res)}`,
-                )
-            }
-
-            const value = getValue(res)
-
-            return {
-                value,
-                info: srefInfo,
-            }
-        }).filter(isNotNil)
-
-        const containmentReferences: StructuredContainmentReference[] =
-            Object.values(type.containmentReferences).map(crefInfo => {
-                const nextResources = resource[crefInfo.name]
-                const value = isNil(nextResources)
-                    ? undefined
-                    : this.convertSome(
-                        rootId,
-                        crefInfo.type,
-                        resource[crefInfo.name],
-                        ecoreModel,
-                        foundStructuredResources,
-                        foundSimpleReferenceKeys,
+                    throw new Error(
+                        `Error in resource ${srefInfo.id} (${srefInfo.name}: Value should be Array: ${srefInfo.isArray}; Value is Array: ${Array.isArray(res)}`,
                     )
+                }
+
+                const value = getValue(res)
 
                 return {
                     value,
-                    info: crefInfo,
+                    info: srefInfo,
                 }
             })
+            .filter(isNotNil)
+
+        const containmentReferences: StructuredContainmentReference[] = Object.values(
+            type.containmentReferences,
+        ).map((crefInfo) => {
+            const nextResources = resource[crefInfo.name]
+            const value = isNil(nextResources)
+                ? undefined
+                : this.convertSome(
+                      rootId,
+                      crefInfo.type,
+                      resource[crefInfo.name],
+                      ecoreModel,
+                      foundStructuredResources,
+                      foundSimpleReferenceKeys,
+                  )
+
+            return {
+                value,
+                info: crefInfo,
+            }
+        })
 
         return { attributes, containmentReferences }
     }
 
-    private setParents(structuredResources: StructuredResource[], parent: StructuredResource | undefined) {
-        structuredResources.forEach(res => {
+    private setParents(
+        structuredResources: StructuredResource[],
+        parent: StructuredResource | undefined,
+    ) {
+        structuredResources.forEach((res) => {
             res.parentId = parent?.id
-            this.setParents(res.containmentReferences.flatMap(it => normalizeAsArray(it.value)).filter(isNotNil), res)
+            this.setParents(
+                res.containmentReferences
+                    .flatMap((it) => normalizeAsArray(it.value))
+                    .filter(isNotNil),
+                res,
+            )
         })
     }
 
@@ -198,11 +229,10 @@ export class ResourcesApiToStructuredConverter {
         foundStructuredResources: StructuredResourceMap,
         foundSimpleReferenceKeys: SimpleReferenceKeysMap,
     ) {
-        Object.keys(foundSimpleReferenceKeys).forEach(structuredResourceId => {
-
+        Object.keys(foundSimpleReferenceKeys).forEach((structuredResourceId) => {
             const srefKeys = foundSimpleReferenceKeys[structuredResourceId]
 
-            const simpleReferences: StructuredSimpleReference[] = srefKeys.map(key => {
+            const simpleReferences: StructuredSimpleReference[] = srefKeys.map((key) => {
                 if (isNil(key.value)) {
                     return {
                         value: undefined,
@@ -218,7 +248,7 @@ export class ResourcesApiToStructuredConverter {
                 }
 
                 return {
-                    value: key.value.map(it => foundStructuredResources[it]),
+                    value: key.value.map((it) => foundStructuredResources[it]),
                     info: key.info,
                 }
             })

@@ -15,18 +15,8 @@ export function AuthPage({ onAuthenticated }: Props) {
     const [mode, setMode] = useState<AuthMode>('signin')
 
     if (mode === 'signup') {
-        return (
-            <SignUpPage
-                onSuccess={onAuthenticated}
-                onSwitchToSignIn={() => setMode('signin')}
-            />
-        )
+        return <SignUpPage onSuccess={onAuthenticated} onSwitchToSignIn={() => setMode('signin')} />
     }
 
-    return (
-        <SignInPage
-            onSuccess={onAuthenticated}
-            onSwitchToSignUp={() => setMode('signup')}
-        />
-    )
+    return <SignInPage onSuccess={onAuthenticated} onSwitchToSignUp={() => setMode('signup')} />
 }

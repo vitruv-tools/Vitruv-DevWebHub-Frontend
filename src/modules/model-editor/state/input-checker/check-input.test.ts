@@ -26,8 +26,8 @@ describe('checkInput', () => {
             isInherited: false,
         }
 
-        const newValue = 'testValue';
-        vi.mocked(isNotNil).mockReturnValue(true);
+        const newValue = 'testValue'
+        vi.mocked(isNotNil).mockReturnValue(true)
         vi.mocked(checkTypeConstraints).mockReturnValue([])
 
         const result: InputError[] = checkInput(info, newValue)
@@ -48,16 +48,14 @@ describe('checkInput', () => {
             isInherited: false,
         }
 
-        const newValue = undefined;
-        vi.mocked(isNotNil).mockReturnValue(false);
-        vi.mocked(isNil).mockReturnValue(true);
+        const newValue = undefined
+        vi.mocked(isNotNil).mockReturnValue(false)
+        vi.mocked(isNil).mockReturnValue(true)
         vi.mocked(checkTypeConstraints).mockReturnValue([])
 
         const result: InputError[] = checkInput(info, newValue)
 
-        expect(result).toEqual([
-            { message: 'RequiredInput must not be null.', severity: 'reject' },
-        ])
+        expect(result).toEqual([{ message: 'RequiredInput must not be null.', severity: 'reject' }])
     })
 
     it('should throw an error when array input is provided to non-array field', () => {
@@ -73,7 +71,7 @@ describe('checkInput', () => {
             isInherited: false,
         }
 
-        const newValue = ['testArray'];
+        const newValue = ['testArray']
         vi.mocked(isNotNil).mockReturnValue(true)
 
         expect(() => checkInput(info, newValue)).toThrow(
@@ -93,8 +91,8 @@ describe('checkInput', () => {
             isInherited: false,
         }
 
-        const newValue = [1];
-        vi.mocked(isNotNil).mockReturnValue(true);
+        const newValue = [1]
+        vi.mocked(isNotNil).mockReturnValue(true)
         vi.mocked(checkTypeConstraints).mockReturnValue([])
 
         const result: InputError[] = checkInput(info, newValue)
@@ -119,8 +117,8 @@ describe('checkInput', () => {
             isInherited: false,
         }
 
-        const newValue = [1, 2, 3, 4];
-        vi.mocked(isNotNil).mockReturnValue(true);
+        const newValue = [1, 2, 3, 4]
+        vi.mocked(isNotNil).mockReturnValue(true)
         vi.mocked(checkTypeConstraints).mockReturnValue([])
 
         const result: InputError[] = checkInput(info, newValue)
@@ -145,8 +143,8 @@ describe('checkInput', () => {
             isInherited: false,
         }
 
-        const newValue = [1, 2, 2, 3];
-        vi.mocked(isNotNil).mockReturnValue(true);
+        const newValue = [1, 2, 2, 3]
+        vi.mocked(isNotNil).mockReturnValue(true)
         vi.mocked(checkTypeConstraints).mockReturnValue([])
 
         const result: InputError[] = checkInput(info, newValue)
@@ -171,16 +169,14 @@ describe('checkInput', () => {
             isInherited: false,
         }
 
-        const newValue = 'invalidType';
-        vi.mocked(isNotNil).mockReturnValue(true);
+        const newValue = 'invalidType'
+        vi.mocked(isNotNil).mockReturnValue(true)
         vi.mocked(checkTypeConstraints).mockReturnValue([
             { message: 'Invalid type provided.', severity: 'reject' },
         ])
 
         const result: InputError[] = checkInput(info, newValue)
 
-        expect(result).toEqual([
-            { message: 'Invalid type provided.', severity: 'reject' },
-        ])
+        expect(result).toEqual([{ message: 'Invalid type provided.', severity: 'reject' }])
     })
 })

@@ -2,10 +2,12 @@ export function isPasswordValid(password: string): boolean {
     if (password.length < 8 || password.length > 256) {
         return false
     }
-    return /\p{Ll}/u.test(password)
-        && /\p{Lu}/u.test(password)
-        && /\p{Nd}/u.test(password)
-        && /[^\p{L}\p{Nd}\s]/u.test(password)
+    return (
+        /\p{Ll}/u.test(password) &&
+        /\p{Lu}/u.test(password) &&
+        /\p{Nd}/u.test(password) &&
+        /[^\p{L}\p{Nd}\s]/u.test(password)
+    )
 }
 
 export function passwordValidationMessage(password: string): string | null {

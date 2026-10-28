@@ -1,7 +1,16 @@
 import { BaseFullscreenModal } from '../../../../../../../common/components/BaseFullscreenModal.tsx'
 import { ColumnLayout, RowLayout, Spacer } from '../../../../../../../common/components/flex.tsx'
 import { useEffect, useMemo, useState } from 'react'
-import { Button, IconButton, List, ListItem, ListItemButton, ListItemText, Paper, Typography } from '@mui/material'
+import {
+    Button,
+    IconButton,
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemText,
+    Paper,
+    Typography,
+} from '@mui/material'
 import TextField from '@mui/material/TextField'
 import DeleteIcon from '@mui/icons-material/Delete'
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator'
@@ -43,7 +52,12 @@ export function ArraySimpleInputModal({ open, close, value, onSubmit, title }: P
     const [editingId, setEditingId] = useState<string | null>(null)
 
     useEffect(() => {
-        setItems((value ?? []).map((entry, index) => ({ id: `${index}-${crypto.randomUUID()}`, value: entry })))
+        setItems(
+            (value ?? []).map((entry, index) => ({
+                id: `${index}-${crypto.randomUUID()}`,
+                value: entry,
+            })),
+        )
         setDraft('')
         setEditingId(null)
     }, [value, open])
@@ -69,7 +83,9 @@ export function ArraySimpleInputModal({ open, close, value, onSubmit, title }: P
 
     function handleDoneEdit() {
         if (!editingId) return
-        setItems((prev) => prev.map((item) => (item.id === editingId ? { ...item, value: draft } : item)))
+        setItems((prev) =>
+            prev.map((item) => (item.id === editingId ? { ...item, value: draft } : item)),
+        )
         setEditingId(null)
         setDraft('')
     }
@@ -80,7 +96,13 @@ export function ArraySimpleInputModal({ open, close, value, onSubmit, title }: P
     }
 
     function handleSubmit() {
-        if (onSubmit(items.map((item) => item.value), true)) close()
+        if (
+            onSubmit(
+                items.map((item) => item.value),
+                true,
+            )
+        )
+            close()
     }
 
     function handleDragEnd(event: any) {
@@ -97,7 +119,7 @@ export function ArraySimpleInputModal({ open, close, value, onSubmit, title }: P
     return (
         <BaseFullscreenModal open={open} onClose={close}>
             <ColumnLayout sx={{ padding: 2, gap: 2 }}>
-                {title && <Typography variant='h6'>{title}</Typography>}
+                {title && <Typography variant="h6">{title}</Typography>}
 
                 <TextField
                     multiline
@@ -105,22 +127,28 @@ export function ArraySimpleInputModal({ open, close, value, onSubmit, title }: P
                     maxRows={15}
                     value={draft}
                     onChange={(e) => setDraft(e.target.value)}
-                    placeholder='Enter value'
+                    placeholder="Enter value"
                     fullWidth
                 />
 
                 <RowLayout sx={{ height: 'unset', justifyContent: 'flex-end', gap: 1 }}>
                     {editingId ? (
                         <>
-                            <Button variant='outlined' onClick={handleCancelEdit}>Cancel</Button>
-                            <Button variant='contained' onClick={handleDoneEdit}>Done</Button>
+                            <Button variant="outlined" onClick={handleCancelEdit}>
+                                Cancel
+                            </Button>
+                            <Button variant="contained" onClick={handleDoneEdit}>
+                                Done
+                            </Button>
                         </>
                     ) : (
-                        <Button variant='contained' onClick={handleAdd}>Add</Button>
+                        <Button variant="contained" onClick={handleAdd}>
+                            Add
+                        </Button>
                     )}
                 </RowLayout>
 
-                <Paper variant='outlined' sx={{ flex: 1, minHeight: 0, overflow: 'auto', p: 1 }}>
+                <Paper variant="outlined" sx={{ flex: 1, minHeight: 0, overflow: 'auto', p: 1 }}>
                     <DragDropProvider onDragEnd={handleDragEnd}>
                         <List sx={{ p: 0 }}>
                             {items.map((item, index) => (
@@ -136,7 +164,7 @@ export function ArraySimpleInputModal({ open, close, value, onSubmit, title }: P
                         </List>
                     </DragDropProvider>
                     {items.length === 0 && (
-                        <Typography variant='body2' color='text.secondary' sx={{ p: 1 }}>
+                        <Typography variant="body2" color="text.secondary" sx={{ p: 1 }}>
                             No items yet.
                         </Typography>
                     )}
@@ -144,9 +172,20 @@ export function ArraySimpleInputModal({ open, close, value, onSubmit, title }: P
 
                 <Spacer />
 
-                <RowLayout sx={{ height: 'unset', alignItems: 'center', justifyContent: 'flex-end', gap: 1 }}>
-                    <Button variant='outlined' onClick={close}>Cancel</Button>
-                    <Button variant='contained' onClick={handleSubmit}>Submit</Button>
+                <RowLayout
+                    sx={{
+                        height: 'unset',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        gap: 1,
+                    }}
+                >
+                    <Button variant="outlined" onClick={close}>
+                        Cancel
+                    </Button>
+                    <Button variant="contained" onClick={handleSubmit}>
+                        Submit
+                    </Button>
                 </RowLayout>
             </ColumnLayout>
         </BaseFullscreenModal>
@@ -160,17 +199,16 @@ function SortableRow({ item, index, selected, onSelect, onDelete }: SortableRowP
         <SortableItemRoot ref={ref} elevation={0} selected={selected}>
             <ListItem>
                 <DragHandle>
-                    <DragIndicatorIcon fontSize='small' />
+                    <DragIndicatorIcon fontSize="small" />
                 </DragHandle>
                 <ListItemButton
-                    onClick={() => onSelect(item.id)} selected={selected} sx={{ borderRadius: 2, minWidth: 0, flex: 1 }}
+                    onClick={() => onSelect(item.id)}
+                    selected={selected}
+                    sx={{ borderRadius: 2, minWidth: 0, flex: 1 }}
                 >
-                    <ListItemText
-                        primary={item.value}
-                        slotProps={{ primary: { noWrap: true } }}
-                    />
+                    <ListItemText primary={item.value} slotProps={{ primary: { noWrap: true } }} />
                 </ListItemButton>
-                <IconButton edge='end' aria-label='delete' onClick={() => onDelete(item.id)}>
+                <IconButton edge="end" aria-label="delete" onClick={() => onDelete(item.id)}>
                     <DeleteIcon />
                 </IconButton>
             </ListItem>
