@@ -37,13 +37,29 @@ jobs:
 
       # Errors fail the job. Warnings do not, but they are shown as
       # annotations and in the job summary.
+      # Lint errors only fail the job if LINT_FAIL_ON_ERROR is 'true'.
+      # Set it via Settings → Secrets and variables → Actions → Variables,
+      # or change the default after '||' below.
+      # Warnings never fail the job. Crashes of ESLint itself (exit code 2) always do.
       - name: ESLint
         if: ${{ !cancelled() }}
+        env:
+          LINT_FAIL_ON_ERROR: ${{ vars.LINT_FAIL_ON_ERROR || 'false' }}
         run: |
           set +e
           npx eslint . --format json --output-file eslint-report.json
           status=$?
           node .github/scripts/lint-summary.mjs eslint-report.json
+
+          if [ "$status" -eq 0 ]; then
+            exit 0
+          fi
+
+          if [ "$status" -eq 1 ] && [ "$LINT_FAIL_ON_ERROR" != "true" ]; then
+            echo "::notice title=ESLint::Lint errors were found, but LINT_FAIL_ON_ERROR is not 'true', so the job does not fail."
+            exit 0
+          fi
+
           exit $status
 
   build:
