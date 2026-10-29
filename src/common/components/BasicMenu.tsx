@@ -1,6 +1,6 @@
 import { Button, IconButton, Menu, styled } from '@mui/material'
 import * as React from 'react'
-import { type ReactNode, useRef, useState } from 'react'
+import { type ReactNode, useRef, useState, useId } from 'react'
 import Box from '@mui/material/Box'
 
 interface Props {
@@ -29,15 +29,15 @@ export function BasicMenu({ items, buttonContent, buttonType }: Props) {
         setAnchorEl(null)
     }
 
-    const buttonIdRef = useRef('button-id-' + Math.random())
-    const menuIdRef = useRef('menu-id-' + Math.random())
+    const buttonIdRef = useRef('button-id-' + useId())
+    const menuIdRef = useRef('menu-id-' + useId())
 
     return (
         <MenuWrapper forceButtonVisible={open}>
             {buttonType === 'icon-button' ? (
                 <IconButton
-                    id={buttonIdRef.current}
-                    aria-controls={open ? menuIdRef.current : undefined}
+                    id={buttonIdRef}
+                    aria-controls={open ? menuIdRef : undefined}
                     aria-haspopup="true"
                     aria-expanded={open ? 'true' : undefined}
                     onClick={handleClick}
@@ -47,8 +47,8 @@ export function BasicMenu({ items, buttonContent, buttonType }: Props) {
                 </IconButton>
             ) : (
                 <Button
-                    id={buttonIdRef.current}
-                    aria-controls={open ? menuIdRef.current : undefined}
+                    id={buttonIdRef}
+                    aria-controls={open ? menuIdRef : undefined}
                     aria-haspopup="true"
                     aria-expanded={open ? 'true' : undefined}
                     onClick={handleClick}
@@ -59,18 +59,18 @@ export function BasicMenu({ items, buttonContent, buttonType }: Props) {
             )}
 
             <Menu
-                id={menuIdRef.current}
+                id={menuIdRef}
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleClose}
                 onClick={handleClose}
                 slotProps={{
                     list: {
-                        'aria-labelledby': buttonIdRef.current,
+                        'aria-labelledby': buttonIdRef,
                     },
                 }}
             >
-                {items.map((item, index) => item)}
+                {items.map((item, _index) => item)}
             </Menu>
         </MenuWrapper>
     )

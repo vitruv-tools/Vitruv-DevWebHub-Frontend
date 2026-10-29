@@ -49,7 +49,7 @@ export class ResourcesApiToStructuredConverter {
 
         return match(
             structuredResources,
-            (nil) => [],
+            (_nil) => [],
             (single) => [single],
             (array) => array,
         )
@@ -66,7 +66,7 @@ export class ResourcesApiToStructuredConverter {
     ): StructuredResource | StructuredResource[] {
         return match<StructuredResource | StructuredResource[]>(
             resources,
-            (nil) => {
+            (_nil) => {
                 throw new Error(`No resources for type ${type.id}`)
             },
             (single) =>

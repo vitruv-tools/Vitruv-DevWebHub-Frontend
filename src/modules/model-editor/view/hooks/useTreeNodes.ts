@@ -35,7 +35,7 @@ export function useTreeNodes(viewLogic: ViewLogic): {
                       viewLogic.dispatchEditViewAction,
                   )
                 : [],
-        [viewLogic.view],
+        [viewLogic.view, viewLogic.dispatchEditViewAction],
     )
 
     return { ecoreModelTreeNodes, vsumTreeNodes }

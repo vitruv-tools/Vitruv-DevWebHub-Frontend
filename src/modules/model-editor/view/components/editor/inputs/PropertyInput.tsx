@@ -41,8 +41,8 @@ export function PropertyInput({ disabled, isArray, inputErrors, onSubmit, value,
     function getArrayValue() {
         return match(
             value,
-            (nil) => undefined,
-            (single) => undefined,
+            (_nil) => undefined,
+            (_single) => undefined,
             (array) => array.map((it) => ensureStringValue(it)),
             isArray,
         )
@@ -51,9 +51,9 @@ export function PropertyInput({ disabled, isArray, inputErrors, onSubmit, value,
     function getSingleValue() {
         return match(
             value,
-            (nil) => undefined,
+            (_nil) => undefined,
             (single) => ensureStringValue(single),
-            (array) => undefined,
+            (_array) => undefined,
             isArray,
         )
     }

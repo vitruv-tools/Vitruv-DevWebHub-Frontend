@@ -29,7 +29,7 @@ export function Mermaid({ structuredResource }: MermaidDiagramProps) {
 
     const id = useId().replace(/:/g, '_')
     const containerRef = useRef<HTMLDivElement | null>(null)
-    // @ts-ignore
+    // @ts-expect-error ??? FIXME
     const panZoomRef = useRef<svgPanZoom.Instance | null>(null)
     const viewStateRef = useRef<ViewState | null>(null)
 

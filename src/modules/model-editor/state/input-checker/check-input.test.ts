@@ -15,7 +15,6 @@ vi.mock('./type-checker', () => ({
 
 describe('checkInput', () => {
     it('should return no errors for valid non-array input', () => {
-        // @ts-ignore
         const info: StructuredEcorePropertyInfo = {
             id: '1',
             name: 'ValidInput',
@@ -39,7 +38,7 @@ describe('checkInput', () => {
         const info: StructuredEcorePropertyInfo = {
             id: '1',
             name: 'RequiredInput',
-            // @ts-ignore
+            // @ts-expect-error should return an error when non-array is null but minItems is 1
             type: 'number',
             isArray: false,
             minItems: 1,
@@ -62,7 +61,7 @@ describe('checkInput', () => {
         const info: StructuredEcorePropertyInfo = {
             id: '1',
             name: 'NonArrayField',
-            // @ts-ignore
+            // @ts-expect-error should throw an error when array input is provided to non-array field
             type: 'string',
             isArray: false,
             minItems: 0,
@@ -80,7 +79,7 @@ describe('checkInput', () => {
     })
 
     it('should return a warning when arrayItem count is below minItems', () => {
-        // @ts-ignore
+        // @ts-expect-error should return a warning when arrayItem count is below minItems
         const info: StructuredEcorePropertyInfo = {
             id: '1',
             name: 'ArrayField',
@@ -106,7 +105,7 @@ describe('checkInput', () => {
     })
 
     it('should return a warning when arrayItem count exceeds maxItems', () => {
-        // @ts-ignore
+        // @ts-expect-error should return a warning when arrayItem count exceeds maxItems
         const info: StructuredEcorePropertyInfo = {
             id: '1',
             name: 'ArrayField',
@@ -132,7 +131,7 @@ describe('checkInput', () => {
     })
 
     it('should return an error when array contains duplicate values and uniqueItems is true', () => {
-        // @ts-ignore
+        //@ts-expect-error should return an error when array contains duplicate values and uniqueItems is true
         const info: StructuredEcorePropertyInfo = {
             id: '1',
             name: 'UniqueArrayField',
@@ -158,7 +157,6 @@ describe('checkInput', () => {
     })
 
     it('should handle type constraint errors for non-array values', () => {
-        // @ts-ignore
         const info: StructuredEcorePropertyInfo = {
             id: '1',
             name: 'TypeTestField',

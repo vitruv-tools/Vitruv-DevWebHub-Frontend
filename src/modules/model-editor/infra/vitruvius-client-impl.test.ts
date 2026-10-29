@@ -9,7 +9,7 @@ describe('VitruviusClientImpl', () => {
 
     beforeEach(() => {
         onError = vi.fn()
-        // @ts-ignore
+        // @ts-expect-error ignore failures
         client = new VitruviusClientImpl(BASE_URL, onError)
         vi.resetAllMocks()
     })

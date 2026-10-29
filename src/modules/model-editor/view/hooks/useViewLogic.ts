@@ -73,7 +73,7 @@ export function useViewLogic(client: VitruviusClient): ViewLogic {
         )
 
         try {
-            let updatedResourceSet = await asyncPropagation.applyUpdateAsync(view.id, resourceSet)
+            const updatedResourceSet = await asyncPropagation.applyUpdateAsync(view.id, resourceSet)
 
             // Sometimes the update returns an empty resource set, although it is not empty.
             // This is known for the first update of a root resource if an attribute of the root resource is changed.

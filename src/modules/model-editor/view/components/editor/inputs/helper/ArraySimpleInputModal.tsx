@@ -1,6 +1,6 @@
 import { BaseFullscreenModal } from '../../../../../../../common/components/BaseFullscreenModal.tsx'
 import { ColumnLayout, RowLayout, Spacer } from '../../../../../../../common/components/flex.tsx'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
     Button,
     IconButton,
@@ -61,8 +61,6 @@ export function ArraySimpleInputModal({ open, close, value, onSubmit, title }: P
         setDraft('')
         setEditingId(null)
     }, [value, open])
-
-    const sortedIds = useMemo(() => items.map((i) => i.id), [items])
 
     function handleAdd() {
         setItems((prev) => [...prev, { id: crypto.randomUUID(), value: draft }])

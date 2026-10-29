@@ -52,70 +52,6 @@ export function useOpenView(
         () => selector?.selectableObjects ?? [],
         [selector?.selectableObjects],
     )
-
-    /* ----------------------- Preparation ----------------------- */
-
-    useEffect(() => {
-        if (!open) {
-            return
-        }
-
-        let cancelled = false
-
-        async function bootstrap() {
-            try {
-                const cache = viewConfigCache.load()
-                if (isNotNil(cache)) {
-                    await openViewFromCache()
-                    return
-                }
-                if (cancelled) {
-                    return
-                }
-                setMode('select')
-                await loadMetamodels()
-                if (cancelled) {
-                    return
-                }
-                await loadVsums()
-            } catch (error) {
-                console.error('Failed to open VSUM picker:', error)
-                viewConfigCache.clear()
-                if (!cancelled) {
-                    setMode('select')
-                    try {
-                        await loadMetamodels()
-                        await loadVsums()
-                    } catch {
-                        // keep select mode with whatever loaded
-                    }
-                }
-            }
-        }
-
-        void bootstrap()
-        return () => {
-            cancelled = true
-        }
-    }, [open])
-
-    async function loadMetamodels() {
-        const metamodels = await vsumApi.loadMetamodels()
-        setMetamodels(metamodels)
-    }
-
-    async function loadVsums() {
-        const vsums = await vsumApi.loadVsums()
-        setVsums(vsums)
-    }
-
-    async function createVsum(metamodel: string, name: string, description: string) {
-        const vsum = await vsumApi.createVsum(metamodel, name, description)
-
-        await loadVsums()
-        await selectVsum(vsum.id)
-    }
-
     /* ----------------------- Selection ----------------------- */
 
     async function selectVsum(vsumId: string) {
@@ -214,6 +150,68 @@ export function useOpenView(
         setSelectedViewType(undefined)
         setSelector(undefined)
     }
+
+    /* ----------------------- Preparation ----------------------- */
+    async function loadMetamodels() {
+        const metamodels = await vsumApi.loadMetamodels()
+        setMetamodels(metamodels)
+    }
+
+    async function loadVsums() {
+        const vsums = await vsumApi.loadVsums()
+        setVsums(vsums)
+    }
+
+    async function createVsum(metamodel: string, name: string, description: string) {
+        const vsum = await vsumApi.createVsum(metamodel, name, description)
+
+        await loadVsums()
+        await selectVsum(vsum.id)
+    }
+
+    useEffect(() => {
+        if (!open) {
+            return
+        }
+
+        let cancelled = false
+
+        async function bootstrap() {
+            try {
+                const cache = viewConfigCache.load()
+                if (isNotNil(cache)) {
+                    await openViewFromCache()
+                    return
+                }
+                if (cancelled) {
+                    return
+                }
+                setMode('select')
+                await loadMetamodels()
+                if (cancelled) {
+                    return
+                }
+                await loadVsums()
+            } catch (error) {
+                console.error('Failed to open VSUM picker:', error)
+                viewConfigCache.clear()
+                if (!cancelled) {
+                    setMode('select')
+                    try {
+                        await loadMetamodels()
+                        await loadVsums()
+                    } catch {
+                        // keep select mode with whatever loaded
+                    }
+                }
+            }
+        }
+
+        void bootstrap()
+        return () => {
+            cancelled = true
+        }
+    }, [open])
 
     return {
         mode,

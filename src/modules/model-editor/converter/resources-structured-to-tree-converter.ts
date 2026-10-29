@@ -30,8 +30,8 @@ export class ResourcesStructuredToTreeConverter {
                 .map((type) => {
                     const disabled = match(
                         cref.value,
-                        (nil) => false,
-                        (single) => true,
+                        (_nil) => false,
+                        (_single) => true,
                         (array) => array.length >= cref.info.maxItems,
                         cref.info.isArray,
                     )
