@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { formatSourceTargetRelation, resolveSourceTargetRelation } from './source-target-relation.ts'
+import {
+    formatSourceTargetRelation,
+    resolveSourceTargetRelation,
+} from './source-target-relation.ts'
 
 describe('source-target-relation', () => {
     it('maps AmaltheaAscet to Amalthea → Ascet', () => {

@@ -32,12 +32,12 @@ export function CommitsTab({ client, inconsistencyId }: Props) {
 
     return (
         <Box>
-            {loading && <Typography color='text.secondary'>Loading…</Typography>}
-            {error && <Typography color='error'>{error}</Typography>}
+            {loading && <Typography color="text.secondary">Loading…</Typography>}
+            {error && <Typography color="error">{error}</Typography>}
             {!loading && updates.length === 0 && null}
             <List dense>
-                {updates.map(update => (
-                    <ListItem key={update.id} divider alignItems='flex-start'>
+                {updates.map((update) => (
+                    <ListItem key={update.id} divider alignItems="flex-start">
                         <ListItemText
                             primary={update.viewTypeName || 'View update'}
                             secondary={
@@ -47,8 +47,9 @@ export function CommitsTab({ client, inconsistencyId }: Props) {
                                         : 'No timestamp'}
                                     {' · '}
                                     snapshot {update.resourceSetLength} chars
-                                    {update.selectedObjectEClassNames && update.selectedObjectEClassNames.length > 0
-                                        && ` · ${update.selectedObjectEClassNames.join(', ')}`}
+                                    {update.selectedObjectEClassNames &&
+                                        update.selectedObjectEClassNames.length > 0 &&
+                                        ` · ${update.selectedObjectEClassNames.join(', ')}`}
                                 </>
                             }
                         />

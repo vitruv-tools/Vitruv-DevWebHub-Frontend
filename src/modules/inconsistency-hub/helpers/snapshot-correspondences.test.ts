@@ -33,7 +33,7 @@ function stubType(name: string) {
 function resource(
     id: string,
     typeName: string,
-    opts?: { name?: string, parentId?: string, uri?: string },
+    opts?: { name?: string; parentId?: string; uri?: string },
 ): StructuredResource {
     const type = stubType(typeName)
     return {
@@ -42,7 +42,8 @@ function resource(
         type: type as unknown as StructuredResource['type'],
         attributes: [
             {
-                info: type.attributes.name as unknown as StructuredResource['attributes'][0]['info'],
+                info: type.attributes
+                    .name as unknown as StructuredResource['attributes'][0]['info'],
                 value: opts?.name,
             },
         ],
@@ -136,8 +137,22 @@ describe('resolveHubCorrespondencePairs', () => {
         const server = resource('c', 'Server', { name: 'Brake', uri: 'model2.model2#c' })
 
         const elements: ModelElementNode[] = [
-            { id: 'E1', displayName: 'Brake', eClassName: 'Entity', metamodelName: 'model', uri: 'model.model#e', role: 'source' },
-            { id: 'C1', displayName: 'Brake', eClassName: 'Server', metamodelName: 'model2', uri: 'model2.model2#c', role: 'target' },
+            {
+                id: 'E1',
+                displayName: 'Brake',
+                eClassName: 'Entity',
+                metamodelName: 'model',
+                uri: 'model.model#e',
+                role: 'source',
+            },
+            {
+                id: 'C1',
+                displayName: 'Brake',
+                eClassName: 'Server',
+                metamodelName: 'model2',
+                uri: 'model2.model2#c',
+                role: 'target',
+            },
         ]
         const context: InconsistencyContext = {
             inconsistencyId: 'i',
@@ -153,12 +168,15 @@ describe('resolveHubCorrespondencePairs', () => {
         expect(keyOf(pairs)).toContain('c|e')
         expect(keyOf(pairs)).toContain('r|s')
         // entity<->server must appear only once even though inference would also find it
-        expect(keyOf(pairs).filter(k => k === 'c|e')).toHaveLength(1)
+        expect(keyOf(pairs).filter((k) => k === 'c|e')).toHaveLength(1)
     })
 })
 
 describe('linkedResourceIdsFor', () => {
-    const pairs: Array<[string, string]> = [['a', 'b'], ['b', 'c']]
+    const pairs: Array<[string, string]> = [
+        ['a', 'b'],
+        ['b', 'c'],
+    ]
 
     it('finds neighbours regardless of pair direction', () => {
         expect(linkedResourceIdsFor('a', pairs).sort()).toEqual(['b'])

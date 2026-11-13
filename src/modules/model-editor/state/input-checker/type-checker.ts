@@ -19,7 +19,11 @@ export type InputError = {
  * @return {InputError[]} An array of InputError objects describing violations of the type constraints.
  *                        Returns an empty array if no violations are found.
  */
-export function checkTypeConstraints(value: any, type: StructuredEcoreClass, itemIndex?: number): InputError[] {
+export function checkTypeConstraints(
+    value: any,
+    type: StructuredEcoreClass,
+    itemIndex?: number,
+): InputError[] {
     const errorPrefix = itemIndex !== undefined ? `Item ${itemIndex + 1}: ` : ''
     if (value === '') {
         return []
@@ -61,7 +65,13 @@ export function checkTypeConstraints(value: any, type: StructuredEcoreClass, ite
             return validateFloating(value, -3.4028235e38, 3.4028235e38, 'Float', errorPrefix)
 
         case 'http://www.eclipse.org/emf/2002/Ecore#//EDouble':
-            return validateFloating(value, -Number.MAX_VALUE, Number.MAX_VALUE, 'Double', errorPrefix)
+            return validateFloating(
+                value,
+                -Number.MAX_VALUE,
+                Number.MAX_VALUE,
+                'Double',
+                errorPrefix,
+            )
 
         case 'http://www.eclipse.org/emf/2002/Ecore#//EBigDecimal':
             return validateBigDecimal(value, errorPrefix)
@@ -119,7 +129,13 @@ function validateBigDecimal(value: string, errorPrefix: string): InputError[] {
     ]
 }
 
-function validateIntegerInRange(value: string, min: bigint, max: bigint, label: string, errorPrefix: string): InputError[] {
+function validateIntegerInRange(
+    value: string,
+    min: bigint,
+    max: bigint,
+    label: string,
+    errorPrefix: string,
+): InputError[] {
     if (!/^[-+]?\d+$/.test(value)) {
         return [
             {
@@ -150,7 +166,13 @@ function validateIntegerInRange(value: string, min: bigint, max: bigint, label: 
     }
 }
 
-function validateFloating(value: string, min: number, max: number, label: string, errorPrefix: string): InputError[] {
+function validateFloating(
+    value: string,
+    min: number,
+    max: number,
+    label: string,
+    errorPrefix: string,
+): InputError[] {
     if (!/^[-+]?\d+(\.\d+)?([eE][-+]?\d+)?$/.test(value)) {
         return [
             {

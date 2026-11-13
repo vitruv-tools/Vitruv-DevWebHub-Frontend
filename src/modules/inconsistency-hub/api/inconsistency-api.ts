@@ -25,11 +25,16 @@ export async function listInconsistencies(
 }
 
 /** @deprecated Prefer listInconsistencies(client, 'OPEN') */
-export async function listOpenInconsistencies(client: VitruviusClient): Promise<OpenInconsistency[]> {
+export async function listOpenInconsistencies(
+    client: VitruviusClient,
+): Promise<OpenInconsistency[]> {
     return listInconsistencies(client, 'OPEN')
 }
 
-export async function getOpenInconsistency(client: VitruviusClient, id: string): Promise<OpenInconsistency> {
+export async function getOpenInconsistency(
+    client: VitruviusClient,
+    id: string,
+): Promise<OpenInconsistency> {
     const response = await client.request(`/v1/inconsistencies/${id}`)
     return response.json()
 }
@@ -45,7 +50,7 @@ export async function listInconsistencyComments(
 export async function addInconsistencyComment(
     client: VitruviusClient,
     id: string,
-    body: { author?: string, body: string },
+    body: { author?: string; body: string },
 ): Promise<InconsistencyComment> {
     const response = await client.request(`/v1/inconsistencies/${id}/comments`, {
         method: 'POST',
@@ -58,7 +63,7 @@ export async function addInconsistencyComment(
 export async function recordInconsistencyResolution(
     client: VitruviusClient,
     id: string,
-    body: { resolvedBy: string, choice: string, comment?: string },
+    body: { resolvedBy: string; choice: string; comment?: string },
 ): Promise<OpenInconsistency> {
     const response = await client.request(`/v1/inconsistencies/${id}/resolution`, {
         method: 'POST',
@@ -100,7 +105,10 @@ export async function getInconsistencyModelSnapshot(
     return response.json()
 }
 
-export async function getTaskStatus(client: VitruviusClient, taskId: string): Promise<PropagationTaskStatus> {
+export async function getTaskStatus(
+    client: VitruviusClient,
+    taskId: string,
+): Promise<PropagationTaskStatus> {
     const response = await client.request(`/v1/tasks/${taskId}`)
     return response.json()
 }
@@ -144,9 +152,9 @@ export async function pollUntilCompleteOrNextInteraction(
         const status = await getTaskStatus(client, taskId)
 
         if (
-            status.state === 'COMPLETED'
-            || status.state === 'FAILED'
-            || status.state === 'INCONSISTENT'
+            status.state === 'COMPLETED' ||
+            status.state === 'FAILED' ||
+            status.state === 'INCONSISTENT'
         ) {
             return status
         }
@@ -174,5 +182,5 @@ export async function pollUntilCompleteOrNextInteraction(
 }
 
 function sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms))
+    return new Promise((resolve) => setTimeout(resolve, ms))
 }

@@ -21,7 +21,6 @@ export type MermaidHighlightOptions = {
  * Class responsible for converting a `StructuredResource` object to a Mermaid.js class diagram definition.
  */
 export class ResourcesStructuredToMermaidConverter {
-
     private readonly maxLength = 20
 
     private mermaidIds: { [actualId: string]: string } = {}
@@ -57,19 +56,21 @@ export class ResourcesStructuredToMermaidConverter {
 
         this.addTypeDefinition(res)
 
-        res.simpleReferences.forEach(sref => {
+        res.simpleReferences.forEach((sref) => {
             this.addSimpleReferenceDefinition(res, sref)
         })
 
-        res.containmentReferences.forEach(cref => {
+        res.containmentReferences.forEach((cref) => {
             this.addContainmentReferenceDefinition(res, cref)
         })
     }
 
     private addTypeDefinition(res: StructuredResource) {
-        const attributesDefinition = res.attributes.map(attr => {
-            return `${attr.info.name} : ${attr.info.type.name} = ${this.getAttributeValueOutput(attr.value)}`
-        }).join('\n')
+        const attributesDefinition = res.attributes
+            .map((attr) => {
+                return `${attr.info.name} : ${attr.info.type.name} = ${this.getAttributeValueOutput(attr.value)}`
+            })
+            .join('\n')
 
         const typeDefinition = `class ${this.getObjectHeader(res)} {\n${attributesDefinition}\n}`
 
@@ -85,33 +86,34 @@ export class ResourcesStructuredToMermaidConverter {
             return 'null'
         }
 
-        const output = Array.isArray(value) ? `[${truncate(value.join(','), this.maxLength)}]` : truncate(value, this.maxLength)
+        const output = Array.isArray(value)
+            ? `[${truncate(value.join(','), this.maxLength)}]`
+            : truncate(value, this.maxLength)
         return `${output}`
     }
 
     private addSimpleReferenceDefinition(res: StructuredResource, sref: StructuredSimpleReference) {
         if (isNil(sref.value)) return
 
-        normalizeAsArray(sref.value).forEach(dependencyRes => {
+        normalizeAsArray(sref.value).forEach((dependencyRes) => {
             this.fillDefinitions(dependencyRes)
 
-            const refDefinition =
-                `${this.getOrPutMermaidId(res.id)} --> ${this.getOrPutMermaidId(dependencyRes.id)} : ${sref.info.name}`
+            const refDefinition = `${this.getOrPutMermaidId(res.id)} --> ${this.getOrPutMermaidId(dependencyRes.id)} : ${sref.info.name}`
             this.referenceDefinitions.push(refDefinition)
-
         })
     }
 
-    private addContainmentReferenceDefinition(res: StructuredResource, cref: StructuredContainmentReference) {
+    private addContainmentReferenceDefinition(
+        res: StructuredResource,
+        cref: StructuredContainmentReference,
+    ) {
         if (isNil(cref.value)) return
 
-        normalizeAsArray(cref.value).forEach(dependencyRes => {
+        normalizeAsArray(cref.value).forEach((dependencyRes) => {
             this.fillDefinitions(dependencyRes)
 
-            const refDefinition =
-                `${this.getOrPutMermaidId(res.id)} *-- ${this.getOrPutMermaidId(dependencyRes.id)} : ${cref.info.name}`
+            const refDefinition = `${this.getOrPutMermaidId(res.id)} *-- ${this.getOrPutMermaidId(dependencyRes.id)} : ${cref.info.name}`
             this.referenceDefinitions.push(refDefinition)
-
         })
     }
 
@@ -123,4 +125,3 @@ export class ResourcesStructuredToMermaidConverter {
         return this.mermaidIds[actualId]
     }
 }
-

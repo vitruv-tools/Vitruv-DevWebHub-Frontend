@@ -4,18 +4,14 @@ import { describe, expect, it, vi } from 'vitest'
 
 describe('useControllableState', () => {
     it('should use the default value when no controlled value is provided', () => {
-        const { result } = renderHook(() =>
-            useControllableState({ defaultValue: 'default' }),
-        )
+        const { result } = renderHook(() => useControllableState({ defaultValue: 'default' }))
 
         const [state] = result.current
         expect(state).toBe('default')
     })
 
     it('should update internal state when uncontrolled', () => {
-        const { result } = renderHook(() =>
-            useControllableState({ defaultValue: 'default' }),
-        )
+        const { result } = renderHook(() => useControllableState({ defaultValue: 'default' }))
 
         const [, setState] = result.current
 
@@ -60,9 +56,7 @@ describe('useControllableState', () => {
     })
 
     it('should handle functional updates correctly in uncontrolled state', () => {
-        const { result } = renderHook(() =>
-            useControllableState({ defaultValue: 1 }),
-        )
+        const { result } = renderHook(() => useControllableState({ defaultValue: 1 }))
 
         const [, setState] = result.current
 

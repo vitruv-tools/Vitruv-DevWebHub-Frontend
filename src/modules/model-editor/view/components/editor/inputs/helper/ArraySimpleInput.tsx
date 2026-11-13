@@ -16,21 +16,18 @@ interface Props {
  * @param {function} props.onSubmit - A callback function invoked when the input values are updated.
  */
 export function ArraySimpleInput({ disabled, value, onSubmit }: Props) {
-
     return (
         <Autocomplete
             sx={{ width: '100%' }}
             disabled={disabled}
-            size='small'
+            size="small"
             fullWidth
             multiple
             freeSolo
             options={[]}
             value={value ?? []}
             onChange={(_, values) => onSubmit(values, true)}
-            renderInput={(params) => (
-                <TextField {...params} />
-            )}
+            renderInput={(params) => <TextField {...params} />}
         />
     )
 }

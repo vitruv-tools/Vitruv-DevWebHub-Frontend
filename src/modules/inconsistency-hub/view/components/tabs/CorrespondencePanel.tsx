@@ -26,7 +26,7 @@ export function CorrespondencePanel({
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.6, p: 0.75 }}>
-            <Typography variant='caption' sx={{ fontWeight: 600, lineHeight: 1.2 }}>
+            <Typography variant="caption" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
                 Correspondences
             </Typography>
 
@@ -41,14 +41,19 @@ export function CorrespondencePanel({
                 }}
             >
                 <Typography
-                    variant='caption'
-                    sx={{ fontWeight: 700, color: 'primary.light', lineHeight: 1.25, wordBreak: 'break-word' }}
+                    variant="caption"
+                    sx={{
+                        fontWeight: 700,
+                        color: 'primary.light',
+                        lineHeight: 1.25,
+                        wordBreak: 'break-word',
+                    }}
                 >
                     {structuredResourceLabel(selectedResource)}
                 </Typography>
             </Box>
 
-            {linkedResources.map(resource => (
+            {linkedResources.map((resource) => (
                 <ButtonBase
                     key={resource.id}
                     onClick={() => onSelectResource?.(resource.id)}
@@ -70,9 +75,9 @@ export function CorrespondencePanel({
                         },
                     }}
                 >
-                    <ArrowForwardIcon sx={{ fontSize: 14 }} color='primary' />
+                    <ArrowForwardIcon sx={{ fontSize: 14 }} color="primary" />
                     <Typography
-                        variant='caption'
+                        variant="caption"
                         sx={{ flex: 1, fontWeight: 600, lineHeight: 1.25, wordBreak: 'break-word' }}
                     >
                         {structuredResourceLabel(resource)}

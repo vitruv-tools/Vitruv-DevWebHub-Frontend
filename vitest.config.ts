@@ -4,5 +4,17 @@ export default defineConfig({
     test: {
         globals: true,
         environment: 'jsdom',
+        coverage: {
+            provider: 'v8',
+            reporter: ['text-summary', 'json-summary', 'lcov', 'html'],
+            reportsDirectory: 'coverage',
+            include: ['src/**/*.{ts,tsx}'],
+            exclude: [
+                'src/**/*.{test,spec}.{ts,tsx}',
+                'src/**/__tests__/**',
+                'src/**/*.d.ts',
+                'src/main.tsx',
+            ],
+        },
     },
 })

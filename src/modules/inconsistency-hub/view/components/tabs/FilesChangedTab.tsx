@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Box, CircularProgress, Typography } from '@mui/material'
 import type { VitruviusClient } from '../../../../model-editor/infra/vitruvius-client.ts'
-import { getInconsistencyContext, getInconsistencyModelSnapshot } from '../../../api/inconsistency-api.ts'
+import {
+    getInconsistencyContext,
+    getInconsistencyModelSnapshot,
+} from '../../../api/inconsistency-api.ts'
 import type { InconsistencyContext, OpenInconsistency } from '../../../types/open-inconsistency.ts'
 import type { ApiEcoreModelPackage } from '../../../../model-editor/types/api-ecore-model.ts'
 import { EcoreModelApiToStructuredConverter } from '../../../../model-editor/converter/ecore-model-api-to-structured-converter.ts'
@@ -32,7 +35,7 @@ type Props = {
 
 function toReadOnlyTreeNodes(resources: StructuredResource[]): TreeNode[] {
     function convertOne(resource: StructuredResource): TreeNode {
-        const children = resource.containmentReferences.flatMap(cref => {
+        const children = resource.containmentReferences.flatMap((cref) => {
             if (isNil(cref.value)) {
                 return []
             }
@@ -96,12 +99,14 @@ export function FilesChangedTab({ inconsistency, client }: Props) {
                     throw new Error('Model snapshot contains no resources')
                 }
 
-                const ecoreResponse = await client.request(`/v1/metamodels/${metamodel}/ecore-models`)
+                const ecoreResponse = await client.request(
+                    `/v1/metamodels/${metamodel}/ecore-models`,
+                )
                 if (!ecoreResponse.ok) {
                     throw new Error(`Failed to load metamodel ${metamodel}`)
                 }
                 const apiEcoreModelPackages: ApiEcoreModelPackage[] = await ecoreResponse.json()
-                const ecoreModels = apiEcoreModelPackages.map(pkg =>
+                const ecoreModels = apiEcoreModelPackages.map((pkg) =>
                     new EcoreModelApiToStructuredConverter().convert(pkg),
                 )
                 const sortedEcoreModels = ecoreModelsForResourceSet(resourceSet, ecoreModels)
@@ -185,7 +190,7 @@ export function FilesChangedTab({ inconsistency, client }: Props) {
     )
 
     const userSelectedResource = useMemo(
-        () => allResources.find(res => res.id === userSelectedResourceId),
+        () => allResources.find((res) => res.id === userSelectedResourceId),
         [allResources, userSelectedResourceId],
     )
 
@@ -194,9 +199,9 @@ export function FilesChangedTab({ inconsistency, client }: Props) {
             return []
         }
         const linkedIds = linkedResourceIdsFor(userSelectedResourceId, correspondencePairs)
-        const byId = new Map(allResources.map(res => [res.id, res]))
+        const byId = new Map(allResources.map((res) => [res.id, res]))
         return linkedIds
-            .map(id => byId.get(id))
+            .map((id) => byId.get(id))
             .filter((res): res is StructuredResource => res != null)
     }, [userSelectedResourceId, correspondencePairs, allResources])
 
@@ -217,14 +222,14 @@ export function FilesChangedTab({ inconsistency, client }: Props) {
         return (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 2 }}>
                 <CircularProgress size={20} />
-                <Typography color='text.secondary'>Loading model snapshot…</Typography>
+                <Typography color="text.secondary">Loading model snapshot…</Typography>
             </Box>
         )
     }
 
     if (error) {
         return (
-            <Typography color='error' sx={{ p: 2 }}>
+            <Typography color="error" sx={{ p: 2 }}>
                 {error}
             </Typography>
         )
@@ -232,9 +237,9 @@ export function FilesChangedTab({ inconsistency, client }: Props) {
 
     if (structuredResources.length === 0) {
         return (
-            <Typography color='text.secondary' sx={{ p: 2 }}>
-                Model snapshot is empty. Park a new inconsistency from the editor (Update → dismiss prompt with X)
-                after rebuilding the server so the model is captured at park time.
+            <Typography color="text.secondary" sx={{ p: 2 }}>
+                Model snapshot is empty. Park a new inconsistency from the editor (Update → dismiss
+                prompt with X) after rebuilding the server so the model is captured at park time.
             </Typography>
         )
     }
@@ -251,7 +256,7 @@ export function FilesChangedTab({ inconsistency, client }: Props) {
             }}
         >
             {(metamodelName || viewTypeName) && (
-                <Typography variant='body2' color='text.secondary' sx={{ flexShrink: 0 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ flexShrink: 0 }}>
                     {metamodelName}
                     {viewTypeName ? ` · view ${viewTypeName}` : ''}
                 </Typography>
@@ -263,7 +268,10 @@ export function FilesChangedTab({ inconsistency, client }: Props) {
                     minHeight: { xs: 360, md: 480 },
                     display: 'grid',
                     gridTemplateColumns: { xs: '1fr', lg: 'minmax(0, 220px) minmax(0, 1fr) 176px' },
-                    gridTemplateRows: { xs: 'minmax(110px, 140px) minmax(360px, 1fr) minmax(130px, 170px)', lg: '1fr' },
+                    gridTemplateRows: {
+                        xs: 'minmax(110px, 140px) minmax(360px, 1fr) minmax(130px, 170px)',
+                        lg: '1fr',
+                    },
                     gap: 0.75,
                     overflow: 'hidden',
                 }}
@@ -283,16 +291,31 @@ export function FilesChangedTab({ inconsistency, client }: Props) {
                     }}
                 >
                     <Typography
-                        variant='caption'
-                        sx={{ px: 0.75, pt: 0.75, pb: 0.25, flexShrink: 0, fontWeight: 600, display: 'block' }}
+                        variant="caption"
+                        sx={{
+                            px: 0.75,
+                            pt: 0.75,
+                            pb: 0.25,
+                            flexShrink: 0,
+                            fontWeight: 600,
+                            display: 'block',
+                        }}
                     >
                         Model overview
                     </Typography>
-                    <Box sx={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden', maxWidth: '100%' }}>
+                    <Box
+                        sx={{
+                            flex: 1,
+                            minHeight: 0,
+                            overflowY: 'auto',
+                            overflowX: 'hidden',
+                            maxWidth: '100%',
+                        }}
+                    >
                         <CustomTreeView
                             items={treeNodes}
                             selectedItem={userSelectedResourceId}
-                            onSelectItem={itemId => {
+                            onSelectItem={(itemId) => {
                                 if (itemId) {
                                     selectResource(itemId)
                                 }
@@ -331,8 +354,9 @@ export function FilesChangedTab({ inconsistency, client }: Props) {
                 </Box>
             </Box>
 
-            <Typography variant='caption' color='text.secondary' sx={{ flexShrink: 0 }}>
-                Red = inconsistency · click an element for blue selection and correspondences · scroll to zoom · drag to pan
+            <Typography variant="caption" color="text.secondary" sx={{ flexShrink: 0 }}>
+                Red = inconsistency · click an element for blue selection and correspondences ·
+                scroll to zoom · drag to pan
             </Typography>
         </Box>
     )

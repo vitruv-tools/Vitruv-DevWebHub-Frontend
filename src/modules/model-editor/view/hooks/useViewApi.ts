@@ -22,7 +22,7 @@ export function useViewApi(client: VitruviusClient) {
             body: JSON.stringify({ vsumId, selectorId, selectedObjectIds }),
         })
 
-        const responseBody: { id: string, resourceSet: any } = await response.json()
+        const responseBody: { id: string; resourceSet: any } = await response.json()
         return responseBody
     }
 
@@ -35,7 +35,9 @@ export function useViewApi(client: VitruviusClient) {
     }
 
     async function update(viewId: string) {
-        const response = await client.request(`/v1/views/${viewId}/apply-update`, { method: 'POST' })
+        const response = await client.request(`/v1/views/${viewId}/apply-update`, {
+            method: 'POST',
+        })
         const updatedResourceSet = await response.json()
         return updatedResourceSet
     }

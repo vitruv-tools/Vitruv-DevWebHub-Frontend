@@ -57,11 +57,12 @@ type Props = {
  * - Providing modals for opening views and updating VSUM metadata.
  */
 export function ModelManagerPage({ onOpenHub }: Props) {
-
     const notify = useNotify()
     const { user, signOut } = useAuth()
     const { openSettings } = useModelKnowledge()
-    const clientRef = useRef(new VitruviusClientImpl(VITRUVIUS_SERVER_BASE_URL, message => notify(message, 'error')))
+    const clientRef = useRef(
+        new VitruviusClientImpl(VITRUVIUS_SERVER_BASE_URL, (message) => notify(message, 'error')),
+    )
     const client = clientRef.current
 
     const { openConfirmDialog } = useConfirmDialog()
@@ -73,7 +74,8 @@ export function ModelManagerPage({ onOpenHub }: Props) {
     const viewLogic = useViewLogic(client)
 
     const structuredResources = viewLogic.view?.structuredResources
-    const structuredResourcesWithErrors = structuredResources?.filter(it => it.propertiesWithErrors.length > 0) ?? []
+    const structuredResourcesWithErrors =
+        structuredResources?.filter((it) => it.propertiesWithErrors.length > 0) ?? []
     const hasErrors = structuredResourcesWithErrors.length > 0
 
     useLayoutEffect(() => {
@@ -100,19 +102,25 @@ export function ModelManagerPage({ onOpenHub }: Props) {
 
     const { ecoreModelTreeNodes, vsumTreeNodes } = useTreeNodes(viewLogic)
 
-    const [selectedResourceId, setSelectedResourceId] = useLocalStorageState<string>('selectedResourceId')
+    const [selectedResourceId, setSelectedResourceId] =
+        useLocalStorageState<string>('selectedResourceId')
 
     const selectedResource = useMemo(
-        () => viewLogic.allStructuredResources.find(it => it.id === selectedResourceId),
+        () => viewLogic.allStructuredResources.find((it) => it.id === selectedResourceId),
         [viewLogic.allStructuredResources, selectedResourceId],
     )
 
-    async function handleOpenView(vsumDto: VsumDto, selectorId: string, selectedObjectIds: string[]) {
-
-        const response = await client.request(`/v1/metamodels/${vsumDto.metamodelName}/ecore-models`)
+    async function handleOpenView(
+        vsumDto: VsumDto,
+        selectorId: string,
+        selectedObjectIds: string[],
+    ) {
+        const response = await client.request(
+            `/v1/metamodels/${vsumDto.metamodelName}/ecore-models`,
+        )
         const apiEcoreModelPackages: ApiEcoreModelPackage[] = await response.json()
 
-        const ecoreModels = apiEcoreModelPackages.map(it =>
+        const ecoreModels = apiEcoreModelPackages.map((it) =>
             new EcoreModelApiToStructuredConverter().convert(it),
         )
 
@@ -145,7 +153,9 @@ export function ModelManagerPage({ onOpenHub }: Props) {
                 title: 'Errors',
                 text: 'There are inputs that will most likely lead to errors. Do you want to proceed?',
                 confirmLabel: 'Update',
-                onConfirm: () => { void runUpdate() },
+                onConfirm: () => {
+                    void runUpdate()
+                },
             })
         } else {
             void runUpdate()
@@ -179,7 +189,7 @@ export function ModelManagerPage({ onOpenHub }: Props) {
     }
 
     function handleAfterSave(vsumDto: VsumDto) {
-        setSelectedVsum(prev => {
+        setSelectedVsum((prev) => {
             if (isNil(prev)) {
                 return undefined
             }
@@ -211,7 +221,10 @@ export function ModelManagerPage({ onOpenHub }: Props) {
             />
 
             <PropagationProgressOverlay
-                open={viewLogic.propagationUiState.isActive && viewLogic.propagationUiState.phase === 'running'}
+                open={
+                    viewLogic.propagationUiState.isActive &&
+                    viewLogic.propagationUiState.phase === 'running'
+                }
                 message={viewLogic.propagationUiState.statusMessage}
             />
 
@@ -219,7 +232,9 @@ export function ModelManagerPage({ onOpenHub }: Props) {
                 open={viewLogic.propagationUiState.phase === 'interaction'}
                 interaction={viewLogic.propagationUiState.interaction}
                 onSubmit={viewLogic.submitInteractionResponse}
-                onDismiss={() => { void handleDismissInteraction() }}
+                onDismiss={() => {
+                    void handleDismissInteraction()
+                }}
             />
             <ColumnLayout sx={{ padding: 0.5, gap: 0.5 }}>
                 <Box
@@ -227,43 +242,62 @@ export function ModelManagerPage({ onOpenHub }: Props) {
                     sx={{
                         width: '100%',
                         position: 'relative',
-                        zIndex: theme => theme.zIndex.modal + 1,
+                        zIndex: (theme) => theme.zIndex.modal + 1,
                     }}
                 >
                     <RowLayout
-                        sx={{ height: 'unset', alignItems: 'center', justifyContent: 'flex-end', gap: 1 }}
+                        sx={{
+                            height: 'unset',
+                            alignItems: 'center',
+                            justifyContent: 'flex-end',
+                            gap: 1,
+                        }}
                     >
-
                         <Box
-                            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 1, flex: 1 }}
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'flex-start',
+                                gap: 1,
+                                flex: 1,
+                            }}
                         >
                             {onOpenHub && (
-                                <AppNavButton label='Inconsistency Hub' onClick={onOpenHub} />
+                                <AppNavButton label="Inconsistency Hub" onClick={onOpenHub} />
                             )}
                         </Box>
                         {isNotNil(selectedVsum) && (
                             <Chip
-                                size='small'
+                                size="small"
                                 label={
                                     <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                                      <span>{selectedVsum.name}</span>
-                                      <ExpandMoreIcon fontSize='small' />
+                                        <span>{selectedVsum.name}</span>
+                                        <ExpandMoreIcon fontSize="small" />
                                     </span>
                                 }
                                 onClick={() => setUpdateVsumModalOpened(true)}
                             />
                         )}
                         <Box
-                            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1, flex: 1 }}
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'flex-end',
+                                gap: 1,
+                                flex: 1,
+                            }}
                         >
                             {user && (
-                                <Chip size='small' label={user.name || user.username || user.email || 'User'} />
+                                <Chip
+                                    size="small"
+                                    label={user.name || user.username || user.email || 'User'}
+                                />
                             )}
-                            <Button size='small' onClick={openSettings}>
+                            <Button size="small" onClick={openSettings}>
                                 Model knowledge
                             </Button>
                             <Button
-                                size='small'
+                                size="small"
                                 onClick={() => {
                                     void signOut()
                                 }}
@@ -271,10 +305,12 @@ export function ModelManagerPage({ onOpenHub }: Props) {
                                 Sign out
                             </Button>
                             <Button
-                                size='small'
-                                variant='contained'
+                                size="small"
+                                variant="contained"
                                 color={hasErrors ? 'error' : undefined}
-                                disabled={!viewLogic.hasChanges || viewLogic.propagationUiState.isActive}
+                                disabled={
+                                    !viewLogic.hasChanges || viewLogic.propagationUiState.isActive
+                                }
                                 onClick={handleUpdate}
                             >
                                 Update
@@ -288,13 +324,13 @@ export function ModelManagerPage({ onOpenHub }: Props) {
                                         onClick={handleCloseView}
                                     >
                                         <ListItemIcon sx={{ color: 'error.main' }}>
-                                            <DeleteIcon fontSize='small' />
+                                            <DeleteIcon fontSize="small" />
                                         </ListItemIcon>
-                                        <ListItemText primary='Close View' />
+                                        <ListItemText primary="Close View" />
                                     </MenuItem>,
                                 ]}
                                 buttonContent={<MoreVertIcon />}
-                                buttonType='icon-button'
+                                buttonType="icon-button"
                             />
                         </Box>
                     </RowLayout>
@@ -318,11 +354,11 @@ export function ModelManagerPage({ onOpenHub }: Props) {
                             <CustomTreeView
                                 items={ecoreModelTreeNodes}
                                 icons={{
-                                    'attribute': <ShortTextIcon fontSize='small' />,
-                                    'reference': <LinkIcon fontSize='small' />,
-                                    'literal': <RemoveIcon fontSize='small' />,
-                                    'class': <IntegrationInstructionsOutlinedIcon fontSize='small' />,
-                                    'package': <FolderOpenIcon fontSize='small' />,
+                                    attribute: <ShortTextIcon fontSize="small" />,
+                                    reference: <LinkIcon fontSize="small" />,
+                                    literal: <RemoveIcon fontSize="small" />,
+                                    class: <IntegrationInstructionsOutlinedIcon fontSize="small" />,
+                                    package: <FolderOpenIcon fontSize="small" />,
                                 }}
                             />
                         </BaseFrame>
@@ -330,16 +366,16 @@ export function ModelManagerPage({ onOpenHub }: Props) {
                     cell21={
                         <BaseFrame
                             title={
-                                isNil(selectedResource)
-                                    ? undefined
-                                    : isNil(selectedResource?.resourceSetInfo)
-                                        ? 'This instance is not commit yet.'
-                                        : (
-                                            <StructuredResourceIdBreadcrumbs
-                                                structuredResourceId={selectedResource.id}
-                                                onClick={id => setSelectedResourceId(id)}
-                                            />
-                                        )
+                                isNil(selectedResource) ? undefined : isNil(
+                                      selectedResource?.resourceSetInfo,
+                                  ) ? (
+                                    'This instance is not commit yet.'
+                                ) : (
+                                    <StructuredResourceIdBreadcrumbs
+                                        structuredResourceId={selectedResource.id}
+                                        onClick={(id) => setSelectedResourceId(id)}
+                                    />
+                                )
                             }
                             headerWidgets={
                                 isNotNil(selectedResourceId) && (
@@ -348,21 +384,23 @@ export function ModelManagerPage({ onOpenHub }: Props) {
                                             <MenuItem
                                                 sx={{ color: 'error.main' }}
                                                 key={1}
-                                                onClick={() => viewLogic.dispatchEditViewAction({
-                                                    type: 'REMOVE_CONTAINMENT_REFERENCE',
-                                                    containmentReferenceId: selectedResourceId,
-                                                    ignoreInputErrors: false,
-                                                    ownerId: selectedResourceId,
-                                                })}
+                                                onClick={() =>
+                                                    viewLogic.dispatchEditViewAction({
+                                                        type: 'REMOVE_CONTAINMENT_REFERENCE',
+                                                        containmentReferenceId: selectedResourceId,
+                                                        ignoreInputErrors: false,
+                                                        ownerId: selectedResourceId,
+                                                    })
+                                                }
                                             >
                                                 <ListItemIcon sx={{ color: 'error.main' }}>
-                                                    <DeleteIcon fontSize='small' />
+                                                    <DeleteIcon fontSize="small" />
                                                 </ListItemIcon>
-                                                <ListItemText primary='Löschen' />
+                                                <ListItemText primary="Löschen" />
                                             </MenuItem>,
                                         ]}
                                         buttonContent={<MoreVertIcon />}
-                                        buttonType='icon-button'
+                                        buttonType="icon-button"
                                     />
                                 )
                             }
@@ -383,12 +421,9 @@ export function ModelManagerPage({ onOpenHub }: Props) {
                                     <Mermaid structuredResource={selectedResource} />
                                 )}
                             </BaseFrame>
-
                         </ColumnLayout>
                     }
-                >
-
-                </ResizableGrid>
+                ></ResizableGrid>
             </ColumnLayout>
         </>
     )

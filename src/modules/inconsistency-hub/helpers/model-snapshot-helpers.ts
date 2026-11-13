@@ -15,12 +15,12 @@ export function ecoreModelsForResourceSet(
     resourceSet: unknown[],
     ecoreModels: StructuredEcoreModel[],
 ): StructuredEcoreModel[] {
-    return resourceSet.map(res => {
+    return resourceSet.map((res) => {
         const rootType = (res as { content?: { eClass?: string } }).content?.eClass
         if (!rootType) {
             throw new Error('Resource set entry is missing content.eClass')
         }
-        const foundEcoreModel = ecoreModels.find(ecoreModel => isNotNil(ecoreModel[rootType]))
+        const foundEcoreModel = ecoreModels.find((ecoreModel) => isNotNil(ecoreModel[rootType]))
         if (isNil(foundEcoreModel)) {
             throw new Error(`Could not find ecore model for root type ${rootType}`)
         }

@@ -16,7 +16,10 @@ vi.mock('./edit-view-reducer', () => ({
 
 describe('manageViewReducer', () => {
     it('should handle the CLEAR_VIEW action', () => {
-        const initialState = { view: { id: '1', structuredResources: [], ecoreModels: [] }, success: false }
+        const initialState = {
+            view: { id: '1', structuredResources: [], ecoreModels: [] },
+            success: false,
+        }
         const action: ManageViewAction = { type: 'CLEAR_VIEW' }
 
         const result = manageViewReducer(initialState, action)
@@ -46,7 +49,10 @@ describe('manageViewReducer', () => {
             },
             success: true,
         })
-        expect(mockConvert).toHaveBeenCalledWith((action as any).resourceSet, (action as any).ecoreModels)
+        expect(mockConvert).toHaveBeenCalledWith(
+            (action as any).resourceSet,
+            (action as any).ecoreModels,
+        )
     })
 
     it('should handle the SET_VIEW action with missing ecore model', () => {
@@ -68,14 +74,8 @@ describe('manageViewReducer', () => {
         const action: ManageViewAction = {
             type: 'SET_VIEW',
             id: '4',
-            resourceSet: [
-                { content: { eClass: 'Type1' } },
-                { content: { eClass: 'Type2' } },
-            ],
-            ecoreModels: [
-                { Type2: {} as any },
-                { Type1: {} as any },
-            ],
+            resourceSet: [{ content: { eClass: 'Type1' } }, { content: { eClass: 'Type2' } }],
+            ecoreModels: [{ Type2: {} as any }, { Type1: {} as any }],
         }
 
         const mockConvert = vi.mocked(ResourcesApiToStructuredConverter.prototype.convert)
@@ -129,7 +129,10 @@ describe('manageViewReducer', () => {
 
         const result = manageViewReducer(initialState, action)
 
-        expect(mockEditViewReducer).toHaveBeenCalledWith(initialState, (action as any).editViewAction)
+        expect(mockEditViewReducer).toHaveBeenCalledWith(
+            initialState,
+            (action as any).editViewAction,
+        )
         expect(result).toEqual({ view: initialState.view, success: true })
     })
 })

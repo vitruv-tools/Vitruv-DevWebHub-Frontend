@@ -10,12 +10,16 @@ export function formatInconsistencyDescription(item: OpenInconsistency): string 
         lines.push(item.message)
     }
 
-    if (item.interaction && 'choices' in item.interaction && Array.isArray(item.interaction.choices)) {
+    if (
+        item.interaction &&
+        'choices' in item.interaction &&
+        Array.isArray(item.interaction.choices)
+    ) {
         lines.push('\nOptions:')
-        let i:number = 1
+        let i: number = 1
         for (const option of item.interaction.choices) {
-            lines.push(i+":  "+option)
-            i = i+1
+            lines.push(i + ':  ' + option)
+            i = i + 1
         }
     }
 

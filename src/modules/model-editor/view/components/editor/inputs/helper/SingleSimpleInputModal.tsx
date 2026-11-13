@@ -26,13 +26,11 @@ interface Props {
  * @param {Function} props.onSubmit - A callback function that is triggered when the form is submitted. Receives the input value and a "submitted" status flag.
  */
 export function SingleSimpleInputModal({ value, open, close, inputErrors, onSubmit }: Props) {
-
     const [draft, setDraft] = useState('')
 
     useEffect(() => {
         setDraft(value ?? '')
     }, [value])
-
 
     function handleSubmit() {
         onSubmit(draft, true)
@@ -46,26 +44,31 @@ export function SingleSimpleInputModal({ value, open, close, inputErrors, onSubm
                     minRows={3}
                     maxRows={15}
                     value={draft}
-                    onChange={event => setDraft(event.target.value)}
+                    onChange={(event) => setDraft(event.target.value)}
                 />
 
-                {inputErrors.map(it => (
-                    <Typography
-                        key={it.message}
-                        color={colorOfInputErrorSeverity(it.severity)}
-                    >
+                {inputErrors.map((it) => (
+                    <Typography key={it.message} color={colorOfInputErrorSeverity(it.severity)}>
                         {it.message}
                     </Typography>
                 ))}
                 <Spacer />
-                <RowLayout sx={{ height: 'unset', alignItems: 'center', justifyContent: 'flex-end', gap: 1 }}>
-                    <Button variant='outlined' onClick={close}>Cancel</Button>
-                    <Button variant='contained' onClick={handleSubmit}>
+                <RowLayout
+                    sx={{
+                        height: 'unset',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        gap: 1,
+                    }}
+                >
+                    <Button variant="outlined" onClick={close}>
+                        Cancel
+                    </Button>
+                    <Button variant="contained" onClick={handleSubmit}>
                         Submit
                     </Button>
                 </RowLayout>
             </ColumnLayout>
-
         </BaseFullscreenModal>
     )
 }

@@ -12,10 +12,13 @@ describe('ecore-model-api-to-structured-converter', () => {
         const encodedExpected = JSON.stringify(expected)
 
         const actual = underTest.convert(testHelperApiEcoreModel)
-        const simplifiedActual = replaceByKey([
-            { subTypes: (subTypes: any[]) => subTypes.length },
-            { superTypes: (superTypes: any[]) => superTypes.length },
-        ], actual)
+        const simplifiedActual = replaceByKey(
+            [
+                { subTypes: (subTypes: any[]) => subTypes.length },
+                { superTypes: (superTypes: any[]) => superTypes.length },
+            ],
+            actual,
+        )
         const encodedSimplifiedActual = JSON.stringify(simplifiedActual)
 
         expect(encodedSimplifiedActual).toEqual(encodedExpected)

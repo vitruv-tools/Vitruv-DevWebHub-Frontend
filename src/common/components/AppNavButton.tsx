@@ -8,8 +8,8 @@ type Props = Omit<ButtonProps, 'variant' | 'size'> & {
 export function AppNavButton({ label, sx, ...rest }: Props) {
     return (
         <Button
-            size='small'
-            variant='outlined'
+            size="small"
+            variant="outlined"
             sx={{
                 minWidth: 64,
                 fontWeight: 600,

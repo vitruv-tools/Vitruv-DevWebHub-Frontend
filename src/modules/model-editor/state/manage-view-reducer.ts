@@ -4,7 +4,7 @@ import type { ManageViewAction } from './manage-view-actions.ts'
 import type { View } from '../types/structured-vitruvius-model.ts'
 import { ResourcesApiToStructuredConverter } from '../converter/resources-api-to-structured-converter.ts'
 
-type ReducerType = { view: View | undefined, success: boolean }
+type ReducerType = { view: View | undefined; success: boolean }
 
 /**
  * Reducer function to manage the state of a view.
@@ -15,17 +15,21 @@ type ReducerType = { view: View | undefined, success: boolean }
  * @param {ManageViewAction} action The action object containing the type of action and additional payload.
  * @return {ReducerType} The updated state after applying the specified action.
  */
-export function manageViewReducer({ view, success }: ReducerType, action: ManageViewAction): ReducerType {
+export function manageViewReducer(
+    { view, success }: ReducerType,
+    action: ManageViewAction,
+): ReducerType {
     switch (action.type) {
         case 'CLEAR_VIEW':
             return { view: undefined, success: true }
 
         case 'SET_VIEW': {
-
-            const sortedEcoreModels = action.resourceSet.map(res => {
+            const sortedEcoreModels = action.resourceSet.map((res) => {
                 const rootType = res.content.eClass
 
-                const foundEcoreModel = action.ecoreModels.find(ecoreModel => isNotNil(ecoreModel[rootType]))
+                const foundEcoreModel = action.ecoreModels.find((ecoreModel) =>
+                    isNotNil(ecoreModel[rootType]),
+                )
                 if (isNil(foundEcoreModel)) {
                     throw new Error(`Could not find ecore model for root type ${rootType}`)
                 }
@@ -33,8 +37,10 @@ export function manageViewReducer({ view, success }: ReducerType, action: Manage
                 return foundEcoreModel
             })
 
-            const structuredResources =
-                new ResourcesApiToStructuredConverter().convert(action.resourceSet, sortedEcoreModels)
+            const structuredResources = new ResourcesApiToStructuredConverter().convert(
+                action.resourceSet,
+                sortedEcoreModels,
+            )
 
             return {
                 view: {

@@ -16,7 +16,10 @@ import {
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import type { UserInteractionPayload } from '../../../types/api-propagation-task.ts'
-import { buildInteractionResponse, getInteractionKind } from '../../../helpers/build-interaction-response.ts'
+import {
+    buildInteractionResponse,
+    getInteractionKind,
+} from '../../../helpers/build-interaction-response.ts'
 
 type Props = {
     open: boolean
@@ -103,23 +106,21 @@ function UserInteractionModalForm({
     }
 
     function toggleMultiIndex(index: number) {
-        setSelectedIndices(prev =>
-            prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index].sort((a, b) => a - b),
+        setSelectedIndices((prev) =>
+            prev.includes(index)
+                ? prev.filter((i) => i !== index)
+                : [...prev, index].sort((a, b) => a - b),
         )
     }
 
     return (
-        <Dialog open={open} maxWidth='sm' fullWidth disableEscapeKeyDown>
+        <Dialog open={open} maxWidth="sm" fullWidth disableEscapeKeyDown>
             <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, pr: 1 }}>
-                <Box component='span' sx={{ flex: 1 }}>
+                <Box component="span" sx={{ flex: 1 }}>
                     Propagation requires your input
                 </Box>
                 {allowDismiss && onDismiss && (
-                    <IconButton
-                        aria-label='Close dialog and view'
-                        onClick={onDismiss}
-                        size='small'
-                    >
+                    <IconButton aria-label="Close dialog and view" onClick={onDismiss} size="small">
                         <CloseIcon />
                     </IconButton>
                 )}
@@ -132,9 +133,9 @@ function UserInteractionModalForm({
                 {kind === 'freeText' && (
                     <TextField
                         fullWidth
-                        label='Your answer'
+                        label="Your answer"
                         value={text}
-                        onChange={e => setText(e.target.value)}
+                        onChange={(e) => setText(e.target.value)}
                         autoFocus
                         error={Boolean(validationError)}
                         helperText={validationError ?? ' '}
@@ -142,7 +143,10 @@ function UserInteractionModalForm({
                 )}
 
                 {kind === 'singleSelection' && (
-                    <RadioGroup value={selectedIndex} onChange={e => setSelectedIndex(Number(e.target.value))}>
+                    <RadioGroup
+                        value={selectedIndex}
+                        onChange={(e) => setSelectedIndex(Number(e.target.value))}
+                    >
                         {choices.map((choice, index) => (
                             <FormControlLabel
                                 key={index}
@@ -175,13 +179,20 @@ function UserInteractionModalForm({
                 {kind === 'confirmation' && (
                     <>
                         <Button onClick={() => submitConfirmation(false)}>No</Button>
-                        <Button variant='contained' onClick={() => submitConfirmation(true)} autoFocus>
+                        <Button
+                            variant="contained"
+                            onClick={() => submitConfirmation(true)}
+                            autoFocus
+                        >
                             Yes
                         </Button>
                     </>
                 )}
-                {(kind === 'notification' || kind === 'freeText' || kind === 'singleSelection' || kind === 'multiSelection') && (
-                    <Button variant='contained' onClick={handleSubmit}>
+                {(kind === 'notification' ||
+                    kind === 'freeText' ||
+                    kind === 'singleSelection' ||
+                    kind === 'multiSelection') && (
+                    <Button variant="contained" onClick={handleSubmit}>
                         {kind === 'notification' ? 'OK' : 'Submit'}
                     </Button>
                 )}

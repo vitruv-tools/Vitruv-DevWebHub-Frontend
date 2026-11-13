@@ -5,7 +5,7 @@ import { normalizeNil } from '../../../../../../../common/utils/nil-utils.ts'
 interface Props {
     value: string | undefined
     onSubmit: (value: string | string[] | undefined, ignoreErrors: boolean) => boolean
-    options: { key: string, label: string }[]
+    options: { key: string; label: string }[]
     disabled?: boolean
 }
 
@@ -22,21 +22,19 @@ interface Props {
  */
 export function SingleOptionsInput({ disabled, value, onSubmit, options }: Props) {
     function getOption(value: string | undefined) {
-        return options?.find(it => it.key === value)
+        return options?.find((it) => it.key === value)
     }
 
     return (
         <Autocomplete
             sx={{ width: '100%' }}
-            size='small'
+            size="small"
             fullWidth
             disabled={disabled}
             options={options}
             value={getOption(value)}
             onChange={(_, value) => onSubmit(normalizeNil(value)?.key, true)}
-            renderInput={(params) => (
-                <TextField {...params} />
-            )}
+            renderInput={(params) => <TextField {...params} />}
         />
     )
 }

@@ -13,12 +13,7 @@ export type InconsistencyHighlight = {
 const NAMED_ELEMENT_PATTERN = /(?:entity|component|task|link|module)\s+['"]([^'"]+)['"]/i
 
 /** Types that are containers / packages — prefer more specific leaf types when both match. */
-const LOW_PRIORITY_TYPES = new Set([
-    'Root',
-    'System',
-    'ComponentContainer',
-    'AscetModule',
-])
+const LOW_PRIORITY_TYPES = new Set(['Root', 'System', 'ComponentContainer', 'AscetModule'])
 
 /**
  * Derives the inconsistency diagram root from the parked message and model snapshot.
@@ -49,15 +44,15 @@ export function resolveInconsistencyHighlight(
     // entity 'null' / blank names: highlight unnamed Entities (all if several — we cannot tell which).
     if (messageMentionsNullEntity(message)) {
         const unnamed = all.filter(
-            resource => resource.type.name === 'Entity' && !resourceName(resource),
+            (resource) => resource.type.name === 'Entity' && !resourceName(resource),
         )
         if (unnamed.length > 0) {
-            return toHighlight(unnamed.map(resource => resource.id))
+            return toHighlight(unnamed.map((resource) => resource.id))
         }
     }
 
     const roots = findAffectedResources(all, message)
-    return toHighlight(roots.map(resource => resource.id))
+    return toHighlight(roots.map((resource) => resource.id))
 }
 
 function toHighlight(ids: string[]): InconsistencyHighlight {
@@ -100,7 +95,7 @@ function findByQuotedName(
     }
 
     return resources.find(
-        resource => resourceName(resource)?.toLowerCase() === quotedName.toLowerCase(),
+        (resource) => resourceName(resource)?.toLowerCase() === quotedName.toLowerCase(),
     )
 }
 
@@ -125,7 +120,7 @@ function findAffectedResources(
 
     const typeHits = mentionedTypesInMessage(resources, normalized)
     for (const typeName of typeHits) {
-        const ofType = resources.filter(resource => resource.type.name === typeName)
+        const ofType = resources.filter((resource) => resource.type.name === typeName)
         const picked = pickInstancesForHighlight(ofType, normalized)
         if (picked.length > 0) {
             return picked
@@ -135,9 +130,9 @@ function findAffectedResources(
     // Soft fallback: "has been created" / "create a corresponding" → newest leaf-ish element.
     if (/\b(created|corresponding)\b/i.test(message)) {
         const leafCandidates = resources.filter(
-            resource => !LOW_PRIORITY_TYPES.has(resource.type.name),
+            (resource) => !LOW_PRIORITY_TYPES.has(resource.type.name),
         )
-        const unnamed = leafCandidates.filter(resource => !resourceName(resource))
+        const unnamed = leafCandidates.filter((resource) => !resourceName(resource))
         if (unnamed.length === 1) {
             return unnamed
         }
@@ -159,10 +154,10 @@ function mentionedTypesInMessage(
     resources: StructuredResource[],
     normalizedMessage: string,
 ): string[] {
-    const presentTypes = [...new Set(resources.map(resource => resource.type.name))]
+    const presentTypes = [...new Set(resources.map((resource) => resource.type.name))]
 
     const scored = presentTypes
-        .map(typeName => {
+        .map((typeName) => {
             const token = typeName.toLowerCase()
             // Match "Task" in "A Task has been created" and "ASCET Task".
             const word = new RegExp(`\\b${escapeRegExp(token)}\\b`, 'i')
@@ -182,10 +177,10 @@ function mentionedTypesInMessage(
             }
             return { typeName, score }
         })
-        .filter((entry): entry is { typeName: string, score: number } => entry != null)
+        .filter((entry): entry is { typeName: string; score: number } => entry != null)
 
     scored.sort((a, b) => b.score - a.score)
-    return scored.map(entry => entry.typeName)
+    return scored.map((entry) => entry.typeName)
 }
 
 function pickInstancesForHighlight(
@@ -199,7 +194,7 @@ function pickInstancesForHighlight(
         return ofType
     }
 
-    const unnamed = ofType.filter(resource => !resourceName(resource))
+    const unnamed = ofType.filter((resource) => !resourceName(resource))
     if (unnamed.length === 1) {
         return unnamed
     }
@@ -217,11 +212,11 @@ function pickInstancesForHighlight(
 }
 
 function pickSingleLink(resources: StructuredResource[]): StructuredResource | undefined {
-    const links = resources.filter(resource => resource.type.name === 'Link')
+    const links = resources.filter((resource) => resource.type.name === 'Link')
     if (links.length === 1) {
         return links[0]
     }
-    const unnamed = links.filter(resource => !resourceName(resource))
+    const unnamed = links.filter((resource) => !resourceName(resource))
     if (unnamed.length === 1) {
         return unnamed[0]
     }
@@ -232,10 +227,10 @@ function pickLinkUnderType(
     resources: StructuredResource[],
     ancestorType: 'System' | 'Root',
 ): StructuredResource | undefined {
-    const byId = new Map(resources.map(resource => [resource.id, resource]))
-    const links = resources.filter(resource => resource.type.name === 'Link')
+    const byId = new Map(resources.map((resource) => [resource.id, resource]))
+    const links = resources.filter((resource) => resource.type.name === 'Link')
 
-    return links.find(link => {
+    return links.find((link) => {
         let current: StructuredResource | undefined = link
         while (current) {
             if (current.type.name === ancestorType) {
@@ -248,7 +243,7 @@ function pickLinkUnderType(
 }
 
 function resourceName(resource: StructuredResource): string | undefined {
-    const nameAttr = resource.attributes.find(attr => attr.info.name === 'name')
+    const nameAttr = resource.attributes.find((attr) => attr.info.name === 'name')
     const value = nameAttr?.value
     if (typeof value !== 'string' || value === 'null' || value.trim() === '') {
         return undefined
@@ -274,13 +269,13 @@ export function findResourceForContextElement(
     const all = getAllStructuredResources(resources)
 
     if (element.uri) {
-        const byUri = all.find(resource => resource.resourceSetInfo?.uri === element.uri)
+        const byUri = all.find((resource) => resource.resourceSetInfo?.uri === element.uri)
         if (byUri) {
             return byUri
         }
     }
 
-    const byTypeAndName = all.find(resource => {
+    const byTypeAndName = all.find((resource) => {
         if (resource.type.name !== element.eClassName) {
             return false
         }
@@ -294,5 +289,5 @@ export function findResourceForContextElement(
         return byTypeAndName
     }
 
-    return all.find(resource => resource.type.name === element.eClassName)
+    return all.find((resource) => resource.type.name === element.eClassName)
 }

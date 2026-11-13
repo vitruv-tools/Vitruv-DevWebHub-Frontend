@@ -40,7 +40,7 @@ export function SignUpPage({ onSuccess, onSwitchToSignIn }: Props) {
     const [submitting, setSubmitting] = useState(false)
 
     function updateField<K extends keyof SignUpCredentials>(field: K, value: SignUpCredentials[K]) {
-        setFormData(prev => ({ ...prev, [field]: value }))
+        setFormData((prev) => ({ ...prev, [field]: value }))
         if (error) {
             setError(null)
         }
@@ -49,7 +49,12 @@ export function SignUpPage({ onSuccess, onSwitchToSignIn }: Props) {
     async function handleSubmit(event: FormEvent) {
         event.preventDefault()
 
-        if (!formData.username.trim() || !formData.email.trim() || !formData.firstName.trim() || !formData.lastName.trim()) {
+        if (
+            !formData.username.trim() ||
+            !formData.email.trim() ||
+            !formData.firstName.trim() ||
+            !formData.lastName.trim()
+        ) {
             setError('Please fill in all required fields.')
             return
         }
@@ -118,62 +123,66 @@ export function SignUpPage({ onSuccess, onSwitchToSignIn }: Props) {
                     bgcolor: 'background.paper',
                 }}
             >
-                <Typography variant='h5' sx={{ fontWeight: 600, mb: 0.5 }}>
+                <Typography variant="h5" sx={{ fontWeight: 600, mb: 0.5 }}>
                     Create account
                 </Typography>
-                <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                     Register a new user ID to access the editor and Inconsistency Hub.
                 </Typography>
 
                 <Divider sx={{ mb: 2 }} />
 
-                <Box component='form' onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Box
+                    component="form"
+                    onSubmit={handleSubmit}
+                    sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+                >
                     <TextField
-                        label='Username'
+                        label="Username"
                         value={formData.username}
-                        onChange={e => updateField('username', e.target.value)}
-                        autoComplete='username'
+                        onChange={(e) => updateField('username', e.target.value)}
+                        autoComplete="username"
                         autoFocus
                         fullWidth
                         disabled={submitting}
                         required
                     />
                     <TextField
-                        label='Email'
-                        type='email'
+                        label="Email"
+                        type="email"
                         value={formData.email}
-                        onChange={e => updateField('email', e.target.value)}
-                        autoComplete='email'
+                        onChange={(e) => updateField('email', e.target.value)}
+                        autoComplete="email"
                         fullWidth
                         disabled={submitting}
                         required
                     />
                     <Box sx={{ display: 'flex', gap: 2 }}>
                         <TextField
-                            label='First name'
+                            label="First name"
                             value={formData.firstName}
-                            onChange={e => updateField('firstName', e.target.value)}
-                            autoComplete='given-name'
+                            onChange={(e) => updateField('firstName', e.target.value)}
+                            autoComplete="given-name"
                             fullWidth
                             disabled={submitting}
                             required
                         />
                         <TextField
-                            label='Last name'
+                            label="Last name"
                             value={formData.lastName}
-                            onChange={e => updateField('lastName', e.target.value)}
-                            autoComplete='family-name'
+                            onChange={(e) => updateField('lastName', e.target.value)}
+                            autoComplete="family-name"
                             fullWidth
                             disabled={submitting}
                             required
                         />
                     </Box>
                     <TextField
-                        label='Password'
-                        type='password'
+                        label="Password"
+                        type="password"
                         value={formData.password}
-                        onChange={e => updateField('password', e.target.value)}
-                        autoComplete='new-password'
+                        onChange={(e) => updateField('password', e.target.value)}
+                        autoComplete="new-password"
                         fullWidth
                         disabled={submitting}
                         required
@@ -184,35 +193,39 @@ export function SignUpPage({ onSuccess, onSwitchToSignIn }: Props) {
                         }
                     />
                     <TextField
-                        label='Confirm password'
-                        type='password'
+                        label="Confirm password"
+                        type="password"
                         value={confirmPassword}
-                        onChange={e => {
+                        onChange={(e) => {
                             setConfirmPassword(e.target.value)
                             if (error) {
                                 setError(null)
                             }
                         }}
-                        autoComplete='new-password'
+                        autoComplete="new-password"
                         fullWidth
                         disabled={submitting}
                         required
                     />
 
-                    {info && <Alert severity='success'>{info}</Alert>}
-                    {error && <Alert severity='error'>{error}</Alert>}
+                    {info && <Alert severity="success">{info}</Alert>}
+                    {error && <Alert severity="error">{error}</Alert>}
 
-                    <Button type='submit' variant='contained' disabled={submitting}>
-                        {submitting ? <CircularProgress size={20} color='inherit' /> : 'Sign up'}
+                    <Button type="submit" variant="contained" disabled={submitting}>
+                        {submitting ? <CircularProgress size={20} color="inherit" /> : 'Sign up'}
                     </Button>
                 </Box>
 
                 {onSwitchToSignIn && (
-                    <Typography variant='body2' color='text.secondary' sx={{ mt: 2, textAlign: 'center' }}>
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mt: 2, textAlign: 'center' }}
+                    >
                         Already have an account?{' '}
                         <Link
-                            component='button'
-                            type='button'
+                            component="button"
+                            type="button"
                             onClick={onSwitchToSignIn}
                             sx={{ verticalAlign: 'baseline' }}
                         >

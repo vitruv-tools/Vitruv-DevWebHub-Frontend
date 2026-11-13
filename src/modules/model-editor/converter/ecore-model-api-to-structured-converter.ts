@@ -29,13 +29,19 @@ export class EcoreModelApiToStructuredConverter {
 
         this.collectAllClasses(rootPackage, [], ecoreModel, allApiEcoreModelClassifiers)
 
-        Object.keys(allApiEcoreModelClassifiers).forEach(classifierId => {
+        Object.keys(allApiEcoreModelClassifiers).forEach((classifierId) => {
             const classifier = allApiEcoreModelClassifiers[classifierId]
-
 
             const superTypes: StructuredEcoreClass[] = []
             const directSuperTypes: StructuredEcoreClass[] = []
-            this.collectAllSuperClasses(classifier, rootPackage, ecoreModel, allApiEcoreModelClassifiers, superTypes, directSuperTypes)
+            this.collectAllSuperClasses(
+                classifier,
+                rootPackage,
+                ecoreModel,
+                allApiEcoreModelClassifiers,
+                superTypes,
+                directSuperTypes,
+            )
 
             const ecoreClass = ecoreModel[classifierId]
             ecoreClass.superTypes = superTypes
@@ -43,8 +49,8 @@ export class EcoreModelApiToStructuredConverter {
 
             ecoreClass.subTypes.push(ecoreClass)
 
-            superTypes.forEach(superType => {
-                const found = superType.subTypes.find(it => it.id === ecoreClass.id)
+            superTypes.forEach((superType) => {
+                const found = superType.subTypes.find((it) => it.id === ecoreClass.id)
                 if (isNil(found)) {
                     superType.subTypes.push(ecoreClass)
                 }
@@ -55,9 +61,8 @@ export class EcoreModelApiToStructuredConverter {
             const containmentReferences: StructuredEcoreProperties = {}
             const foundNames = new Set<string>()
 
-
             const features = normalizeAsArray(classifier.eStructuralFeatures)
-            const superTypeFeatures = superTypes.map(superType => {
+            const superTypeFeatures = superTypes.map((superType) => {
                 const classifier = allApiEcoreModelClassifiers[superType.id]
                 return normalizeAsArray(classifier.eStructuralFeatures)
             })
@@ -110,7 +115,7 @@ export class EcoreModelApiToStructuredConverter {
         pkg.eClassifiers = normalizeAsArray(pkg.eClassifiers)
         pkg.eSubpackages = normalizeAsArray(pkg.eSubpackages)
 
-        pkg.eClassifiers.forEach(c => {
+        pkg.eClassifiers.forEach((c) => {
             const id = this.getClassId(packageEntries, c.name)
 
             const ecoreClass: StructuredEcoreClass = {
@@ -126,8 +131,9 @@ export class EcoreModelApiToStructuredConverter {
                 attributes: {},
                 simpleReferences: {},
                 containmentReferences: {},
-                canInstantiate: !stringAsBoolean(c.abstract, false) && !stringAsBoolean(c.interface, false),
-                literals: c.eLiterals?.map(it => ({
+                canInstantiate:
+                    !stringAsBoolean(c.abstract, false) && !stringAsBoolean(c.interface, false),
+                literals: c.eLiterals?.map((it) => ({
                     id: createLiteralId(id, it.name),
                     name: it.name,
                     value: it.value,
@@ -138,8 +144,7 @@ export class EcoreModelApiToStructuredConverter {
             allApiEcoreModelClassifiers[id] = c
         })
 
-
-        pkg.eSubpackages.forEach(subpkg => {
+        pkg.eSubpackages.forEach((subpkg) => {
             this.collectAllClasses(subpkg, packageEntries, ecoreModel, allApiEcoreModelClassifiers)
         })
     }
@@ -152,7 +157,7 @@ export class EcoreModelApiToStructuredConverter {
         superTypes: StructuredEcoreClass[],
         directSuperTypes: StructuredEcoreClass[] | undefined,
     ) {
-        classifier.eSuperTypes?.split(' ').forEach(superTypeSubpackagedName => {
+        classifier.eSuperTypes?.split(' ').forEach((superTypeSubpackagedName) => {
             const superTypeId = rootPackage.nsURI + superTypeSubpackagedName
             superTypes.push(ecoreModel[superTypeId])
 
@@ -161,7 +166,14 @@ export class EcoreModelApiToStructuredConverter {
             }
 
             const superClassifier = allApiEcoreModelClassifiers[superTypeId]
-            this.collectAllSuperClasses(superClassifier, rootPackage, ecoreModel, allApiEcoreModelClassifiers, superTypes, undefined)
+            this.collectAllSuperClasses(
+                superClassifier,
+                rootPackage,
+                ecoreModel,
+                allApiEcoreModelClassifiers,
+                superTypes,
+                undefined,
+            )
         })
     }
 
@@ -247,14 +259,17 @@ export class EcoreModelApiToStructuredConverter {
         return upperBoundNumber < 0 ? Infinity : upperBoundNumber
     }
 
-    private getClassId([rootEntry, ...otherEntries]: StructuredEcorePackageEntry[], className: string): string {
+    private getClassId(
+        [rootEntry, ...otherEntries]: StructuredEcorePackageEntry[],
+        className: string,
+    ): string {
         if (isNil(rootEntry)) {
             throw new Error('no root package defined')
         }
 
         let id = `${rootEntry.nsUri}#//`
 
-        otherEntries.forEach(entry => {
+        otherEntries.forEach((entry) => {
             id += `${entry.name}/`
         })
 
@@ -264,9 +279,10 @@ export class EcoreModelApiToStructuredConverter {
     }
 
     private getIsNotEditable(
-        changeable: boolean | undefined, derived: boolean | undefined, unsettable: boolean | undefined,
+        changeable: boolean | undefined,
+        derived: boolean | undefined,
+        unsettable: boolean | undefined,
     ): boolean {
-
         const notChangeable = isNil(changeable) ? false : !changeable
 
         if (isNil(derived)) {

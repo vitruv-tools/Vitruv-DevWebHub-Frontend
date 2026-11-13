@@ -1,9 +1,5 @@
 export type AsyncTaskState =
-    | 'RUNNING'
-    | 'WAITING_USER_INTERACTION'
-    | 'COMPLETED'
-    | 'FAILED'
-    | 'INCONSISTENT'
+    'RUNNING' | 'WAITING_USER_INTERACTION' | 'COMPLETED' | 'FAILED' | 'INCONSISTENT'
 
 export type PropagationTaskStatus = {
     taskId: string
