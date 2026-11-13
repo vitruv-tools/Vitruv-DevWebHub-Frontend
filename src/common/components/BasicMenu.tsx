@@ -1,6 +1,6 @@
 import { Button, IconButton, Menu, styled } from '@mui/material'
 import * as React from 'react'
-import { type ReactNode, useRef, useState, useId } from 'react'
+import { type ReactNode, useState, useId } from 'react'
 import Box from '@mui/material/Box'
 
 interface Props {
@@ -29,15 +29,15 @@ export function BasicMenu({ items, buttonContent, buttonType }: Props) {
         setAnchorEl(null)
     }
 
-    const buttonIdRef = useRef('button-id-' + useId())
-    const menuIdRef = useRef('menu-id-' + useId())
+    const buttonId = 'button-id-' + useId()
+    const menuId = 'menu-id-' + useId()
 
     return (
         <MenuWrapper forceButtonVisible={open}>
             {buttonType === 'icon-button' ? (
                 <IconButton
-                    id={buttonIdRef}
-                    aria-controls={open ? menuIdRef : undefined}
+                    id={buttonId}
+                    aria-controls={open ? menuId : undefined}
                     aria-haspopup="true"
                     aria-expanded={open ? 'true' : undefined}
                     onClick={handleClick}
@@ -47,8 +47,8 @@ export function BasicMenu({ items, buttonContent, buttonType }: Props) {
                 </IconButton>
             ) : (
                 <Button
-                    id={buttonIdRef}
-                    aria-controls={open ? menuIdRef : undefined}
+                    id={buttonId}
+                    aria-controls={open ? menuId : undefined}
                     aria-haspopup="true"
                     aria-expanded={open ? 'true' : undefined}
                     onClick={handleClick}
@@ -59,14 +59,14 @@ export function BasicMenu({ items, buttonContent, buttonType }: Props) {
             )}
 
             <Menu
-                id={menuIdRef}
+                id={menuId}
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleClose}
                 onClick={handleClose}
                 slotProps={{
                     list: {
-                        'aria-labelledby': buttonIdRef,
+                        'aria-labelledby': buttonId,
                     },
                 }}
             >
