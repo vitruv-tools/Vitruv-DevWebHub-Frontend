@@ -11,7 +11,7 @@ if (!existsSync(reportPath)) {
 }
 
 const escapeData = (s) => s.replace(/%/g, '%25').replace(/\r/g, '%0D').replace(/\n/g, '%0A')
-const escapeCell = (s) => s.replace(/\|/g, '\\|').replace(/\r?\n/g, ' ')
+const escapeCell = (s) => s.replace(/\\/g, '\\\\').replace(/\|/g, '\\|').replace(/\r?\n/g, ' ')
 
 const results = JSON.parse(readFileSync(reportPath, 'utf8'))
 const findings = []
