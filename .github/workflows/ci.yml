@@ -140,7 +140,7 @@ jobs:
 
       - name: Download coverage report
         if: steps.token.outputs.available == 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: coverage-report
           path: coverage
