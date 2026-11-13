@@ -19,7 +19,7 @@
         "@dnd-kit/react": "^0.3.2",
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
-        "@mui/icons-material": "^7.3.7",
+        "@mui/icons-material": "^9.5.0",
         "@mui/material": "^7.3.6",
         "@mui/x-tree-view": "^8.22.0",
         "immer": "^11.1.3",
