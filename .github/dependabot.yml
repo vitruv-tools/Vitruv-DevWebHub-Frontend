@@ -20,6 +20,11 @@ updates:
       mui:
         patterns:
           - '@mui/*'
+      # @vitejs/plugin-react majors require a matching vite major.
+      vite:
+        patterns:
+          - 'vite'
+          - '@vitejs/*'
       vitest:
         patterns:
           - 'vitest'
