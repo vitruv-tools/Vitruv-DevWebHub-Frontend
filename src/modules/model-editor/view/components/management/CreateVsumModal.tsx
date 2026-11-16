@@ -41,7 +41,7 @@ export function CreateVsumModal({ open, onSubmit, onCancel, metamodels }: Props)
 
     return (
         <BaseFullscreenModal open={open}>
-            <ColumnLayout gap={2} sx={{ padding: 2 }}>
+            <ColumnLayout sx={{ gap: 2, padding: 2 }}>
                 <Typography variant="h5">Create VSUM</Typography>
                 <Divider />
 
@@ -81,8 +81,12 @@ export function CreateVsumModal({ open, onSubmit, onCancel, metamodels }: Props)
 
                 <Divider sx={{ my: 1 }} />
                 <RowLayout
-                    gap={1}
-                    sx={{ height: 'unset', justifyContent: 'flex-end', alignItems: 'center' }}
+                    sx={{
+                        gap: 1,
+                        height: 'unset',
+                        justifyContent: 'flex-end',
+                        alignItems: 'center',
+                    }}
                 >
                     <Button variant="outlined" onClick={onCancel}>
                         Cancel

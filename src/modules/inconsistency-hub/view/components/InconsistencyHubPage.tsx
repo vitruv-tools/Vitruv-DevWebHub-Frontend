@@ -721,8 +721,7 @@ export function InconsistencyHubPage({ onBack }: Props) {
                                     <Typography
                                         variant="caption"
                                         color="text.secondary"
-                                        display="block"
-                                        sx={{ mt: 1 }}
+                                        sx={{ display: 'block', mt: 1 }}
                                     >
                                         Task {selected.taskId}
                                     </Typography>

@@ -20,5 +20,5 @@ export const ColumnLayout = styled(Box)`
 `
 
 export function Spacer() {
-    return <Box flex={1} />
+    return <Box sx={{ flex: 1 }} />
 }
