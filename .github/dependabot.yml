@@ -6,6 +6,11 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 5
+    ignore:
+      # typescript-eslint does not support TypeScript 7 yet (peer range
+      # ">=4.8.4 <6.1.0"), so npm ci fails. Remove once it does.
+      - dependency-name: 'typescript'
+        versions: ['>=7.0.0']
     # A dependency that matches several groups goes into the first one,
     # so the lockstep groups must stay above the catch-all group.
     groups:
