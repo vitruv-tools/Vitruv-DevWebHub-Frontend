@@ -52,7 +52,7 @@ export class ErrorBoundary extends Component<Props, State> {
                         padding: 3,
                         textAlign: 'center',
                         gap: 2,
-                        overflow: 'hidden'
+                        overflow: 'hidden',
                     }}
                 >
                     <Paper
@@ -64,10 +64,10 @@ export class ErrorBoundary extends Component<Props, State> {
                             color: 'white',
                         }}
                     >
-                        <Typography variant='h4' gutterBottom>
+                        <Typography variant="h4" gutterBottom>
                             Something went wrong
                         </Typography>
-                        <Typography variant='body1' sx={{ mb: 3 }}>
+                        <Typography variant="body1" sx={{ mb: 3 }}>
                             An unexpected error occurred while rendering the application.
                         </Typography>
                         {this.state.error && (
@@ -82,28 +82,33 @@ export class ErrorBoundary extends Component<Props, State> {
                                     overflow: 'auto',
                                 }}
                             >
-                                <Typography variant='caption' component='pre' sx={{ fontFamily: 'monospace' }}>
+                                <Typography
+                                    variant="caption"
+                                    component="pre"
+                                    sx={{ fontFamily: 'monospace' }}
+                                >
                                     {this.state.error.message}
                                 </Typography>
                             </Box>
                         )}
-
-
                     </Paper>
 
-                    <RowLayout sx={{ gap: 1, alignItems: 'center', justifyContent: 'flex-end', height: 'unset' }}>
+                    <RowLayout
+                        sx={{
+                            gap: 1,
+                            alignItems: 'center',
+                            justifyContent: 'flex-end',
+                            height: 'unset',
+                        }}
+                    >
                         <Button
-                            variant='outlined'
-                            color='error'
+                            variant="outlined"
+                            color="error"
                             onClick={this.handleClearAndReload}
                         >
                             Clear caches and reload
                         </Button>
-                        <Button
-                            variant='contained'
-                            color='error'
-                            onClick={this.reload}
-                        >
+                        <Button variant="contained" color="error" onClick={this.reload}>
                             Just reload
                         </Button>
                     </RowLayout>

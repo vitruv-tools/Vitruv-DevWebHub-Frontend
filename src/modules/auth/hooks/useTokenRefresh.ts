@@ -30,12 +30,12 @@ export function useTokenRefresh(enabled: boolean) {
             }
         }
 
-        void maybeRefresh().catch(error => {
+        void maybeRefresh().catch((error) => {
             console.error('Initial token refresh failed:', error)
         })
 
         intervalRef.current = setInterval(() => {
-            void maybeRefresh().catch(error => {
+            void maybeRefresh().catch((error) => {
                 console.error('Automatic token refresh failed:', error)
                 if (intervalRef.current) {
                     clearInterval(intervalRef.current)

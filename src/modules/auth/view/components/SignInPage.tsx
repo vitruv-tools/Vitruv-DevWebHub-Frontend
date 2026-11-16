@@ -75,55 +75,59 @@ export function SignInPage({ onSuccess, onCancel, onSwitchToSignUp }: Props) {
                     bgcolor: 'background.paper',
                 }}
             >
-                <Typography variant='h5' sx={{ fontWeight: 600, mb: 0.5 }}>
+                <Typography variant="h5" sx={{ fontWeight: 600, mb: 0.5 }}>
                     Sign in
                 </Typography>
-                <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                     Sign in to access the editor and Inconsistency Hub.
                 </Typography>
 
-                <Alert severity='info' sx={{ mb: 2 }}>
+                <Alert severity="info" sx={{ mb: 2 }}>
                     Demo credentials:{' '}
-                    <Box component='span' sx={{ fontFamily: 'monospace', fontWeight: 600 }}>
+                    <Box component="span" sx={{ fontFamily: 'monospace', fontWeight: 600 }}>
                         {DEMO_USERNAME}
                     </Box>
                     {' / '}
-                    <Box component='span' sx={{ fontFamily: 'monospace', fontWeight: 600 }}>
+                    <Box component="span" sx={{ fontFamily: 'monospace', fontWeight: 600 }}>
                         {DEMO_PASSWORD}
                     </Box>
                 </Alert>
 
                 <Divider sx={{ mb: 2 }} />
 
-                <Box component='form' onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Box
+                    component="form"
+                    onSubmit={handleSubmit}
+                    sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+                >
                     <TextField
-                        label='Username or email'
-                        name='username'
+                        label="Username or email"
+                        name="username"
                         value={username}
-                        onChange={e => {
+                        onChange={(e) => {
                             setUsername(e.target.value)
                             if (error) setError(null)
                         }}
-                        autoComplete='username'
+                        autoComplete="username"
                         autoFocus
                         fullWidth
                         disabled={submitting}
                     />
                     <TextField
-                        label='Password'
-                        name='password'
-                        type='password'
+                        label="Password"
+                        name="password"
+                        type="password"
                         value={password}
-                        onChange={e => {
+                        onChange={(e) => {
                             setPassword(e.target.value)
                             if (error) setError(null)
                         }}
-                        autoComplete='current-password'
+                        autoComplete="current-password"
                         fullWidth
                         disabled={submitting}
                     />
 
-                    {error && <Alert severity='error'>{error}</Alert>}
+                    {error && <Alert severity="error">{error}</Alert>}
 
                     <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
                         {onCancel && (
@@ -131,18 +135,26 @@ export function SignInPage({ onSuccess, onCancel, onSwitchToSignUp }: Props) {
                                 Cancel
                             </Button>
                         )}
-                        <Button type='submit' variant='contained' disabled={submitting}>
-                            {submitting ? <CircularProgress size={20} color='inherit' /> : 'Sign in'}
+                        <Button type="submit" variant="contained" disabled={submitting}>
+                            {submitting ? (
+                                <CircularProgress size={20} color="inherit" />
+                            ) : (
+                                'Sign in'
+                            )}
                         </Button>
                     </Box>
                 </Box>
 
                 {onSwitchToSignUp && (
-                    <Typography variant='body2' color='text.secondary' sx={{ mt: 2, textAlign: 'center' }}>
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mt: 2, textAlign: 'center' }}
+                    >
                         Need an account?{' '}
                         <Link
-                            component='button'
-                            type='button'
+                            component="button"
+                            type="button"
                             onClick={onSwitchToSignUp}
                             sx={{ verticalAlign: 'baseline' }}
                         >

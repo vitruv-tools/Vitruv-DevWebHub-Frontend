@@ -17,7 +17,12 @@ interface Props {
  * @param {ReactNode} props.children - The content to be displayed inside the modal.
  * @param {number} props.topInset - Optional top offset so a toolbar above stays clickable.
  */
-export function BaseFullscreenModal({ open, onClose, children, topInset = 0 }: Props & ChildrenProps) {
+export function BaseFullscreenModal({
+    open,
+    onClose,
+    children,
+    topInset = 0,
+}: Props & ChildrenProps) {
     return (
         <Modal
             open={open}
@@ -32,9 +37,7 @@ export function BaseFullscreenModal({ open, onClose, children, topInset = 0 }: P
                 },
             }}
         >
-            <ModalContent>
-                {children}
-            </ModalContent>
+            <ModalContent>{children}</ModalContent>
         </Modal>
     )
 }

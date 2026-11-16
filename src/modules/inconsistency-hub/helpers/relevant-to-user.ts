@@ -12,6 +12,6 @@ export function isRelevantToUser(
     if (!involvedMetamodels || involvedMetamodels.length === 0) {
         return true
     }
-    const known = new Set(knownMetamodels.map(name => name.toLowerCase()))
-    return involvedMetamodels.some(name => known.has(name.toLowerCase()))
+    const known = new Set(knownMetamodels.map((name) => name.toLowerCase()))
+    return involvedMetamodels.some((name) => known.has(name.toLowerCase()))
 }

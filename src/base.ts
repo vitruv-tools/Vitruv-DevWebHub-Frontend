@@ -29,8 +29,7 @@ export const VITRUVIUS_SERVER_BASE_URL = resolveVitruviusServerBaseUrl()
  * Base URL for Methodologist auth API (login / refresh). No `/api` suffix.
  * Example: http://localhost:9811
  */
-export const AUTH_API_BASE_URL =
-    import.meta.env.VITE_AUTH_API_BASE_URL ?? 'http://localhost:9811'
+export const AUTH_API_BASE_URL = import.meta.env.VITE_AUTH_API_BASE_URL ?? 'http://localhost:9811'
 
 /**
  * Specifies if multiple selectable objects can be selected when opening a view

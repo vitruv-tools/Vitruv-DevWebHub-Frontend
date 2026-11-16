@@ -15,7 +15,6 @@ vi.mock('./type-checker', () => ({
 
 describe('checkInput', () => {
     it('should return no errors for valid non-array input', () => {
-        // @ts-ignore
         const info: StructuredEcorePropertyInfo = {
             id: '1',
             name: 'ValidInput',
@@ -26,8 +25,8 @@ describe('checkInput', () => {
             isInherited: false,
         }
 
-        const newValue = 'testValue';
-        vi.mocked(isNotNil).mockReturnValue(true);
+        const newValue = 'testValue'
+        vi.mocked(isNotNil).mockReturnValue(true)
         vi.mocked(checkTypeConstraints).mockReturnValue([])
 
         const result: InputError[] = checkInput(info, newValue)
@@ -39,7 +38,7 @@ describe('checkInput', () => {
         const info: StructuredEcorePropertyInfo = {
             id: '1',
             name: 'RequiredInput',
-            // @ts-ignore
+            // @ts-expect-error should return an error when non-array is null but minItems is 1
             type: 'number',
             isArray: false,
             minItems: 1,
@@ -48,23 +47,21 @@ describe('checkInput', () => {
             isInherited: false,
         }
 
-        const newValue = undefined;
-        vi.mocked(isNotNil).mockReturnValue(false);
-        vi.mocked(isNil).mockReturnValue(true);
+        const newValue = undefined
+        vi.mocked(isNotNil).mockReturnValue(false)
+        vi.mocked(isNil).mockReturnValue(true)
         vi.mocked(checkTypeConstraints).mockReturnValue([])
 
         const result: InputError[] = checkInput(info, newValue)
 
-        expect(result).toEqual([
-            { message: 'RequiredInput must not be null.', severity: 'reject' },
-        ])
+        expect(result).toEqual([{ message: 'RequiredInput must not be null.', severity: 'reject' }])
     })
 
     it('should throw an error when array input is provided to non-array field', () => {
         const info: StructuredEcorePropertyInfo = {
             id: '1',
             name: 'NonArrayField',
-            // @ts-ignore
+            // @ts-expect-error should throw an error when array input is provided to non-array field
             type: 'string',
             isArray: false,
             minItems: 0,
@@ -73,7 +70,7 @@ describe('checkInput', () => {
             isInherited: false,
         }
 
-        const newValue = ['testArray'];
+        const newValue = ['testArray']
         vi.mocked(isNotNil).mockReturnValue(true)
 
         expect(() => checkInput(info, newValue)).toThrow(
@@ -82,7 +79,7 @@ describe('checkInput', () => {
     })
 
     it('should return a warning when arrayItem count is below minItems', () => {
-        // @ts-ignore
+        // @ts-expect-error should return a warning when arrayItem count is below minItems
         const info: StructuredEcorePropertyInfo = {
             id: '1',
             name: 'ArrayField',
@@ -93,8 +90,8 @@ describe('checkInput', () => {
             isInherited: false,
         }
 
-        const newValue = [1];
-        vi.mocked(isNotNil).mockReturnValue(true);
+        const newValue = [1]
+        vi.mocked(isNotNil).mockReturnValue(true)
         vi.mocked(checkTypeConstraints).mockReturnValue([])
 
         const result: InputError[] = checkInput(info, newValue)
@@ -108,7 +105,7 @@ describe('checkInput', () => {
     })
 
     it('should return a warning when arrayItem count exceeds maxItems', () => {
-        // @ts-ignore
+        // @ts-expect-error should return a warning when arrayItem count exceeds maxItems
         const info: StructuredEcorePropertyInfo = {
             id: '1',
             name: 'ArrayField',
@@ -119,8 +116,8 @@ describe('checkInput', () => {
             isInherited: false,
         }
 
-        const newValue = [1, 2, 3, 4];
-        vi.mocked(isNotNil).mockReturnValue(true);
+        const newValue = [1, 2, 3, 4]
+        vi.mocked(isNotNil).mockReturnValue(true)
         vi.mocked(checkTypeConstraints).mockReturnValue([])
 
         const result: InputError[] = checkInput(info, newValue)
@@ -134,7 +131,7 @@ describe('checkInput', () => {
     })
 
     it('should return an error when array contains duplicate values and uniqueItems is true', () => {
-        // @ts-ignore
+        //@ts-expect-error should return an error when array contains duplicate values and uniqueItems is true
         const info: StructuredEcorePropertyInfo = {
             id: '1',
             name: 'UniqueArrayField',
@@ -145,8 +142,8 @@ describe('checkInput', () => {
             isInherited: false,
         }
 
-        const newValue = [1, 2, 2, 3];
-        vi.mocked(isNotNil).mockReturnValue(true);
+        const newValue = [1, 2, 2, 3]
+        vi.mocked(isNotNil).mockReturnValue(true)
         vi.mocked(checkTypeConstraints).mockReturnValue([])
 
         const result: InputError[] = checkInput(info, newValue)
@@ -160,7 +157,6 @@ describe('checkInput', () => {
     })
 
     it('should handle type constraint errors for non-array values', () => {
-        // @ts-ignore
         const info: StructuredEcorePropertyInfo = {
             id: '1',
             name: 'TypeTestField',
@@ -171,16 +167,14 @@ describe('checkInput', () => {
             isInherited: false,
         }
 
-        const newValue = 'invalidType';
-        vi.mocked(isNotNil).mockReturnValue(true);
+        const newValue = 'invalidType'
+        vi.mocked(isNotNil).mockReturnValue(true)
         vi.mocked(checkTypeConstraints).mockReturnValue([
             { message: 'Invalid type provided.', severity: 'reject' },
         ])
 
         const result: InputError[] = checkInput(info, newValue)
 
-        expect(result).toEqual([
-            { message: 'Invalid type provided.', severity: 'reject' },
-        ])
+        expect(result).toEqual([{ message: 'Invalid type provided.', severity: 'reject' }])
     })
 })

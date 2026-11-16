@@ -90,11 +90,14 @@ export function ModelKnowledgeProvider({ children }: Props) {
 
         async function load() {
             try {
-                const profile = await syncUserSession({
-                    username: current.username,
-                    name: current.name,
-                    email: current.email,
-                }, controller.signal)
+                const profile = await syncUserSession(
+                    {
+                        username: current.username,
+                        name: current.name,
+                        email: current.email,
+                    },
+                    controller.signal,
+                )
                 if (controller.signal.aborted) {
                     return
                 }
@@ -116,25 +119,39 @@ export function ModelKnowledgeProvider({ children }: Props) {
         }
     }, [user, loadCatalog])
 
-    const saveMetamodels = useCallback(async (metamodels: string[]) => {
-        if (!user?.username) {
-            throw new Error('Sign in before choosing metamodels.')
-        }
-        const profile = await updateUserMetamodels(user.username, metamodels)
-        setKnownMetamodels(profile.metamodels ?? [])
-    }, [user])
+    const saveMetamodels = useCallback(
+        async (metamodels: string[]) => {
+            if (!user?.username) {
+                throw new Error('Sign in before choosing metamodels.')
+            }
+            const profile = await updateUserMetamodels(user.username, metamodels)
+            setKnownMetamodels(profile.metamodels ?? [])
+        },
+        [user],
+    )
 
-    const value = useMemo<ModelKnowledgeContextValue>(() => ({
-        catalog,
-        catalogLoading,
-        catalogError,
-        knownMetamodels,
-        settingsOpen,
-        openSettings: () => setSettingsOpen(true),
-        closeSettings: () => setSettingsOpen(false),
-        reloadCatalog: () => loadCatalog(),
-        saveMetamodels,
-    }), [catalog, catalogLoading, catalogError, knownMetamodels, settingsOpen, loadCatalog, saveMetamodels])
+    const value = useMemo<ModelKnowledgeContextValue>(
+        () => ({
+            catalog,
+            catalogLoading,
+            catalogError,
+            knownMetamodels,
+            settingsOpen,
+            openSettings: () => setSettingsOpen(true),
+            closeSettings: () => setSettingsOpen(false),
+            reloadCatalog: () => loadCatalog(),
+            saveMetamodels,
+        }),
+        [
+            catalog,
+            catalogLoading,
+            catalogError,
+            knownMetamodels,
+            settingsOpen,
+            loadCatalog,
+            saveMetamodels,
+        ],
+    )
 
     return (
         <ModelKnowledgeContext.Provider value={value}>
@@ -146,7 +163,9 @@ export function ModelKnowledgeProvider({ children }: Props) {
                 catalogError={catalogError}
                 knownMetamodels={knownMetamodels}
                 onClose={() => setSettingsOpen(false)}
-                onRetry={() => { void loadCatalog() }}
+                onRetry={() => {
+                    void loadCatalog()
+                }}
                 onSave={saveMetamodels}
             />
         </ModelKnowledgeContext.Provider>

@@ -26,11 +26,11 @@ npm run build
 
 ## Environment (`.env`)
 
-| Variable | Purpose |
-|----------|---------|
-| `VITE_VITRUVIUS_SERVER_BASE_URL` | Server API (`auto` = same host, port 8000) |
-| `VITE_AUTH_API_BASE_URL` | Methodologist auth (default `http://localhost:9811`) |
-| `VITE_ALLOW_MULTIPLE_SELECTED_OBJECTS` | Multi-select when opening a view |
+| Variable                               | Purpose                                              |
+| -------------------------------------- | ---------------------------------------------------- |
+| `VITE_VITRUVIUS_SERVER_BASE_URL`       | Server API (`auto` = same host, port 8000)           |
+| `VITE_AUTH_API_BASE_URL`               | Methodologist auth (default `http://localhost:9811`) |
+| `VITE_ALLOW_MULTIPLE_SELECTED_OBJECTS` | Multi-select when opening a view                     |
 
 ## Auth
 

@@ -6,7 +6,10 @@ import type {
     PropagationUiState,
     UserInteractionPayload,
 } from '../../types/api-propagation-task.ts'
-import { isPropagationDeferredError, PropagationDeferredError } from '../../types/api-propagation-task.ts'
+import {
+    isPropagationDeferredError,
+    PropagationDeferredError,
+} from '../../types/api-propagation-task.ts'
 
 const POLL_INTERVAL_MS = 500
 const MAX_POLL_ATTEMPTS = 120
@@ -20,7 +23,7 @@ export function useAsyncPropagation(client: VitruviusClient) {
     const [uiState, setUiState] = useState<PropagationUiState>(IDLE_STATE)
     const interactionResolverRef = useRef<((responseJson: string) => void) | null>(null)
     const interactionRejecterRef = useRef<((error: Error) => void) | null>(null)
-    const activeTaskRef = useRef<{ taskId: string, viewId: string } | null>(null)
+    const activeTaskRef = useRef<{ taskId: string; viewId: string } | null>(null)
     const pendingInteractionRef = useRef<UserInteractionPayload | undefined>(undefined)
 
     async function startAsyncUpdate(viewId: string, resourceSet?: unknown): Promise<string> {
@@ -28,9 +31,9 @@ export function useAsyncPropagation(client: VitruviusClient) {
             method: 'POST',
             ...(resourceSet !== undefined
                 ? {
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(resourceSet),
-                }
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(resourceSet),
+                  }
                 : {}),
         })
         const body: { taskId: string } = await response.json()
@@ -90,8 +93,10 @@ export function useAsyncPropagation(client: VitruviusClient) {
             return null
         }
 
-        const response = await client.request(`/v1/tasks/${active.taskId}/inconsistent`, { method: 'POST' })
-        const body = await response.json() as { id?: string }
+        const response = await client.request(`/v1/tasks/${active.taskId}/inconsistent`, {
+            method: 'POST',
+        })
+        const body = (await response.json()) as { id?: string }
 
         const snapshot: DeferredPropagation = {
             taskId: active.taskId,
@@ -131,7 +136,11 @@ export function useAsyncPropagation(client: VitruviusClient) {
 
             if (status.state === 'WAITING_USER_INTERACTION') {
                 if (status.interaction) {
-                    const responseJson = await waitForInteraction(taskId, status.viewId, status.interaction)
+                    const responseJson = await waitForInteraction(
+                        taskId,
+                        status.viewId,
+                        status.interaction,
+                    )
                     await submitTaskInteraction(taskId, responseJson)
                     continue
                 }
@@ -158,7 +167,12 @@ export function useAsyncPropagation(client: VitruviusClient) {
     }
 
     async function applyUpdateAsync(viewId: string, resourceSet?: unknown): Promise<any[]> {
-        setUiState({ isActive: true, phase: 'running', statusMessage: 'Starting propagation…', viewId })
+        setUiState({
+            isActive: true,
+            phase: 'running',
+            statusMessage: 'Starting propagation…',
+            viewId,
+        })
         try {
             const taskId = await startAsyncUpdate(viewId, resourceSet)
             activeTaskRef.current = { taskId, viewId }
@@ -186,5 +200,5 @@ export function useAsyncPropagation(client: VitruviusClient) {
 }
 
 function sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms))
+    return new Promise((resolve) => setTimeout(resolve, ms))
 }

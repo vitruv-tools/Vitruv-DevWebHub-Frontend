@@ -1,5 +1,8 @@
 import type { VitruviusClient } from '../../../../model-editor/infra/vitruvius-client.ts'
-import { addInconsistencyComment, listInconsistencyComments } from '../../../api/inconsistency-api.ts'
+import {
+    addInconsistencyComment,
+    listInconsistencyComments,
+} from '../../../api/inconsistency-api.ts'
 import type { InconsistencyComment } from '../../../types/open-inconsistency.ts'
 import { useCallback, useEffect, useState } from 'react'
 import { Avatar, Box, Button, Stack, TextField, Typography } from '@mui/material'
@@ -70,11 +73,11 @@ export function CommentsTab({
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {loading && <Typography color='text.secondary'>Loading comments…</Typography>}
-            {error && <Typography color='error'>{error}</Typography>}
+            {loading && <Typography color="text.secondary">Loading comments…</Typography>}
+            {error && <Typography color="error">{error}</Typography>}
             {!loading && comments.length === 0 && null}
             <Stack spacing={1.5}>
-                {comments.map(comment => (
+                {comments.map((comment) => (
                     <Box
                         key={comment.id}
                         sx={{
@@ -86,19 +89,28 @@ export function CommentsTab({
                             p: 1.5,
                         }}
                     >
-                        <Avatar sx={{ width: 32, height: 32, fontSize: 14, bgcolor: 'primary.main' }}>
+                        <Avatar
+                            sx={{ width: 32, height: 32, fontSize: 14, bgcolor: 'primary.main' }}
+                        >
                             {initialOf(comment.author)}
                         </Avatar>
                         <Box sx={{ flex: 1, minWidth: 0 }}>
-                            <Typography variant='subtitle2'>
+                            <Typography variant="subtitle2">
                                 {comment.author}
                                 {comment.createdAt && (
-                                    <Typography component='span' variant='caption' color='text.secondary' sx={{ ml: 1 }}>
+                                    <Typography
+                                        component="span"
+                                        variant="caption"
+                                        color="text.secondary"
+                                        sx={{ ml: 1 }}
+                                    >
                                         {new Date(comment.createdAt).toLocaleString()}
                                     </Typography>
                                 )}
                             </Typography>
-                            <Typography sx={{ whiteSpace: 'pre-wrap', mt: 0.5 }}>{comment.body}</Typography>
+                            <Typography sx={{ whiteSpace: 'pre-wrap', mt: 0.5 }}>
+                                {comment.body}
+                            </Typography>
                         </Box>
                     </Box>
                 ))}
@@ -114,22 +126,31 @@ export function CommentsTab({
                     p: 1.5,
                 }}
             >
-                <Avatar sx={{ width: 32, height: 32, fontSize: 14 }}>{initialOf(authorLabel)}</Avatar>
+                <Avatar sx={{ width: 32, height: 32, fontSize: 14 }}>
+                    {initialOf(authorLabel)}
+                </Avatar>
                 <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <TextField
-                        placeholder='Leave a comment'
+                        placeholder="Leave a comment"
                         multiline
                         minRows={3}
                         value={draft}
-                        onChange={event => setDraft(event.target.value)}
+                        onChange={(event) => setDraft(event.target.value)}
                         disabled={submitting}
-                        size='small'
+                        size="small"
                     />
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 1 }}>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'flex-end',
+                            alignItems: 'center',
+                            gap: 1,
+                        }}
+                    >
                         {canChoose && onChoose && (
                             <Button
-                                variant='contained'
-                                size='small'
+                                variant="contained"
+                                size="small"
                                 disabled={choosingDisabled}
                                 onClick={onChoose}
                                 sx={{ textTransform: 'none', fontWeight: 600 }}
@@ -138,10 +159,12 @@ export function CommentsTab({
                             </Button>
                         )}
                         <Button
-                            variant='contained'
-                            size='small'
+                            variant="contained"
+                            size="small"
                             disabled={submitting || !draft.trim()}
-                            onClick={() => { void handleSubmit() }}
+                            onClick={() => {
+                                void handleSubmit()
+                            }}
                             sx={{ textTransform: 'none', fontWeight: 600 }}
                         >
                             Comment

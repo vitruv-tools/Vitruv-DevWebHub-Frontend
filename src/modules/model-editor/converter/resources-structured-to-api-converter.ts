@@ -1,19 +1,20 @@
 import type { StructuredResource } from '../types/structured-resource.ts'
 import { isNil, isNotNil } from '../../../common/utils/nil-utils.ts'
 
-
 /**
  * A utility class for converting structured resource objects into an API-compatible format.
  */
 export class ResourcesStructuredToApiConverter {
     convert(resources: StructuredResource[]): any[] {
-        return resources.map(res => ({
+        return resources.map((res) => ({
             uri: res.resourceSetInfo?.uri,
             content: this.convertOne(res),
         }))
     }
 
-    private convertSome(resources: StructuredResource | StructuredResource[] | undefined): any | any[] | undefined {
+    private convertSome(
+        resources: StructuredResource | StructuredResource[] | undefined,
+    ): any | any[] | undefined {
         if (isNil(resources)) {
             return undefined
         }
@@ -22,11 +23,10 @@ export class ResourcesStructuredToApiConverter {
             return this.convertOne(resources)
         }
 
-        return resources.map(res => this.convertOne(res))
+        return resources.map((res) => this.convertOne(res))
     }
 
     private convertOne(resource: StructuredResource): any {
-
         const result: any = {}
 
         if (isNil(resource.resourceSetInfo)) {
@@ -62,7 +62,7 @@ export class ResourcesStructuredToApiConverter {
             }
 
             if (Array.isArray(value)) {
-                result[sref.info.name] = value.map(it => getReference(it))
+                result[sref.info.name] = value.map((it) => getReference(it))
             } else {
                 result[sref.info.name] = getReference(value)
             }

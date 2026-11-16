@@ -13,27 +13,29 @@ import { isNotNil } from '../../../../common/utils/nil-utils.ts'
  * - ecoreModelTreeNodes: An array of tree nodes converted from ecore models.
  * - vsumTreeNodes: An array of tree nodes converted from structured resources.
  */
-export function useTreeNodes(
-    viewLogic: ViewLogic,
-): {
-    ecoreModelTreeNodes: TreeNode[],
+export function useTreeNodes(viewLogic: ViewLogic): {
+    ecoreModelTreeNodes: TreeNode[]
     vsumTreeNodes: TreeNode[]
 } {
-    const ecoreModelTreeNodes: TreeNode[] = useMemo(() =>
+    const ecoreModelTreeNodes: TreeNode[] = useMemo(
+        () =>
             isNotNil(viewLogic.view)
-                ? viewLogic.view.ecoreModels.flatMap(it => new EcoreModelToTreeConverter().convert(it))
+                ? viewLogic.view.ecoreModels.flatMap((it) =>
+                      new EcoreModelToTreeConverter().convert(it),
+                  )
                 : [],
         [viewLogic.view],
     )
 
-    const vsumTreeNodes: TreeNode[] = useMemo(() =>
+    const vsumTreeNodes: TreeNode[] = useMemo(
+        () =>
             isNotNil(viewLogic.view)
                 ? new ResourcesStructuredToTreeConverter().convert(
-                    viewLogic.view.structuredResources,
-                    viewLogic.dispatchEditViewAction,
-                )
+                      viewLogic.view.structuredResources,
+                      viewLogic.dispatchEditViewAction,
+                  )
                 : [],
-        [viewLogic.view],
+        [viewLogic.view, viewLogic.dispatchEditViewAction],
     )
 
     return { ecoreModelTreeNodes, vsumTreeNodes }

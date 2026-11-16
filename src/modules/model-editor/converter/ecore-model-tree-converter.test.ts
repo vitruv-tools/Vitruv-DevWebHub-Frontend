@@ -6,7 +6,9 @@ import { testHelperEcoreModelTree } from '../../../test-helper/test-model/ecore-
 
 describe('ecore-model-to-tree-converter', () => {
     it('converts', () => {
-        const structuredEcoreModel = new EcoreModelApiToStructuredConverter().convert(testHelperApiEcoreModel)
+        const structuredEcoreModel = new EcoreModelApiToStructuredConverter().convert(
+            testHelperApiEcoreModel,
+        )
         const underTest = new EcoreModelToTreeConverter()
 
         const expected = testHelperEcoreModelTree

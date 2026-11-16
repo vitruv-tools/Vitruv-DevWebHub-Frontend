@@ -29,7 +29,7 @@ export function ResolutionCommentDialog({ open, choiceLabel, onConfirm, onCancel
     }, [open, choiceLabel])
 
     return (
-        <Dialog open={open} maxWidth='sm' fullWidth disableEscapeKeyDown>
+        <Dialog open={open} maxWidth="sm" fullWidth disableEscapeKeyDown>
             <DialogTitle>Confirm resolution</DialogTitle>
             <DialogContent>
                 <DialogContentText sx={{ mb: 2 }}>
@@ -39,16 +39,16 @@ export function ResolutionCommentDialog({ open, choiceLabel, onConfirm, onCancel
                     fullWidth
                     multiline
                     minRows={3}
-                    label='Resolution comment (optional)'
-                    placeholder='Add a note about why you chose this option…'
+                    label="Resolution comment (optional)"
+                    placeholder="Add a note about why you chose this option…"
                     value={comment}
-                    onChange={event => setComment(event.target.value)}
+                    onChange={(event) => setComment(event.target.value)}
                     autoFocus
                 />
             </DialogContent>
             <DialogActions>
                 <Button onClick={onCancel}>Back</Button>
-                <Button variant='contained' onClick={() => onConfirm(comment)}>
+                <Button variant="contained" onClick={() => onConfirm(comment)}>
                     Resolve
                 </Button>
             </DialogActions>

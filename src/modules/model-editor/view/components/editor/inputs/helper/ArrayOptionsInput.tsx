@@ -4,7 +4,7 @@ import { Autocomplete } from '@mui/material'
 interface Props {
     value: string[] | undefined
     onSubmit: (value: string | string[] | undefined, ignoreErrors: boolean) => boolean
-    options: { key: string, label: string }[]
+    options: { key: string; label: string }[]
     disabled?: boolean
 }
 
@@ -19,24 +19,27 @@ interface Props {
  */
 export function ArrayOptionsInput({ disabled, value, onSubmit, options }: Props) {
     function getOptions(value: string[]) {
-        return options?.filter(it => value.includes(it.key))
+        return options?.filter((it) => value.includes(it.key))
     }
 
     return (
         <Autocomplete
             sx={{ width: '100%' }}
-            size='small'
+            size="small"
             fullWidth
             multiple
             disabled={disabled}
             value={getOptions(value ?? [])}
             options={options}
-            getOptionKey={option => option.key}
-            getOptionLabel={option => option.label}
-            onChange={(_, value) => onSubmit(value.map(it => it.key), true)}
-            renderInput={(params) => (
-                <TextField {...params} />
-            )}
+            getOptionKey={(option) => option.key}
+            getOptionLabel={(option) => option.label}
+            onChange={(_, value) =>
+                onSubmit(
+                    value.map((it) => it.key),
+                    true,
+                )
+            }
+            renderInput={(params) => <TextField {...params} />}
         />
     )
 }

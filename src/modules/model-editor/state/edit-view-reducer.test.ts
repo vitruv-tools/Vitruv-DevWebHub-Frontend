@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { editViewReducer } from './edit-view-reducer'
 import type { EditViewAction } from './edit-view-actions'
-import type { StructuredEcoreClass, StructuredEcorePropertyInfo } from '../types/structured-ecore-model'
+import type {
+    StructuredEcoreClass,
+    StructuredEcorePropertyInfo,
+} from '../types/structured-ecore-model'
 
 const mockEcoreClass: StructuredEcoreClass = {
     id: 'type1',
@@ -38,9 +41,7 @@ describe('editViewReducer', () => {
                     {
                         id: 'owner1',
                         type: mockEcoreClass,
-                        attributes: [
-                            { info: mockPropertyInfo, value: 'oldValue' },
-                        ],
+                        attributes: [{ info: mockPropertyInfo, value: 'oldValue' }],
                         simpleReferences: [],
                         containmentReferences: [],
                         propertiesWithErrors: [],
@@ -64,9 +65,7 @@ describe('editViewReducer', () => {
         const result = editViewReducer(initialState, action)
 
         expect(result.success).toBe(true)
-        expect(
-            result.view.structuredResources[0].attributes[0].value,
-        ).toBe('newValue')
+        expect(result.view.structuredResources[0].attributes[0].value).toBe('newValue')
     })
 
     it('should handle EDIT_SIMPLE_REFERENCE action when newValue is undefined', () => {
@@ -81,7 +80,10 @@ describe('editViewReducer', () => {
                         simpleReferences: [
                             {
                                 info: { ...mockPropertyInfo, id: 'ref1', name: 'Reference1' },
-                                value: { id: 'existingRef', type: { ...mockEcoreClass, id: 'type2' } } as any,
+                                value: {
+                                    id: 'existingRef',
+                                    type: { ...mockEcoreClass, id: 'type2' },
+                                } as any,
                             },
                         ],
                         containmentReferences: [],
@@ -106,9 +108,7 @@ describe('editViewReducer', () => {
         const result = editViewReducer(initialState, action)
 
         expect(result.success).toBe(true)
-        expect(
-            result.view.structuredResources[0].simpleReferences[0].value,
-        ).toBeUndefined()
+        expect(result.view.structuredResources[0].simpleReferences[0].value).toBeUndefined()
     })
 
     it('should handle ADD_CONTAINMENT_REFERENCE action properly', () => {
@@ -162,8 +162,7 @@ describe('editViewReducer', () => {
         const result = editViewReducer(initialState, action)
 
         expect(result.success).toBe(true)
-        const containmentRef =
-            result.view.structuredResources[0].containmentReferences[0]
+        const containmentRef = result.view.structuredResources[0].containmentReferences[0]
         expect(containmentRef.value).toHaveLength(1)
         expect((containmentRef.value as any)[0].type.id).toBe('subType1')
         expect((containmentRef.value as any)[0].parentId).toBe('owner1')

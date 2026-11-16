@@ -8,5 +8,5 @@ export function keepSelectedIfVisible<T extends { id: string }>(
     if (!selected) {
         return null
     }
-    return visibleItems.some(item => item.id === selected.id) ? selected : null
+    return visibleItems.some((item) => item.id === selected.id) ? selected : null
 }

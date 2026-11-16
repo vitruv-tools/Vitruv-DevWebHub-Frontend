@@ -3,7 +3,6 @@ import { ResourcesStructuredToApiConverter } from './resources-structured-to-api
 import { testHelperApiResources } from '../../../test-helper/test-model/vsum/api-resources'
 import { testHelperStructuredResources } from '../../../test-helper/test-model/vsum/structured-resources'
 
-
 describe('resources-structured-to-api', () => {
     it('converts', () => {
         const underTest = new ResourcesStructuredToApiConverter()

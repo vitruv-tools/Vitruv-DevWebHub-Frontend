@@ -8,8 +8,7 @@ export class VitruviusClientImpl implements VitruviusClient {
     constructor(
         private readonly baseUrl: string,
         private readonly onError: (message: string) => void,
-    ) {
-    }
+    ) {}
 
     async request(url: string, options?: RequestInit): Promise<Response> {
         try {

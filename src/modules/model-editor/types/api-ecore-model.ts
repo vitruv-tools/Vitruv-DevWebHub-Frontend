@@ -12,7 +12,7 @@ export interface ApiEcoreModelClassifier {
     eStructuralFeatures: ApiEcoreModelFeature[]
     abstract?: string
     interface?: string
-    eLiterals?: { name: string, value: string }[]
+    eLiterals?: { name: string; value: string }[]
 }
 
 export interface ApiEcoreModelFeature {

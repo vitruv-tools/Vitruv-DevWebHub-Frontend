@@ -1,5 +1,9 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import type { Property, StructuredResource, StructuredSimpleReference } from '../../../types/structured-resource.ts'
+import type {
+    Property,
+    StructuredResource,
+    StructuredSimpleReference,
+} from '../../../types/structured-resource.ts'
 import type { EditViewAction } from '../../../state/edit-view-actions.ts'
 import { isNil, isNotNil } from '../../../../../common/utils/nil-utils.ts'
 import { getTypeOutput, structuredResourceShortLabel } from '../../../helpers/display-helpers.ts'
@@ -23,24 +27,23 @@ interface Props {
  * @param {Object} props.structuredResource - The structured resource containing attributes and references to be edited.
  * @param {Object} props.typesToStructuresResources - A mapping used for resolving types to structured resources.
  */
-export function Editor(
-    {
-        dispatchEditViewAction,
-        structuredResource,
-        typesToStructuresResources,
-    }: Props,
-) {
-
+export function Editor({
+    dispatchEditViewAction,
+    structuredResource,
+    typesToStructuresResources,
+}: Props) {
     function handleEditAttribute(
         ownerId: string,
         attributeId: string,
         newValue: string | string[] | undefined,
         ignoreInputErrors: boolean,
     ): boolean {
-
         return dispatchEditViewAction({
             type: 'EDIT_ATTRIBUTE',
-            ownerId, attributeId, newValue, ignoreInputErrors,
+            ownerId,
+            attributeId,
+            newValue,
+            ignoreInputErrors,
         })
     }
 
@@ -50,10 +53,12 @@ export function Editor(
         newValue: string | string[] | undefined,
         ignoreInputErrors: boolean,
     ) {
-
         return dispatchEditViewAction({
             type: 'EDIT_SIMPLE_REFERENCE',
-            ownerId, simpleReferenceId, newValue, ignoreInputErrors,
+            ownerId,
+            simpleReferenceId,
+            newValue,
+            ignoreInputErrors,
         })
     }
 
@@ -67,7 +72,7 @@ export function Editor(
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {structuredResource.attributes.map(attr => (
+                    {structuredResource.attributes.map((attr) => (
                         <TableRow key={attr.info.name}>
                             <NameCell property={attr} />
                             <TableCell sx={{ width: '70%', overflow: 'hidden' }}>
@@ -84,7 +89,7 @@ export function Editor(
                                     }
                                     value={attr.value as string[] | undefined}
                                     inputErrors={attr.inputErrors}
-                                    options={attr.info.type.literals?.map(lit => ({
+                                    options={attr.info.type.literals?.map((lit) => ({
                                         key: lit.name,
                                         label: lit.name,
                                     }))}
@@ -93,7 +98,7 @@ export function Editor(
                         </TableRow>
                     ))}
 
-                    {structuredResource.simpleReferences.map(sref => (
+                    {structuredResource.simpleReferences.map((sref) => (
                         <TableRow key={sref.info.name}>
                             <NameCell property={sref} />
 
@@ -103,13 +108,10 @@ export function Editor(
                                 typesToStructuresResources={typesToStructuresResources}
                                 handleEditSimpleReference={handleEditSimpleReference}
                             />
-
                         </TableRow>
                     ))}
-
                 </TableBody>
             </Table>
-
         </TableContainer>
     )
 }
@@ -124,24 +126,34 @@ function NameCell({ property }: { property: Property<unknown> }) {
                 whiteSpace: 'nowrap',
             }}
         >
-            <div><b>{property.info.name}</b></div>
+            <div>
+                <b>{property.info.name}</b>
+            </div>
             <span>{getTypeOutput(property.info)}</span>
         </TableCell>
     )
 }
 
-function SimpleReferenceValueCell(
-    { sref, structuredResource, typesToStructuresResources, handleEditSimpleReference }: {
-        sref: StructuredSimpleReference,
-        structuredResource: StructuredResource,
-        typesToStructuresResources: Record<string, StructuredResource[]>
-        handleEditSimpleReference: (ownerId: string, simpleReferenceId: string, newValue: string | string[] | undefined, ignoreInputErrors: boolean) => boolean
-    },
-) {
-    const {
-        options,
-        someOptionsNotAvailable,
-    } = getOptionsFromStructuredResources(sref.info.type, typesToStructuresResources)
+function SimpleReferenceValueCell({
+    sref,
+    structuredResource,
+    typesToStructuresResources,
+    handleEditSimpleReference,
+}: {
+    sref: StructuredSimpleReference
+    structuredResource: StructuredResource
+    typesToStructuresResources: Record<string, StructuredResource[]>
+    handleEditSimpleReference: (
+        ownerId: string,
+        simpleReferenceId: string,
+        newValue: string | string[] | undefined,
+        ignoreInputErrors: boolean,
+    ) => boolean
+}) {
+    const { options, someOptionsNotAvailable } = getOptionsFromStructuredResources(
+        sref.info.type,
+        typesToStructuresResources,
+    )
 
     const inputErrors = sref.inputErrors ?? []
 
@@ -159,12 +171,14 @@ function SimpleReferenceValueCell(
             <PropertyInput
                 disabled={sref.info.isNotEditable}
                 isArray={sref.info.isArray}
-                onSubmit={(value, ignoreErrors) => handleEditSimpleReference(
-                    structuredResource.id,
-                    sref.info.id,
-                    value,
-                    ignoreErrors,
-                )}
+                onSubmit={(value, ignoreErrors) =>
+                    handleEditSimpleReference(
+                        structuredResource.id,
+                        sref.info.id,
+                        value,
+                        ignoreErrors,
+                    )
+                }
                 value={getCurrentValue(sref)}
                 inputErrors={inputHints}
                 options={options}
@@ -177,8 +191,8 @@ function getOptionsFromStructuredResources(
     type: StructuredEcoreClass,
     typesToStructuredResources: Record<string, StructuredResource[]>,
 ): {
-    options: { key: string, label: string }[] | undefined,
-    someOptionsNotAvailable: boolean,
+    options: { key: string; label: string }[] | undefined
+    someOptionsNotAvailable: boolean
 } {
     let someOptionsNotAvailable = false
 
@@ -186,19 +200,19 @@ function getOptionsFromStructuredResources(
         return { key: res.id, label: structuredResourceShortLabel(res) }
     }
 
-    const options = type.subTypes.flatMap(type => {
+    const options = type.subTypes.flatMap((type) => {
         const structuredResources = typesToStructuredResources[type.id]
         if (isNil(structuredResources)) {
             return []
         }
 
-        const availableRes = structuredResources.filter(res => isNotNil(res.resourceSetInfo))
+        const availableRes = structuredResources.filter((res) => isNotNil(res.resourceSetInfo))
 
         if (availableRes.length < structuredResources.length) {
             someOptionsNotAvailable = true
         }
 
-        return availableRes.map(res => resToOption(res))
+        return availableRes.map((res) => resToOption(res))
     })
 
     return { options, someOptionsNotAvailable }
@@ -209,7 +223,7 @@ function getCurrentValue(sref: StructuredSimpleReference) {
         return undefined
     }
     if (Array.isArray(sref.value)) {
-        return sref.value.map(it => it.id)
+        return sref.value.map((it) => it.id)
     }
     return sref.value.id
 }

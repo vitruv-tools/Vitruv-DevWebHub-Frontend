@@ -5,14 +5,13 @@ import { App } from './app/App.tsx'
 import { createTheme, ThemeProvider, useMediaQuery } from '@mui/material'
 import { enableMapSet } from 'immer'
 
-
 function Root() {
     const lightTheme = createTheme({
         palette: {
             mode: 'light',
             background: {
-                default: '#f6f6f8'
-            }
+                default: '#f6f6f8',
+            },
         },
     })
 
@@ -20,8 +19,8 @@ function Root() {
         palette: {
             mode: 'dark',
             background: {
-                default: '#242424'
-            }
+                default: '#242424',
+            },
         },
     })
 
@@ -36,7 +35,7 @@ function Root() {
     )
 }
 
-enableMapSet();
+enableMapSet()
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>

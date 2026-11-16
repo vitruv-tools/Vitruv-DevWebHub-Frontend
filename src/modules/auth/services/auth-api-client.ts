@@ -19,7 +19,9 @@ type UserInfoPayload = {
  */
 export async function authApiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
     const base = AUTH_API_BASE_URL.replace(/\/$/, '')
-    const url = path.startsWith('http') ? path : `${base}${path.startsWith('/') ? path : `/${path}`}`
+    const url = path.startsWith('http')
+        ? path
+        : `${base}${path.startsWith('/') ? path : `/${path}`}`
 
     const token = await AuthService.ensureValidToken()
     if (!token) {

@@ -18,17 +18,19 @@ export function enrichModelForInconsistency(
     }
 
     const all = getAllStructuredResources(structuredResources)
-    if (all.some(resource => resourceName(resource)?.toLowerCase() === entityName.toLowerCase())) {
+    if (
+        all.some((resource) => resourceName(resource)?.toLowerCase() === entityName.toLowerCase())
+    ) {
         return structuredResources
     }
 
-    const root = all.find(resource => resource.type.name === 'Root')
-    const template = all.find(resource => resource.type.name === 'Entity')
+    const root = all.find((resource) => resource.type.name === 'Root')
+    const template = all.find((resource) => resource.type.name === 'Entity')
     if (!root || !template) {
         return structuredResources
     }
 
-    const entitiesRef = root.containmentReferences.find(ref => ref.info.name === 'entities')
+    const entitiesRef = root.containmentReferences.find((ref) => ref.info.name === 'entities')
     if (!entitiesRef) {
         return structuredResources
     }
@@ -38,7 +40,7 @@ export function enrichModelForInconsistency(
         id: newEntityId,
         parentId: root.id,
         type: template.type,
-        attributes: template.attributes.map(attr => ({
+        attributes: template.attributes.map((attr) => ({
             ...attr,
             value: attr.info.name === 'name' ? entityName : attr.value,
         })),
@@ -50,7 +52,7 @@ export function enrichModelForInconsistency(
 
     const updatedRoot: StructuredResource = {
         ...root,
-        containmentReferences: root.containmentReferences.map(ref => {
+        containmentReferences: root.containmentReferences.map((ref) => {
             if (ref.info.name !== 'entities') {
                 return ref
             }
@@ -71,14 +73,14 @@ function replaceResource(
     resources: StructuredResource[],
     updated: StructuredResource,
 ): StructuredResource[] {
-    return resources.map(resource => {
+    return resources.map((resource) => {
         if (resource.id === updated.id) {
             return updated
         }
 
         return {
             ...resource,
-            containmentReferences: resource.containmentReferences.map(ref => {
+            containmentReferences: resource.containmentReferences.map((ref) => {
                 if (ref.value == null) {
                     return ref
                 }
@@ -86,8 +88,10 @@ function replaceResource(
                 if (Array.isArray(ref.value)) {
                     return {
                         ...ref,
-                        value: ref.value.map(child =>
-                            child.id === updated.id ? updated : replaceNestedResource(child, updated),
+                        value: ref.value.map((child) =>
+                            child.id === updated.id
+                                ? updated
+                                : replaceNestedResource(child, updated),
                         ),
                     }
                 }
@@ -95,7 +99,8 @@ function replaceResource(
                 const child = ref.value
                 return {
                     ...ref,
-                    value: child.id === updated.id ? updated : replaceNestedResource(child, updated),
+                    value:
+                        child.id === updated.id ? updated : replaceNestedResource(child, updated),
                 }
             }),
         }
@@ -112,7 +117,7 @@ function replaceNestedResource(
 
     return {
         ...resource,
-        containmentReferences: resource.containmentReferences.map(ref => {
+        containmentReferences: resource.containmentReferences.map((ref) => {
             if (ref.value == null) {
                 return ref
             }
@@ -120,7 +125,7 @@ function replaceNestedResource(
             if (Array.isArray(ref.value)) {
                 return {
                     ...ref,
-                    value: ref.value.map(child =>
+                    value: ref.value.map((child) =>
                         child.id === updated.id ? updated : replaceNestedResource(child, updated),
                     ),
                 }
@@ -136,7 +141,7 @@ function replaceNestedResource(
 }
 
 function resourceName(resource: StructuredResource): string | undefined {
-    const nameAttr = resource.attributes.find(attr => attr.info.name === 'name')
+    const nameAttr = resource.attributes.find((attr) => attr.info.name === 'name')
     const value = nameAttr?.value
     if (typeof value !== 'string' || value === 'null' || value.trim() === '') {
         return undefined

@@ -30,7 +30,7 @@ export function randomString(length: number): string {
  */
 export function truncate(text: string, maxLength: number): string {
     const segmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' })
-    const graphemes = Array.from(segmenter.segment(text), s => s.segment)
+    const graphemes = Array.from(segmenter.segment(text), (s) => s.segment)
 
     if (graphemes.length <= maxLength) {
         return text
@@ -46,12 +46,14 @@ export function truncate(text: string, maxLength: number): string {
  * @param {boolean} [defaultValue=false] - The default boolean value to return if the input is undefined or null.
  * @return {boolean} The boolean representation of the input string or the default value if the input is undefined or null.
  */
-export function stringAsBoolean(value: string | boolean | undefined, defaultValue: boolean = false): boolean {
+export function stringAsBoolean(
+    value: string | boolean | undefined,
+    defaultValue: boolean = false,
+): boolean {
     if (isNil(value)) return defaultValue
     if (typeof value === 'boolean') return value
     return value === 'true'
 }
-
 
 /**
  * Enumerates all prefixes of the input string up to each occurrence of the specified delimiter,

@@ -32,7 +32,11 @@ type CompactViewState = {
 /**
  * Hub Mermaid: sharp zoom, red inconsistency highlight, blue only after click, click-vs-pan aware.
  */
-export function HubMermaidDiagram({ structuredResources, highlightOptions, onSelectResource }: Props) {
+export function HubMermaidDiagram({
+    structuredResources,
+    highlightOptions,
+    onSelectResource,
+}: Props) {
     const { code, resourceIdToMermaidId } = useMemo(() => {
         const converter = new ResourcesStructuredToMermaidConverter()
         return {
@@ -42,7 +46,13 @@ export function HubMermaidDiagram({ structuredResources, highlightOptions, onSel
     }, [structuredResources])
 
     const resourcesById = useMemo(
-        () => new Map(getAllStructuredResources(structuredResources).map(resource => [resource.id, resource])),
+        () =>
+            new Map(
+                getAllStructuredResources(structuredResources).map((resource) => [
+                    resource.id,
+                    resource,
+                ]),
+            ),
         [structuredResources],
     )
 
@@ -151,7 +161,12 @@ export function HubMermaidDiagram({ structuredResources, highlightOptions, onSel
                     if (!state || !currentSvg || !currentStage) {
                         return
                     }
-                    applySvgPixelSize(currentSvg, state.vbWidth, state.vbHeight, state.baseScale * state.zoom)
+                    applySvgPixelSize(
+                        currentSvg,
+                        state.vbWidth,
+                        state.vbHeight,
+                        state.baseScale * state.zoom,
+                    )
                     currentStage.style.transform = `translate(${state.panX}px, ${state.panY}px)`
                 }
 
@@ -162,7 +177,11 @@ export function HubMermaidDiagram({ structuredResources, highlightOptions, onSel
                         return
                     }
                     const maps = mapsRef.current
-                    tagMermaidResourceNodes(currentSvg, maps.resourceIdToMermaidId, maps.resourcesById)
+                    tagMermaidResourceNodes(
+                        currentSvg,
+                        maps.resourceIdToMermaidId,
+                        maps.resourcesById,
+                    )
                     applyInconsistencyHighlightOverlays(
                         currentSvg,
                         highlightRef.current,
@@ -189,10 +208,9 @@ export function HubMermaidDiagram({ structuredResources, highlightOptions, onSel
 
                     const availableWidth = Math.max(viewport.clientWidth, 120)
                     const availableHeight = Math.max(viewport.clientHeight, 120)
-                    state.baseScale = Math.min(
-                        availableWidth / state.vbWidth,
-                        availableHeight / state.vbHeight,
-                    ) * 0.92
+                    state.baseScale =
+                        Math.min(availableWidth / state.vbWidth, availableHeight / state.vbHeight) *
+                        0.92
 
                     if (preserveUserView) {
                         state.zoom = prevZoom
@@ -220,7 +238,7 @@ export function HubMermaidDiagram({ structuredResources, highlightOptions, onSel
                     () => {
                         paintView()
                     },
-                    resourceId => onSelectRef.current?.(resourceId),
+                    (resourceId) => onSelectRef.current?.(resourceId),
                     () => svgRef.current,
                 )
 
@@ -229,8 +247,7 @@ export function HubMermaidDiagram({ structuredResources, highlightOptions, onSel
                 })
                 resizeObserverRef.current.observe(viewport)
             } catch (err) {
-                const message =
-                    err instanceof Error ? err.message : 'Unknown Mermaid render error'
+                const message = err instanceof Error ? err.message : 'Unknown Mermaid render error'
 
                 container.innerHTML = `<pre style='white-space:pre-wrap'>${escapeHtml(
                     code,
@@ -265,7 +282,12 @@ export function HubMermaidDiagram({ structuredResources, highlightOptions, onSel
                 if (svgRef.current !== svg || !compactStateRef.current) {
                     return
                 }
-                applyInconsistencyHighlightOverlays(svg, highlightOptions, resourceIdToMermaidId, resourcesById)
+                applyInconsistencyHighlightOverlays(
+                    svg,
+                    highlightOptions,
+                    resourceIdToMermaidId,
+                    resourcesById,
+                )
                 const updatedViewBox = readViewBox(svg)
                 if (updatedViewBox) {
                     compactStateRef.current.vbWidth = updatedViewBox.width
@@ -398,8 +420,7 @@ function attachDiagramInteraction(
 
         if (mode === 'pending-click') {
             // Re-resolve on release in case layout shifted; prefer press target if still set.
-            const resourceId = pendingResourceId
-                ?? resolveResourceAt(event.clientX, event.clientY)
+            const resourceId = pendingResourceId ?? resolveResourceAt(event.clientX, event.clientY)
             if (resourceId) {
                 onSelectResource(resourceId)
             }
@@ -444,7 +465,7 @@ function parseSvgFromRenderResult(
     return svg instanceof SVGSVGElement ? svg : null
 }
 
-function readViewBox(svg: SVGSVGElement): { width: number, height: number } | null {
+function readViewBox(svg: SVGSVGElement): { width: number; height: number } | null {
     const viewBox = svg.viewBox?.baseVal
     const width = viewBox?.width ?? Number.parseFloat(svg.getAttribute('width') ?? '0')
     const height = viewBox?.height ?? Number.parseFloat(svg.getAttribute('height') ?? '0')
@@ -491,5 +512,5 @@ function escapeHtml(input: string): string {
         .replaceAll('<', '&lt;')
         .replaceAll('>', '&gt;')
         .replaceAll('"', '&quot;')
-        .replaceAll('\'', '&#039;')
+        .replaceAll("'", '&#039;')
 }

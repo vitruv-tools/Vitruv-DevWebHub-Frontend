@@ -13,13 +13,11 @@ export function findStructuredResourceById(
     structuredResources: StructuredResource | StructuredResource[] | undefined,
     id: string,
 ): StructuredResource | undefined {
-
     if (isNil(structuredResources)) {
         return undefined
     }
 
     for (const res of normalizeAsArray(structuredResources)) {
-
         if (res.id === id) return res
 
         for (const cref of res.containmentReferences) {
@@ -39,8 +37,12 @@ export function findStructuredResourceById(
  * @return {StructuredResource[]} An array of all structured resources, including nested resources found
  * in containment references.
  */
-export function getAllStructuredResources(structuredResources: StructuredResource[] | undefined): StructuredResource[] {
-    function walk(res: StructuredResource | StructuredResource[] | undefined): StructuredResource[] {
+export function getAllStructuredResources(
+    structuredResources: StructuredResource[] | undefined,
+): StructuredResource[] {
+    function walk(
+        res: StructuredResource | StructuredResource[] | undefined,
+    ): StructuredResource[] {
         if (isNil(res)) return []
         if (Array.isArray(res)) return res.flatMap(walk)
 
@@ -63,12 +65,10 @@ export function getAllStructuredResources(structuredResources: StructuredResourc
 export function getTypesToStructuresResources(
     structuredResources: StructuredResource[] | undefined,
 ): Record<string, StructuredResource[]> {
-
     function collect(
         structuredResources: StructuredResource[],
         acc: Record<string, StructuredResource[]> = {},
     ): Record<string, StructuredResource[]> {
-
         for (const res of structuredResources) {
             const typeId = res.type.id
             if (isNil(acc[typeId])) {

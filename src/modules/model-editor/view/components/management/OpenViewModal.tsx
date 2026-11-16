@@ -1,4 +1,13 @@
-import { Box, Button, CircularProgress, Divider, List, ListItemButton, styled, Typography } from '@mui/material'
+import {
+    Box,
+    Button,
+    CircularProgress,
+    Divider,
+    List,
+    ListItemButton,
+    styled,
+    Typography,
+} from '@mui/material'
 import React, { useEffect, useRef, useState } from 'react'
 import { ColumnLayout, RowLayout } from '../../../../../common/components/flex.tsx'
 import ListItemText from '@mui/material/ListItemText'
@@ -28,8 +37,13 @@ interface Props {
  * @param {object} props.client - The client instance used for handling logic operations.
  * @param {boolean} props.allowMultipleSelections - Indicates whether multiple objects can be selected.
  */
-export function OpenViewModal({ open, onSubmit, client, allowMultipleSelections, topInset = 0 }: Props) {
-
+export function OpenViewModal({
+    open,
+    onSubmit,
+    client,
+    allowMultipleSelections,
+    topInset = 0,
+}: Props) {
     const openViewLogic = useOpenView(client, onSubmit, open)
 
     const [isAddingVsum, setIsAddingVsum] = useState(false)
@@ -41,7 +55,6 @@ export function OpenViewModal({ open, onSubmit, client, allowMultipleSelections,
     useEffect(() => {
         setSelectedObjectIds([])
     }, [openViewLogic.selectableObjects])
-
 
     useEffect(() => {
         if (containerRef.current) {
@@ -58,9 +71,9 @@ export function OpenViewModal({ open, onSubmit, client, allowMultipleSelections,
 
     function handleSelect(selectedObjectId: string) {
         if (allowMultipleSelections) {
-            setSelectedObjectIds(prev => {
+            setSelectedObjectIds((prev) => {
                 if (prev.includes(selectedObjectId)) {
-                    return prev.filter(it => it !== selectedObjectId)
+                    return prev.filter((it) => it !== selectedObjectId)
                 } else {
                     return [...prev, selectedObjectId]
                 }
@@ -76,7 +89,7 @@ export function OpenViewModal({ open, onSubmit, client, allowMultipleSelections,
                 <Typography>VSUMs</Typography>
                 <Divider />
                 <List>
-                    {openViewLogic.vsums.map(vsum => (
+                    {openViewLogic.vsums.map((vsum) => (
                         <React.Fragment key={vsum.id}>
                             <ListItemButton
                                 selected={vsum.id === openViewLogic.selectedVsum?.id}
@@ -88,7 +101,9 @@ export function OpenViewModal({ open, onSubmit, client, allowMultipleSelections,
                         </React.Fragment>
                     ))}
                 </List>
-                <Button variant='outlined' onClick={handleShowCreateVsumModal}><AddIcon /></Button>
+                <Button variant="outlined" onClick={handleShowCreateVsumModal}>
+                    <AddIcon />
+                </Button>
             </SelectorColumn>
         )
     }
@@ -99,7 +114,7 @@ export function OpenViewModal({ open, onSubmit, client, allowMultipleSelections,
                 <Typography>View Types</Typography>
                 <Divider />
                 <List>
-                    {openViewLogic.viewTypes.map(viewType => (
+                    {openViewLogic.viewTypes.map((viewType) => (
                         <React.Fragment key={viewType}>
                             <ListItemButton
                                 selected={viewType === openViewLogic.selectedViewType}
@@ -115,37 +130,39 @@ export function OpenViewModal({ open, onSubmit, client, allowMultipleSelections,
         )
     }
 
-    function SelectableObjectsColumn({ selectableObjects }: { selectableObjects: SelectableObjectDto[] }) {
+    function SelectableObjectsColumn({
+        selectableObjects,
+    }: {
+        selectableObjects: SelectableObjectDto[]
+    }) {
         return (
             <SelectorColumn sx={{ border: 'none', flexShrink: 0 }}>
                 <Typography>Selectable Objects</Typography>
                 <Divider />
                 <List>
-                    {
-                        selectableObjects.map(object => (
-                            <React.Fragment key={object._id}>
-                                <ListItemButton
-                                    selected={selectedObjectIds.includes(object._id)}
-                                    onClick={() => {
-                                        handleSelect(object._id)
-                                    }}
-                                >
-                                    <ListItemText primary={object.eClass} />
-                                </ListItemButton>
-                                <Divider />
-                            </React.Fragment>
-                        ))}
+                    {selectableObjects.map((object) => (
+                        <React.Fragment key={object._id}>
+                            <ListItemButton
+                                selected={selectedObjectIds.includes(object._id)}
+                                onClick={() => {
+                                    handleSelect(object._id)
+                                }}
+                            >
+                                <ListItemText primary={object.eClass} />
+                            </ListItemButton>
+                            <Divider />
+                        </React.Fragment>
+                    ))}
                 </List>
                 {allowMultipleSelections && (
                     <Button
-                        variant='outlined'
+                        variant="outlined"
                         onClick={() => openViewLogic.openView(selectedObjectIds)}
                         disabled={selectedObjectIds.length === 0}
                     >
                         Open View
                     </Button>
                 )}
-
             </SelectorColumn>
         )
     }
@@ -167,15 +184,18 @@ export function OpenViewModal({ open, onSubmit, client, allowMultipleSelections,
                             }}
                         >
                             <CircularProgress />
-                            <Typography color='text.secondary'>Loading VSUMs…</Typography>
+                            <Typography color="text.secondary">Loading VSUMs…</Typography>
                         </Box>
                     )}
                     {openViewLogic.mode === 'select' && <VsumColumn />}
-                    {openViewLogic.selectedVsum && <ViewTypeColumn vsum={openViewLogic.selectedVsum} />}
-                    {openViewLogic.selectedVsum && openViewLogic.selectedViewType && (
-                        <SelectableObjectsColumn selectableObjects={openViewLogic.selectableObjects} />
+                    {openViewLogic.selectedVsum && (
+                        <ViewTypeColumn vsum={openViewLogic.selectedVsum} />
                     )}
-
+                    {openViewLogic.selectedVsum && openViewLogic.selectedViewType && (
+                        <SelectableObjectsColumn
+                            selectableObjects={openViewLogic.selectableObjects}
+                        />
+                    )}
                 </RowLayout>
             </BaseFullscreenModal>
 
@@ -191,7 +211,6 @@ export function OpenViewModal({ open, onSubmit, client, allowMultipleSelections,
         </div>
     )
 }
-
 
 const SelectorColumn = styled(ColumnLayout)`
     overflow-y: auto;

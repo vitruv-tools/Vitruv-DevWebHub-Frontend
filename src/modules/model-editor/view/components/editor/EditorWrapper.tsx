@@ -18,14 +18,11 @@ interface Props {
  * @param {Object|null} props.structuredResource The resource to be edited. If null or undefined, a placeholder message is displayed.
  * @param {Object} props.typesToStructuresResources A mapping of types to their corresponding structured resources.
  */
-export function EditorWrapper(
-    {
-        dispatchEditViewAction,
-        structuredResource,
-        typesToStructuresResources,
-    }: Props,
-) {
-
+export function EditorWrapper({
+    dispatchEditViewAction,
+    structuredResource,
+    typesToStructuresResources,
+}: Props) {
     if (isNil(structuredResource)) {
         return (
             <ColumnLayout sx={{ alignItems: 'center', justifyContent: 'center' }}>

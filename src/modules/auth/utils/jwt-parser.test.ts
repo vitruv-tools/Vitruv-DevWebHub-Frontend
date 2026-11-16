@@ -3,7 +3,10 @@ import { extractUserFromToken, parseJwtToken } from './jwt-parser.ts'
 
 function makeToken(payload: Record<string, unknown>): string {
     const header = btoa(JSON.stringify({ alg: 'none', typ: 'JWT' }))
-    const body = btoa(JSON.stringify(payload)).replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '')
+    const body = btoa(JSON.stringify(payload))
+        .replaceAll('+', '-')
+        .replaceAll('/', '_')
+        .replaceAll('=', '')
     return `${header}.${body}.sig`
 }
 

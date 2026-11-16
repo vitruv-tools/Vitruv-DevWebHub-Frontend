@@ -32,7 +32,8 @@ export function parseJwtToken(token: string): ParsedJwtPayload | null {
 
 export function extractUserFromToken(tokenData: ParsedJwtPayload) {
     return {
-        name: tokenData.name || `${tokenData.given_name || ''} ${tokenData.family_name || ''}`.trim(),
+        name:
+            tokenData.name || `${tokenData.given_name || ''} ${tokenData.family_name || ''}`.trim(),
         email: tokenData.email,
         username: tokenData.preferred_username,
         givenName: tokenData.given_name,

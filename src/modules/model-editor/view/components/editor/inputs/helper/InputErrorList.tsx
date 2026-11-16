@@ -14,11 +14,8 @@ interface Props {
  * @param {string} props.inputErrors[].severity - The severity of the error, typically 'reject' or 'warning'.
  */
 export function InputErrorList({ inputErrors }: Props) {
-    return inputErrors.map(it => (
-        <Typography
-            key={it.message}
-            color={it.severity === 'reject' ? 'error' : 'warning'}
-        >
+    return inputErrors.map((it) => (
+        <Typography key={it.message} color={it.severity === 'reject' ? 'error' : 'warning'}>
             {it.message}
         </Typography>
     ))

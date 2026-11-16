@@ -5,8 +5,9 @@ import type { ChildrenProps } from '../../types.ts'
 
 type Color = 'primary' | 'success' | 'warning' | 'error'
 
-export const NotificationContext = createContext<((message: string, color: Color) => void) | undefined>(undefined)
-
+export const NotificationContext = createContext<
+    ((message: string, color: Color) => void) | undefined
+>(undefined)
 
 /**
  * A provider component for managing notifications within the application. It renders a context
@@ -37,7 +38,7 @@ export function NotificationProvider({ children }: ChildrenProps) {
                     sx={{ backgroundColor: (theme) => theme.palette[color].main }}
                     message={message}
                     action={
-                        <Button size='small' color='inherit' onClick={handleClose}>
+                        <Button size="small" color="inherit" onClick={handleClose}>
                             Dismiss
                         </Button>
                     }

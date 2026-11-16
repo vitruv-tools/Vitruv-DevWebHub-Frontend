@@ -1,5 +1,5 @@
 export type InputError = {
-    message: string,
+    message: string
     severity: InputErrorSeverity
 }
 

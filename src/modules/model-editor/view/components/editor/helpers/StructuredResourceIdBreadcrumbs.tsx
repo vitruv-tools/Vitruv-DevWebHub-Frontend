@@ -14,24 +14,17 @@ interface Props {
  * @param {function} props.onClick - A callback function triggered when a breadcrumb item is clicked. The clicked item's resource ID is passed as an argument.
  */
 export function StructuredResourceIdBreadcrumbs({ structuredResourceId, onClick }: Props) {
-
     const ids = enumeratePrefixes(structuredResourceId, '/@')
-    const printableIds = structuredResourceId.split('/@')
-        .map(it => it.replaceAll(/\.(\d+)/g, '[$1]').replaceAll('//', ''))
+    const printableIds = structuredResourceId
+        .split('/@')
+        .map((it) => it.replaceAll(/\.(\d+)/g, '[$1]').replaceAll('//', ''))
 
     if (ids.length === 0) return <></>
 
     return (
-        <Breadcrumbs
-            separator='.'
-            sx={{ '& .MuiBreadcrumbs-ol': { flexWrap: 'nowrap' } }}
-        >
+        <Breadcrumbs separator="." sx={{ '& .MuiBreadcrumbs-ol': { flexWrap: 'nowrap' } }}>
             {ids.map((id, index) => (
-                <Chip
-                    size='small'
-                    label={printableIds[index]}
-                    onClick={() => onClick(id)}
-                />
+                <Chip size="small" label={printableIds[index]} onClick={() => onClick(id)} />
             ))}
         </Breadcrumbs>
     )

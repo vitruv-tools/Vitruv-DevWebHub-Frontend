@@ -11,7 +11,10 @@ import { checkTypeConstraints } from './type-checker.ts'
  * @param {T | T[] | undefined} newValue - The input value to be validated. It can be a single value, an array of values, or undefined.
  * @return {InputError[]} - A list of validation errors represented as `InputError` objects. If no errors exist, the list will be empty.
  */
-export function checkInput<T>(info: StructuredEcorePropertyInfo, newValue: T | T[] | undefined): InputError[] {
+export function checkInput<T>(
+    info: StructuredEcorePropertyInfo,
+    newValue: T | T[] | undefined,
+): InputError[] {
     const inputErrors: InputError[] = []
 
     if (info.isArray && isNotNil(newValue)) {
@@ -49,7 +52,6 @@ export function checkInput<T>(info: StructuredEcorePropertyInfo, newValue: T | T
             const typeErrors = checkTypeConstraints(item, info.type, index)
             inputErrors.push(...typeErrors)
         })
-
     } else {
         if (Array.isArray(newValue)) {
             throw new Error(`Cannot set value of non-array attribute ${info.id} to array value`)
@@ -64,7 +66,6 @@ export function checkInput<T>(info: StructuredEcorePropertyInfo, newValue: T | T
 
         const typeErrors = checkTypeConstraints(newValue, info.type)
         inputErrors.push(...typeErrors)
-
     }
 
     return inputErrors

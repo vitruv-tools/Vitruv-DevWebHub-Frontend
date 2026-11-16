@@ -19,11 +19,11 @@ export function SingleSimpleInput({ disabled, value, onSubmit }: Props) {
         <TextField
             sx={{ width: '100%' }}
             value={value ?? ''}
-            onChange={event => onSubmit(event.target.value, true)}
+            onChange={(event) => onSubmit(event.target.value, true)}
             disabled={disabled}
-            size='small'
+            size="small"
             fullWidth
-            variant='standard'
+            variant="standard"
         />
     )
 }

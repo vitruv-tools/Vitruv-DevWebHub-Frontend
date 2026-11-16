@@ -72,7 +72,11 @@ describe('string-utils', () => {
         })
 
         it('should handle multiple delimiters correctly', () => {
-            expect(enumeratePrefixes('test.case.one', '.')).toEqual(['test', 'test.case', 'test.case.one'])
+            expect(enumeratePrefixes('test.case.one', '.')).toEqual([
+                'test',
+                'test.case',
+                'test.case.one',
+            ])
         })
 
         it('should handle empty input', () => {

@@ -9,7 +9,6 @@ interface Props {
     children: ReactNode
 }
 
-
 /**
  * Renders a base frame layout that includes a title, optional header widgets,
  * and children content, with a styled paper container and layout structure.
@@ -25,7 +24,14 @@ export function BaseFrame({ title, headerWidgets, children }: Props) {
             <ColumnLayout sx={{ gap: 1 }}>
                 {isNotNil(title) && (
                     <>
-                        <RowLayout sx={{ height: 'unset', alignItems: 'center', minWidth: 0, flexShrink: 0 }}>
+                        <RowLayout
+                            sx={{
+                                height: 'unset',
+                                alignItems: 'center',
+                                minWidth: 0,
+                                flexShrink: 0,
+                            }}
+                        >
                             <RowLayout
                                 sx={{
                                     overflowX: 'auto',
