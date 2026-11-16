@@ -114,7 +114,7 @@ function UserInteractionModalForm({
     }
 
     return (
-        <Dialog open={open} maxWidth="sm" fullWidth disableEscapeKeyDown>
+        <Dialog open={open} maxWidth="sm" fullWidth>
             <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, pr: 1 }}>
                 <Box component="span" sx={{ flex: 1 }}>
                     Propagation requires your input

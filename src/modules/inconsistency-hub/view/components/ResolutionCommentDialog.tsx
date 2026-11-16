@@ -29,7 +29,7 @@ export function ResolutionCommentDialog({ open, choiceLabel, onConfirm, onCancel
     }, [open, choiceLabel])
 
     return (
-        <Dialog open={open} maxWidth="sm" fullWidth disableEscapeKeyDown>
+        <Dialog open={open} maxWidth="sm" fullWidth>
             <DialogTitle>Confirm resolution</DialogTitle>
             <DialogContent>
                 <DialogContentText sx={{ mb: 2 }}>

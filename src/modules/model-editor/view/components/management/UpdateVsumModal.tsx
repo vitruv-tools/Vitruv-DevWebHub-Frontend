@@ -69,7 +69,7 @@ export function UpdateVsumModal({ open, vsum, client, close, afterSave, afterDel
 
     return (
         <BaseFullscreenModal open={open}>
-            <ColumnLayout gap={2} sx={{ padding: 2 }}>
+            <ColumnLayout sx={{ gap: 2, padding: 2 }}>
                 <Typography variant="h5">VSUM Info</Typography>
                 <Divider />
 
@@ -91,8 +91,12 @@ export function UpdateVsumModal({ open, vsum, client, close, afterSave, afterDel
                 <Spacer />
                 <Divider sx={{ my: 1 }} />
                 <RowLayout
-                    gap={1}
-                    sx={{ height: 'unset', justifyContent: 'flex-end', alignItems: 'center' }}
+                    sx={{
+                        gap: 1,
+                        height: 'unset',
+                        justifyContent: 'flex-end',
+                        alignItems: 'center',
+                    }}
                 >
                     <Button color="error" variant="outlined" onClick={handleDelete}>
                         Delete
