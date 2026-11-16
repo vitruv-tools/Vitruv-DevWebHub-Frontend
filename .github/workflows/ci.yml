@@ -2,6 +2,7 @@ name: CI
 
 on:
   pull_request:
+  merge_group:
   push:
     branches: [main]
   workflow_dispatch:
@@ -114,9 +115,12 @@ jobs:
   sonar:
     name: SonarQube Cloud
     needs: test
-    # Secrets are not available to fork PRs and Dependabot PRs
+    # Secrets are not available to fork PRs and Dependabot PRs.
+    # Skipped in the merge queue: Sonar already ran on the PR, and GitHub
+    # counts a skipped required check as passing.
     if: >-
       ${{ github.actor != 'dependabot[bot]' &&
+      github.event_name != 'merge_group' &&
       (github.event_name != 'pull_request' ||
       github.event.pull_request.head.repo.full_name == github.repository) }}
     runs-on: ubuntu-latest
