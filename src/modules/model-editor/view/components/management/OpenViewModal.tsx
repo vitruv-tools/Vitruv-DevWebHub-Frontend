@@ -83,7 +83,7 @@ export function OpenViewModal({
         }
     }
 
-    function VsumColumn() {
+    function renderVsumColumn() {
         return (
             <SelectorColumn>
                 <Typography>VSUMs</Typography>
@@ -108,7 +108,7 @@ export function OpenViewModal({
         )
     }
 
-    function ViewTypeColumn({ vsum }: { vsum: VsumDto }) {
+    function renderViewTypeColumn(vsum: VsumDto) {
         return (
             <SelectorColumn>
                 <Typography>View Types</Typography>
@@ -130,11 +130,7 @@ export function OpenViewModal({
         )
     }
 
-    function SelectableObjectsColumn({
-        selectableObjects,
-    }: {
-        selectableObjects: SelectableObjectDto[]
-    }) {
+    function renderSelectableObjectsColumn(selectableObjects: SelectableObjectDto[]) {
         return (
             <SelectorColumn sx={{ border: 'none', flexShrink: 0 }}>
                 <Typography>Selectable Objects</Typography>
@@ -187,15 +183,11 @@ export function OpenViewModal({
                             <Typography color="text.secondary">Loading VSUMs…</Typography>
                         </Box>
                     )}
-                    {openViewLogic.mode === 'select' && <VsumColumn />}
-                    {openViewLogic.selectedVsum && (
-                        <ViewTypeColumn vsum={openViewLogic.selectedVsum} />
-                    )}
-                    {openViewLogic.selectedVsum && openViewLogic.selectedViewType && (
-                        <SelectableObjectsColumn
-                            selectableObjects={openViewLogic.selectableObjects}
-                        />
-                    )}
+                    {openViewLogic.mode === 'select' && renderVsumColumn()}
+                    {openViewLogic.selectedVsum && renderViewTypeColumn(openViewLogic.selectedVsum)}
+                    {openViewLogic.selectedVsum &&
+                        openViewLogic.selectedViewType &&
+                        renderSelectableObjectsColumn(openViewLogic.selectableObjects)}
                 </RowLayout>
             </BaseFullscreenModal>
 
