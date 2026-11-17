@@ -1,9 +1,10 @@
 import type { SelectableObjectDto, SelectorDto, VsumDto } from '../../types/api-vitruvius-model.ts'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useEffectEvent, useMemo, useState } from 'react'
 import type { VitruviusClient } from '../../infra/vitruvius-client.ts'
 import { useVsumApi } from './useVsumApi.ts'
 import { useViewConfigCache } from './useViewConfigCache.ts'
 import { isNil, isNotNil } from '../../../../common/utils/nil-utils.ts'
+import { useOnChange } from '../../../../common/hooks/useOnChange.ts'
 
 export type OpenViewLogic = {
     mode: 'loading' | 'select'
@@ -32,10 +33,29 @@ export function useOpenView(
     onSubmit: (vsum: VsumDto, selectorId: string, selectedObjectIds: string[]) => void,
     open: boolean,
 ): OpenViewLogic {
-    const [mode, setMode] = useState<'loading' | 'select'>('loading')
-
     const vsumApi = useVsumApi(client)
     const viewConfigCache = useViewConfigCache()
+
+    // Without a cached view config there is nothing to restore, so the picker can be shown right away.
+    // A corrupt cache entry counts as "no cache"; the bootstrap effect clears it.
+    const shouldShowPicker = () => {
+        if (!open) {
+            return false
+        }
+        try {
+            return isNil(viewConfigCache.load())
+        } catch {
+            return true
+        }
+    }
+    const [mode, setMode] = useState<'loading' | 'select'>(() =>
+        shouldShowPicker() ? 'select' : 'loading',
+    )
+    useOnChange([open], () => {
+        if (shouldShowPicker()) {
+            setMode('select')
+        }
+    })
 
     const [metamodels, setMetamodels] = useState<string[]>([])
     const [vsums, setVsums] = useState<VsumDto[]>([])
@@ -169,45 +189,47 @@ export function useOpenView(
         await selectVsum(vsum.id)
     }
 
+    // An effect event always sees the latest helpers without making the effect re-run on every render.
+    const bootstrap = useEffectEvent(async (isCancelled: () => boolean) => {
+        try {
+            const cache = viewConfigCache.load()
+            if (isNotNil(cache)) {
+                await openViewFromCache()
+                return
+            }
+            if (isCancelled()) {
+                return
+            }
+            await loadMetamodels()
+            if (isCancelled()) {
+                return
+            }
+            await loadVsums()
+        } catch (error) {
+            console.error('Failed to open VSUM picker:', error)
+            viewConfigCache.clear()
+            if (!isCancelled()) {
+                setMode('select')
+                try {
+                    await loadMetamodels()
+                    await loadVsums()
+                } catch {
+                    // keep select mode with whatever loaded
+                }
+            }
+        }
+    })
+
     useEffect(() => {
         if (!open) {
             return
         }
 
         let cancelled = false
-
-        async function bootstrap() {
-            try {
-                const cache = viewConfigCache.load()
-                if (isNotNil(cache)) {
-                    await openViewFromCache()
-                    return
-                }
-                if (cancelled) {
-                    return
-                }
-                setMode('select')
-                await loadMetamodels()
-                if (cancelled) {
-                    return
-                }
-                await loadVsums()
-            } catch (error) {
-                console.error('Failed to open VSUM picker:', error)
-                viewConfigCache.clear()
-                if (!cancelled) {
-                    setMode('select')
-                    try {
-                        await loadMetamodels()
-                        await loadVsums()
-                    } catch {
-                        // keep select mode with whatever loaded
-                    }
-                }
-            }
-        }
-
-        void bootstrap()
+        // bootstrap only updates state after awaiting the API, and the picker mode for the
+        // no-cache case is already set during render, so there are no cascading renders here.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        void bootstrap(() => cancelled)
         return () => {
             cancelled = true
         }
