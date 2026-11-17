@@ -54,8 +54,7 @@ export function deepCompare(a: any, b: any) {
             printDiff(a, b)
         } else {
             for (const key in a) {
-                if (b.hasOwnProperty(key)) {
-                    // eslint-disable-line no-prototype-builtins
+                if (Object.hasOwn(b, key)) {
                     deepCompare(a[key], b[key])
                 } else {
                     printDiff(a, b)
