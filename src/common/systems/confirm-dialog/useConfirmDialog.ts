@@ -1,6 +1,20 @@
-import { useContext } from 'react'
-import { ConfirmDialogContext } from './ConfirmDialogProvider.tsx'
+import { createContext, useContext } from 'react'
 import { isNil } from '../../utils/nil-utils.ts'
+
+export interface ConfirmDialogOptions {
+    title: string
+    text: string
+    confirmLabel: string
+    onConfirm: () => void
+    onCancel?: () => void
+}
+
+export interface ConfirmDialogContextValue {
+    openConfirmDialog: (options: ConfirmDialogOptions) => void
+    closeConfirmDialog: () => void
+}
+
+export const ConfirmDialogContext = createContext<ConfirmDialogContextValue | null>(null)
 
 /**
  * Custom hook to access the ConfirmDialog context.

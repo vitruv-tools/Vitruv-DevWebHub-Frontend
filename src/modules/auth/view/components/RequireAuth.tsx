@@ -1,6 +1,6 @@
 import { CircularProgress, Box } from '@mui/material'
 import type { ReactNode } from 'react'
-import { useAuth } from '../../context/AuthContext.tsx'
+import { useAuth } from '../../context/useAuth.ts'
 import { AuthPage } from './AuthPage.tsx'
 
 type Props = {

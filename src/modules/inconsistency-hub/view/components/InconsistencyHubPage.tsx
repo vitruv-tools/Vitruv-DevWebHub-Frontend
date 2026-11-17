@@ -21,7 +21,7 @@ import FilterListIcon from '@mui/icons-material/FilterList'
 import CheckIcon from '@mui/icons-material/Check'
 import { ColumnLayout, RowLayout } from '../../../../common/components/flex.tsx'
 import { AppNavButton } from '../../../../common/components/AppNavButton.tsx'
-import { useAuth } from '../../../auth/context/AuthContext.tsx'
+import { useAuth } from '../../../auth/context/useAuth.ts'
 import { useNotify } from '../../../../common/systems/notification/useNotify.ts'
 import { VitruviusClientImpl } from '../../../model-editor/infra/vitruvius-client-impl.ts'
 import { UserInteractionModal } from '../../../model-editor/view/components/management/UserInteractionModal.tsx'
@@ -41,7 +41,7 @@ import { formatInconsistencyDescription } from '../../helpers/inconsistency-desc
 import { formatSourceTargetRelation } from '../../helpers/source-target-relation.ts'
 import { isRelevantToUser } from '../../helpers/relevant-to-user.ts'
 import { keepSelectedIfVisible } from '../../helpers/selected-if-visible.ts'
-import { useModelKnowledge } from '../../../users/context/ModelKnowledgeContext.tsx'
+import { useModelKnowledge } from '../../../users/context/useModelKnowledge.ts'
 import type {
     InconsistencyListFilter,
     OpenInconsistency,
