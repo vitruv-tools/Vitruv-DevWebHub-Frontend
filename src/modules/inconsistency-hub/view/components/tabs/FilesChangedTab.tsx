@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useOnChange } from '../../../../../common/hooks/useOnChange.ts'
 import { Box, CircularProgress, Typography } from '@mui/material'
 import type { VitruviusClient } from '../../../../model-editor/infra/vitruvius-client.ts'
 import {
@@ -75,12 +76,15 @@ export function FilesChangedTab({ inconsistency, client }: Props) {
     /** Blue diagram highlight only after an explicit user click/selection. */
     const [userSelectedResourceId, setUserSelectedResourceId] = useState<string | null>(null)
 
-    useEffect(() => {
-        let cancelled = false
+    useOnChange([client, inconsistency.id, inconsistency.message, inconsistency.title], () => {
         setLoading(true)
         setError(null)
         setStructuredResources([])
         setUserSelectedResourceId(null)
+    })
+
+    useEffect(() => {
+        let cancelled = false
 
         async function load() {
             try {
@@ -141,9 +145,12 @@ export function FilesChangedTab({ inconsistency, client }: Props) {
         }
     }, [client, inconsistency.id, inconsistency.message, inconsistency.title])
 
+    useOnChange([client, inconsistency.id, inconsistency.vsumId, inconsistency.vsumName], () => {
+        setContext(null)
+    })
+
     useEffect(() => {
         let cancelled = false
-        setContext(null)
 
         async function loadContext() {
             try {

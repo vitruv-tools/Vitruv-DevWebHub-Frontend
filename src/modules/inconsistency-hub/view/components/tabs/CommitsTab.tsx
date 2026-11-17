@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useOnChange } from '../../../../../common/hooks/useOnChange.ts'
 import { Box, List, ListItem, ListItemText, Typography } from '@mui/material'
 import type { VitruviusClient } from '../../../../model-editor/infra/vitruvius-client.ts'
 import { listInconsistencyViewUpdates } from '../../../api/inconsistency-api.ts'
@@ -14,21 +15,27 @@ export function CommitsTab({ client, inconsistencyId }: Props) {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
-    const refresh = useCallback(async () => {
+    useOnChange([client, inconsistencyId], () => {
         setLoading(true)
         setError(null)
-        try {
-            setUpdates(await listInconsistencyViewUpdates(client, inconsistencyId))
-        } catch (err) {
-            setError(err instanceof Error ? err.message : String(err))
-        } finally {
-            setLoading(false)
-        }
-    }, [client, inconsistencyId])
+    })
 
     useEffect(() => {
-        void refresh()
-    }, [refresh])
+        let ignore = false
+        listInconsistencyViewUpdates(client, inconsistencyId)
+            .then((result) => {
+                if (!ignore) setUpdates(result)
+            })
+            .catch((err: unknown) => {
+                if (!ignore) setError(err instanceof Error ? err.message : String(err))
+            })
+            .finally(() => {
+                if (!ignore) setLoading(false)
+            })
+        return () => {
+            ignore = true
+        }
+    }, [client, inconsistencyId])
 
     return (
         <Box>

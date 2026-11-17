@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useOnChange } from '../../../../common/hooks/useOnChange.ts'
 import {
     Button,
     Dialog,
@@ -22,11 +23,11 @@ type Props = {
 export function ResolutionCommentDialog({ open, choiceLabel, onConfirm, onCancel }: Props) {
     const [comment, setComment] = useState('')
 
-    useEffect(() => {
+    useOnChange([open, choiceLabel], () => {
         if (open) {
             setComment('')
         }
-    }, [open, choiceLabel])
+    })
 
     return (
         <Dialog open={open} maxWidth="sm" fullWidth>
