@@ -1,13 +1,6 @@
-import {
-    createContext,
-    useCallback,
-    useContext,
-    useEffect,
-    useMemo,
-    useState,
-    type ReactNode,
-} from 'react'
-import { useAuth } from '../../auth/context/AuthContext.tsx'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { ModelKnowledgeContext, type ModelKnowledgeContextValue } from './useModelKnowledge.ts'
+import { useAuth } from '../../auth/context/useAuth.ts'
 import {
     listKnowledgeMetamodels,
     persistProfileToken,
@@ -16,20 +9,6 @@ import {
     type KnowledgeMetamodel,
 } from '../api/user-api.ts'
 import { ModelKnowledgeDialog } from '../view/ModelKnowledgeDialog.tsx'
-
-type ModelKnowledgeContextValue = {
-    catalog: KnowledgeMetamodel[]
-    catalogLoading: boolean
-    catalogError: string | null
-    knownMetamodels: string[]
-    settingsOpen: boolean
-    openSettings: () => void
-    closeSettings: () => void
-    reloadCatalog: () => Promise<void>
-    saveMetamodels: (metamodels: string[]) => Promise<void>
-}
-
-const ModelKnowledgeContext = createContext<ModelKnowledgeContextValue | undefined>(undefined)
 
 type Props = {
     children: ReactNode
@@ -170,12 +149,4 @@ export function ModelKnowledgeProvider({ children }: Props) {
             />
         </ModelKnowledgeContext.Provider>
     )
-}
-
-export function useModelKnowledge(): ModelKnowledgeContextValue {
-    const context = useContext(ModelKnowledgeContext)
-    if (!context) {
-        throw new Error('useModelKnowledge must be used within a ModelKnowledgeProvider')
-    }
-    return context
 }
