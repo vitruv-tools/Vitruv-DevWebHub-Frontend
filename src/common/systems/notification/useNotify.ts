@@ -1,6 +1,11 @@
-import { useContext } from 'react'
+import { createContext, useContext } from 'react'
 import { isNil } from '../../utils/nil-utils.ts'
-import { NotificationContext } from './NotificationProvider.tsx'
+
+export type NotificationColor = 'primary' | 'success' | 'warning' | 'error'
+
+export const NotificationContext = createContext<
+    ((message: string, color: NotificationColor) => void) | undefined
+>(undefined)
 
 /**
  * Provides access to the notification context, allowing components to send notifications.

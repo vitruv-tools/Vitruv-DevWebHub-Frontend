@@ -1,13 +1,8 @@
 import { Button, Snackbar, SnackbarContent } from '@mui/material'
-import { createContext, useState } from 'react'
+import { useState } from 'react'
 import { isNotNil } from '../../utils/nil-utils.ts'
 import type { ChildrenProps } from '../../types.ts'
-
-type Color = 'primary' | 'success' | 'warning' | 'error'
-
-export const NotificationContext = createContext<
-    ((message: string, color: Color) => void) | undefined
->(undefined)
+import { NotificationContext, type NotificationColor as Color } from './useNotify.ts'
 
 /**
  * A provider component for managing notifications within the application. It renders a context
