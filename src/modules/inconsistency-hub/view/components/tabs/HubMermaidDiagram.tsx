@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef } from 'react'
+import { useEffect, useId, useLayoutEffect, useMemo, useRef } from 'react'
 import mermaid from 'mermaid'
 import { useTheme } from '@mui/material'
 import { isNil } from '../../../../../common/utils/nil-utils.ts'
@@ -65,11 +65,16 @@ export function HubMermaidDiagram({
     const resizeObserverRef = useRef<ResizeObserver | null>(null)
     const interactionCleanupRef = useRef<(() => void) | null>(null)
     const onSelectRef = useRef(onSelectResource)
-    onSelectRef.current = onSelectResource
     const highlightRef = useRef(highlightOptions)
-    highlightRef.current = highlightOptions
     const mapsRef = useRef({ resourceIdToMermaidId, resourcesById })
-    mapsRef.current = { resourceIdToMermaidId, resourcesById }
+
+    // Keep the latest props available to the imperative mermaid callbacks.
+    // Layout effects run before the passive effects below, so they always see fresh values.
+    useLayoutEffect(() => {
+        onSelectRef.current = onSelectResource
+        highlightRef.current = highlightOptions
+        mapsRef.current = { resourceIdToMermaidId, resourcesById }
+    })
 
     const theme = useTheme()
 

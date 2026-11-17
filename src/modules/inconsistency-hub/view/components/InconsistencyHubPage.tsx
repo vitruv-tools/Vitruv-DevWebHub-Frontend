@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
     Alert,
     Box,
@@ -115,10 +115,12 @@ export function InconsistencyHubPage({ onBack }: Props) {
     const notify = useNotify()
     const { user, signOut } = useAuth()
     const { knownMetamodels, openSettings } = useModelKnowledge()
-    const clientRef = useRef(
-        new VitruviusClientImpl(VITRUVIUS_SERVER_BASE_URL, (message) => notify(message, 'error')),
+    const [client] = useState(
+        () =>
+            new VitruviusClientImpl(VITRUVIUS_SERVER_BASE_URL, (message) =>
+                notify(message, 'error'),
+            ),
     )
-    const client = clientRef.current
 
     const [filter, setFilter] = useState<InconsistencyListFilter>('OPEN')
     const [modelFilter, setModelFilter] = useState<string | 'ALL'>('ALL')
