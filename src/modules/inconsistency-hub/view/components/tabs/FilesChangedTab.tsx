@@ -67,6 +67,13 @@ const panelSx = {
  * Hub visualization: clickable model tree/diagram synced with navigable correspondences.
  */
 export function FilesChangedTab({ inconsistency, client }: Props) {
+    const {
+        id: inconsistencyId,
+        message: inconsistencyMessage,
+        title: inconsistencyTitle,
+        vsumId,
+        vsumName,
+    } = inconsistency
     const [structuredResources, setStructuredResources] = useState<StructuredResource[]>([])
     const [context, setContext] = useState<InconsistencyContext | null>(null)
     const [metamodelName, setMetamodelName] = useState<string | null>(null)
@@ -76,7 +83,7 @@ export function FilesChangedTab({ inconsistency, client }: Props) {
     /** Blue diagram highlight only after an explicit user click/selection. */
     const [userSelectedResourceId, setUserSelectedResourceId] = useState<string | null>(null)
 
-    useOnChange([client, inconsistency.id, inconsistency.message, inconsistency.title], () => {
+    useOnChange([client, inconsistencyId, inconsistencyMessage, inconsistencyTitle], () => {
         setLoading(true)
         setError(null)
         setStructuredResources([])
@@ -88,7 +95,7 @@ export function FilesChangedTab({ inconsistency, client }: Props) {
 
         async function load() {
             try {
-                const snapshot = await getInconsistencyModelSnapshot(client, inconsistency.id)
+                const snapshot = await getInconsistencyModelSnapshot(client, inconsistencyId)
                 if (cancelled) {
                     return
                 }
@@ -118,7 +125,10 @@ export function FilesChangedTab({ inconsistency, client }: Props) {
                     resourceSet as Parameters<ResourcesApiToStructuredConverter['convert']>[0],
                     sortedEcoreModels,
                 )
-                const enriched = enrichModelForInconsistency(converted, inconsistency)
+                const enriched = enrichModelForInconsistency(converted, {
+                    message: inconsistencyMessage,
+                    title: inconsistencyTitle,
+                })
 
                 if (cancelled) {
                     return
@@ -143,9 +153,9 @@ export function FilesChangedTab({ inconsistency, client }: Props) {
         return () => {
             cancelled = true
         }
-    }, [client, inconsistency.id, inconsistency.message, inconsistency.title])
+    }, [client, inconsistencyId, inconsistencyMessage, inconsistencyTitle])
 
-    useOnChange([client, inconsistency.id, inconsistency.vsumId, inconsistency.vsumName], () => {
+    useOnChange([client, inconsistencyId, vsumId, vsumName], () => {
         setContext(null)
     })
 
@@ -154,16 +164,16 @@ export function FilesChangedTab({ inconsistency, client }: Props) {
 
         async function loadContext() {
             try {
-                const inconsistencyContext = await getInconsistencyContext(client, inconsistency.id)
+                const inconsistencyContext = await getInconsistencyContext(client, inconsistencyId)
                 if (!cancelled) {
                     setContext(inconsistencyContext)
                 }
             } catch {
                 if (!cancelled) {
                     setContext({
-                        inconsistencyId: inconsistency.id,
-                        vsumId: inconsistency.vsumId,
-                        vsumName: inconsistency.vsumName,
+                        inconsistencyId,
+                        vsumId,
+                        vsumName,
                         note: 'Correspondences could not be loaded.',
                         elements: [],
                         correspondences: [],
@@ -177,7 +187,7 @@ export function FilesChangedTab({ inconsistency, client }: Props) {
         return () => {
             cancelled = true
         }
-    }, [client, inconsistency.id, inconsistency.vsumId, inconsistency.vsumName])
+    }, [client, inconsistencyId, vsumId, vsumName])
 
     const treeNodes = useMemo(() => toReadOnlyTreeNodes(structuredResources), [structuredResources])
 
