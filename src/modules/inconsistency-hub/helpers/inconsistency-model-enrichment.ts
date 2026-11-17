@@ -9,7 +9,7 @@ import { extractQuotedEntityName } from './inconsistency-highlight-helpers.ts'
  */
 export function enrichModelForInconsistency(
     structuredResources: StructuredResource[],
-    inconsistency: OpenInconsistency,
+    inconsistency: Pick<OpenInconsistency, 'message' | 'title'>,
 ): StructuredResource[] {
     const message = inconsistency.message ?? inconsistency.title ?? ''
     const entityName = extractQuotedEntityName(message)
