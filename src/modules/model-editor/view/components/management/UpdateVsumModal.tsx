@@ -2,7 +2,8 @@ import type { Vsum } from '../../../types/structured-vitruvius-model.ts'
 import { BaseFullscreenModal } from '../../../../../common/components/BaseFullscreenModal.tsx'
 import { isNil } from '../../../../../common/utils/nil-utils.ts'
 import TextField from '@mui/material/TextField'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useOnChange } from '../../../../../common/hooks/useOnChange.ts'
 import { Button, Divider, Typography } from '@mui/material'
 import { ColumnLayout, RowLayout, Spacer } from '../../../../../common/components/flex.tsx'
 import type { VitruviusClient } from '../../../infra/vitruvius-client.ts'
@@ -35,10 +36,10 @@ export function UpdateVsumModal({ open, vsum, client, close, afterSave, afterDel
     const [description, setDescription] = useState(vsum?.description ?? '')
     const confirmDialog = useConfirmDialog()
 
-    useEffect(() => {
+    useOnChange([vsum?.name, vsum?.description], () => {
         setName(vsum?.name ?? '')
         setDescription(vsum?.description ?? '')
-    }, [vsum?.name, vsum?.description])
+    })
 
     const vsumApi = useVsumApi(client)
 

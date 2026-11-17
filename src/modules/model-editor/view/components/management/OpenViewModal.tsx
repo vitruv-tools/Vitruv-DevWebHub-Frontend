@@ -9,6 +9,7 @@ import {
     Typography,
 } from '@mui/material'
 import React, { useEffect, useRef, useState } from 'react'
+import { useOnChange } from '../../../../../common/hooks/useOnChange.ts'
 import { ColumnLayout, RowLayout } from '../../../../../common/components/flex.tsx'
 import ListItemText from '@mui/material/ListItemText'
 import AddIcon from '@mui/icons-material/Add'
@@ -52,9 +53,9 @@ export function OpenViewModal({
 
     const containerRef = useRef<HTMLDivElement>(null)
 
-    useEffect(() => {
+    useOnChange([openViewLogic.selectableObjects], () => {
         setSelectedObjectIds([])
-    }, [openViewLogic.selectableObjects])
+    })
 
     useEffect(() => {
         if (containerRef.current) {

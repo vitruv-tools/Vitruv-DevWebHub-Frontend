@@ -1,5 +1,6 @@
 import * as React from 'react'
-import { type ReactNode, useEffect, useMemo, useState } from 'react'
+import { useOnChange } from '../hooks/useOnChange.ts'
+import { type ReactNode, useMemo, useState } from 'react'
 
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView'
 import { TreeItem, type TreeItemProps } from '@mui/x-tree-view/TreeItem'
@@ -57,8 +58,6 @@ export function CustomTreeView({
     defaultExpandAll = false,
     fitContainer = false,
 }: CustomTreeViewProps) {
-    const [expandedItems, setExpandedItems] = useState<string[]>([])
-
     const [selectedItem, setSelectedItem] = useControllableState<string | null>({
         value: selectedItemProp,
         defaultValue: null,
@@ -67,26 +66,24 @@ export function CustomTreeView({
 
     const parentById = useMemo(() => buildParentMap(items), [items])
 
-    useEffect(() => {
-        if (!defaultExpandAll) {
-            return
+    const [expandedItems, setExpandedItems] = useState<string[]>(() =>
+        withAncestorsExpanded(
+            defaultExpandAll ? collectExpandableIds(items) : [],
+            selectedItem,
+            parentById,
+        ),
+    )
+
+    useOnChange([items, defaultExpandAll], () => {
+        if (defaultExpandAll) {
+            setExpandedItems(collectExpandableIds(items))
         }
-        setExpandedItems(collectExpandableIds(items))
-    }, [items, defaultExpandAll])
+    })
 
     // Whenever selection changes (internal or controlled), expand all parents so it becomes visible.
-    useEffect(() => {
-        if (!selectedItem) return
-
-        const ancestors = getAncestors(selectedItem, parentById)
-        if (ancestors.length === 0) return
-
-        setExpandedItems((prev) => {
-            const next = new Set(prev)
-            for (const a of ancestors) next.add(a)
-            return Array.from(next)
-        })
-    }, [selectedItem, parentById])
+    useOnChange([selectedItem, parentById], () => {
+        setExpandedItems((prev) => withAncestorsExpanded(prev, selectedItem, parentById))
+    })
 
     function collectAllItems(itemsToWalk: TreeNode[]): TreeNode[] {
         const result: TreeNode[] = []
@@ -318,6 +315,21 @@ function collectExpandableIds(items: TreeNode[]): string[] {
 
     walk(items)
     return ids
+}
+
+function withAncestorsExpanded(
+    expanded: string[],
+    itemId: string | null,
+    parentById: Map<string, string>,
+): string[] {
+    if (!itemId) return expanded
+
+    const ancestors = getAncestors(itemId, parentById)
+    if (ancestors.length === 0) return expanded
+
+    const next = new Set(expanded)
+    for (const a of ancestors) next.add(a)
+    return Array.from(next)
 }
 
 function getAncestors(id: string, parentById: Map<string, string>): string[] {

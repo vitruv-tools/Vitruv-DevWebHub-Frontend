@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useOnChange } from '../../../../common/hooks/useOnChange.ts'
 import {
     Alert,
     Box,
@@ -142,24 +143,42 @@ export function InconsistencyHubPage({ onBack }: Props) {
 
     const authorLabel = user?.name || user?.username || user?.email || 'anonymous'
 
+    const applyListed = useCallback((listed: OpenInconsistency[]) => {
+        setItems(listed)
+        setSelected((prev) => (prev ? (listed.find((item) => item.id === prev.id) ?? null) : null))
+    }, [])
+
     const refresh = useCallback(async () => {
         setLoading(true)
         try {
-            const listed = await listInconsistencies(client, filter)
-            setItems(listed)
-            setSelected((prev) =>
-                prev ? (listed.find((item) => item.id === prev.id) ?? null) : null,
-            )
+            applyListed(await listInconsistencies(client, filter))
         } catch (error) {
             notify(error instanceof Error ? error.message : String(error), 'error')
         } finally {
             setLoading(false)
         }
-    }, [client, filter, notify])
+    }, [applyListed, client, filter, notify])
+
+    useOnChange([client, filter], () => {
+        setLoading(true)
+    })
 
     useEffect(() => {
-        void refresh()
-    }, [refresh])
+        let ignore = false
+        listInconsistencies(client, filter)
+            .then((listed) => {
+                if (!ignore) applyListed(listed)
+            })
+            .catch((error: unknown) => {
+                if (!ignore) notify(error instanceof Error ? error.message : String(error), 'error')
+            })
+            .finally(() => {
+                if (!ignore) setLoading(false)
+            })
+        return () => {
+            ignore = true
+        }
+    }, [applyListed, client, filter, notify])
 
     function withLiveInteraction(
         item: OpenInconsistency,
@@ -321,15 +340,13 @@ export function InconsistencyHubPage({ onBack }: Props) {
         })
     }, [items, modelFilter, relevantOnly, knownMetamodels])
 
-    useEffect(() => {
-        if (keepSelectedIfVisible(selected, visibleItems) === selected) {
-            return
-        }
+    // Drop the selection during render once it is filtered out of the visible list.
+    if (keepSelectedIfVisible(selected, visibleItems) !== selected) {
         setSelected(null)
         setAnswerOpen(false)
         setCommentDialogOpen(false)
         setPendingAnswer(null)
-    }, [selected, visibleItems])
+    }
 
     const metaLine = useMemo(() => {
         if (!selected) {

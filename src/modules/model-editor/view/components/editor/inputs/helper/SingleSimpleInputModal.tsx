@@ -1,6 +1,7 @@
 import { BaseFullscreenModal } from '../../../../../../../common/components/BaseFullscreenModal.tsx'
 import { ColumnLayout, RowLayout, Spacer } from '../../../../../../../common/components/flex.tsx'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useOnChange } from '../../../../../../../common/hooks/useOnChange.ts'
 import { Button, Typography } from '@mui/material'
 import type { InputError } from '../../../../../types/error.ts'
 import { colorOfInputErrorSeverity } from '../../../../../helpers/display-helpers.ts'
@@ -26,11 +27,11 @@ interface Props {
  * @param {Function} props.onSubmit - A callback function that is triggered when the form is submitted. Receives the input value and a "submitted" status flag.
  */
 export function SingleSimpleInputModal({ value, open, close, inputErrors, onSubmit }: Props) {
-    const [draft, setDraft] = useState('')
+    const [draft, setDraft] = useState(value ?? '')
 
-    useEffect(() => {
+    useOnChange([value], () => {
         setDraft(value ?? '')
-    }, [value])
+    })
 
     function handleSubmit() {
         onSubmit(draft, true)
