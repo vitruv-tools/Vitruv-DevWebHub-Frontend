@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useOnChange } from '../../../common/hooks/useOnChange.ts'
 import { ModelKnowledgeContext, type ModelKnowledgeContextValue } from './useModelKnowledge.ts'
 import { useAuth } from '../../auth/context/useAuth.ts'
 import {
@@ -28,7 +29,7 @@ function errorMessage(error: unknown): string {
 export function ModelKnowledgeProvider({ children }: Props) {
     const { user } = useAuth()
     const [catalog, setCatalog] = useState<KnowledgeMetamodel[]>([])
-    const [catalogLoading, setCatalogLoading] = useState(true)
+    const [catalogLoading, setCatalogLoading] = useState(Boolean(user?.username))
     const [catalogError, setCatalogError] = useState<string | null>(null)
     const [knownMetamodels, setKnownMetamodels] = useState<string[]>([])
     const [settingsOpen, setSettingsOpen] = useState(false)
@@ -55,12 +56,17 @@ export function ModelKnowledgeProvider({ children }: Props) {
         }
     }, [])
 
-    useEffect(() => {
+    useOnChange([user?.username], () => {
         if (!user?.username) {
             setKnownMetamodels([])
             setCatalog([])
             setCatalogError(null)
             setCatalogLoading(false)
+        }
+    })
+
+    useEffect(() => {
+        if (!user?.username) {
             return
         }
 

@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useOnChange } from '../../../common/hooks/useOnChange.ts'
 import {
     Box,
     Button,
@@ -37,14 +38,14 @@ export function ModelKnowledgeDialog({
     onSave,
 }: Props) {
     const notify = useNotify()
-    const [selected, setSelected] = useState<string[]>([])
+    const [selected, setSelected] = useState<string[]>(() => (open ? knownMetamodels : []))
     const [saving, setSaving] = useState(false)
 
-    useEffect(() => {
+    useOnChange([open, knownMetamodels], () => {
         if (open) {
             setSelected(knownMetamodels)
         }
-    }, [open, knownMetamodels])
+    })
 
     function toggle(name: string) {
         setSelected((current) =>

@@ -5,6 +5,7 @@ import {
 } from '../../../api/inconsistency-api.ts'
 import type { InconsistencyComment } from '../../../types/open-inconsistency.ts'
 import { useCallback, useEffect, useState } from 'react'
+import { useOnChange } from '../../../../../common/hooks/useOnChange.ts'
 import { Avatar, Box, Button, Stack, TextField, Typography } from '@mui/material'
 
 type Props = {
@@ -47,9 +48,27 @@ export function CommentsTab({
         }
     }, [client, inconsistencyId])
 
+    useOnChange([client, inconsistencyId], () => {
+        setLoading(true)
+        setError(null)
+    })
+
     useEffect(() => {
-        void refresh()
-    }, [refresh])
+        let ignore = false
+        listInconsistencyComments(client, inconsistencyId)
+            .then((result) => {
+                if (!ignore) setComments(result)
+            })
+            .catch((err: unknown) => {
+                if (!ignore) setError(err instanceof Error ? err.message : String(err))
+            })
+            .finally(() => {
+                if (!ignore) setLoading(false)
+            })
+        return () => {
+            ignore = true
+        }
+    }, [client, inconsistencyId])
 
     async function handleSubmit() {
         if (!draft.trim()) {
