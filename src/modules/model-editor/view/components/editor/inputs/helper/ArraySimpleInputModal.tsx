@@ -59,10 +59,14 @@ export function ArraySimpleInputModal({ open, close, value, onSubmit, title }: P
     const [draft, setDraft] = useState('')
     const [editingId, setEditingId] = useState<string | null>(null)
 
-    useOnChange([value, open], () => {
-        setItems(toEditableItems(value))
-        setDraft('')
-        setEditingId(null)
+    // Start from the current value each time the modal opens. Not on every `value` change:
+    // callers pass a freshly mapped array on each render, which would discard the user's edits.
+    useOnChange([open], () => {
+        if (open) {
+            setItems(toEditableItems(value))
+            setDraft('')
+            setEditingId(null)
+        }
     })
 
     function handleAdd() {
