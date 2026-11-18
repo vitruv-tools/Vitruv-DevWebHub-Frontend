@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+import { useAsyncData } from '../../../../../common/hooks/useAsyncData.ts'
 import { useOnChange } from '../../../../../common/hooks/useOnChange.ts'
 import { Box, CircularProgress, Typography } from '@mui/material'
 import type { VitruviusClient } from '../../../../model-editor/infra/vitruvius-client.ts'
@@ -63,131 +64,95 @@ const panelSx = {
     flexDirection: 'column',
 } as const
 
+type HubModel = {
+    structuredResources: StructuredResource[]
+    metamodelName: string | null
+    viewTypeName: string | null
+}
+
+const EMPTY_MODEL: HubModel = { structuredResources: [], metamodelName: null, viewTypeName: null }
+
+async function loadHubModel(
+    client: VitruviusClient,
+    inconsistency: Pick<OpenInconsistency, 'id' | 'message' | 'title'>,
+): Promise<HubModel> {
+    const snapshot = await getInconsistencyModelSnapshot(client, inconsistency.id)
+
+    const metamodel = snapshot.metamodelName
+    if (!metamodel) {
+        throw new Error('VSUM metamodel name is missing on the snapshot')
+    }
+
+    const resourceSet = parseEncodedResourceSet(snapshot.encodedResourceSet)
+    if (resourceSet.length === 0) {
+        throw new Error('Model snapshot contains no resources')
+    }
+
+    const ecoreResponse = await client.request(`/v1/metamodels/${metamodel}/ecore-models`)
+    if (!ecoreResponse.ok) {
+        throw new Error(`Failed to load metamodel ${metamodel}`)
+    }
+    const apiEcoreModelPackages: ApiEcoreModelPackage[] = await ecoreResponse.json()
+    const ecoreModels = apiEcoreModelPackages.map((pkg) =>
+        new EcoreModelApiToStructuredConverter().convert(pkg),
+    )
+    const sortedEcoreModels = ecoreModelsForResourceSet(resourceSet, ecoreModels)
+    const converted = new ResourcesApiToStructuredConverter().convert(
+        resourceSet as Parameters<ResourcesApiToStructuredConverter['convert']>[0],
+        sortedEcoreModels,
+    )
+
+    return {
+        structuredResources: enrichModelForInconsistency(converted, inconsistency),
+        metamodelName: snapshot.metamodelName ?? null,
+        viewTypeName: snapshot.viewTypeName ?? null,
+    }
+}
+
+/** Loads the correspondences, falling back to an empty context with a note when that fails. */
+async function loadContextOrFallback(
+    client: VitruviusClient,
+    inconsistency: Pick<OpenInconsistency, 'id' | 'vsumId' | 'vsumName'>,
+): Promise<InconsistencyContext> {
+    try {
+        return await getInconsistencyContext(client, inconsistency.id)
+    } catch {
+        return {
+            inconsistencyId: inconsistency.id,
+            vsumId: inconsistency.vsumId,
+            vsumName: inconsistency.vsumName,
+            note: 'Correspondences could not be loaded.',
+            elements: [],
+            correspondences: [],
+        }
+    }
+}
+
 /**
  * Hub visualization: clickable model tree/diagram synced with navigable correspondences.
  */
 export function FilesChangedTab({ inconsistency, client }: Props) {
+    const { id, message, title, vsumId, vsumName } = inconsistency
     const {
-        id: inconsistencyId,
-        message: inconsistencyMessage,
-        title: inconsistencyTitle,
-        vsumId,
-        vsumName,
-    } = inconsistency
-    const [structuredResources, setStructuredResources] = useState<StructuredResource[]>([])
-    const [context, setContext] = useState<InconsistencyContext | null>(null)
-    const [metamodelName, setMetamodelName] = useState<string | null>(null)
-    const [viewTypeName, setViewTypeName] = useState<string | null>(null)
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState<string | null>(null)
+        data: { structuredResources, metamodelName, viewTypeName },
+        loading,
+        error,
+    } = useAsyncData(
+        () => loadHubModel(client, { id, message, title }),
+        [client, id, message, title],
+        EMPTY_MODEL,
+    )
+    const { data: context } = useAsyncData(
+        () => loadContextOrFallback(client, { id, vsumId, vsumName }),
+        [client, id, vsumId, vsumName],
+        null,
+    )
     /** Blue diagram highlight only after an explicit user click/selection. */
     const [userSelectedResourceId, setUserSelectedResourceId] = useState<string | null>(null)
 
-    useOnChange([client, inconsistencyId, inconsistencyMessage, inconsistencyTitle], () => {
-        setLoading(true)
-        setError(null)
-        setStructuredResources([])
+    useOnChange([client, id, message, title], () => {
         setUserSelectedResourceId(null)
     })
-
-    useEffect(() => {
-        let cancelled = false
-
-        async function load() {
-            try {
-                const snapshot = await getInconsistencyModelSnapshot(client, inconsistencyId)
-                if (cancelled) {
-                    return
-                }
-
-                const metamodel = snapshot.metamodelName
-                if (!metamodel) {
-                    throw new Error('VSUM metamodel name is missing on the snapshot')
-                }
-
-                const resourceSet = parseEncodedResourceSet(snapshot.encodedResourceSet)
-                if (resourceSet.length === 0) {
-                    throw new Error('Model snapshot contains no resources')
-                }
-
-                const ecoreResponse = await client.request(
-                    `/v1/metamodels/${metamodel}/ecore-models`,
-                )
-                if (!ecoreResponse.ok) {
-                    throw new Error(`Failed to load metamodel ${metamodel}`)
-                }
-                const apiEcoreModelPackages: ApiEcoreModelPackage[] = await ecoreResponse.json()
-                const ecoreModels = apiEcoreModelPackages.map((pkg) =>
-                    new EcoreModelApiToStructuredConverter().convert(pkg),
-                )
-                const sortedEcoreModels = ecoreModelsForResourceSet(resourceSet, ecoreModels)
-                const converted = new ResourcesApiToStructuredConverter().convert(
-                    resourceSet as Parameters<ResourcesApiToStructuredConverter['convert']>[0],
-                    sortedEcoreModels,
-                )
-                const enriched = enrichModelForInconsistency(converted, {
-                    message: inconsistencyMessage,
-                    title: inconsistencyTitle,
-                })
-
-                if (cancelled) {
-                    return
-                }
-
-                setStructuredResources(enriched)
-                setMetamodelName(snapshot.metamodelName ?? null)
-                setViewTypeName(snapshot.viewTypeName ?? null)
-            } catch (err) {
-                if (!cancelled) {
-                    setError(err instanceof Error ? err.message : String(err))
-                }
-            } finally {
-                if (!cancelled) {
-                    setLoading(false)
-                }
-            }
-        }
-
-        void load()
-
-        return () => {
-            cancelled = true
-        }
-    }, [client, inconsistencyId, inconsistencyMessage, inconsistencyTitle])
-
-    useOnChange([client, inconsistencyId, vsumId, vsumName], () => {
-        setContext(null)
-    })
-
-    useEffect(() => {
-        let cancelled = false
-
-        async function loadContext() {
-            try {
-                const inconsistencyContext = await getInconsistencyContext(client, inconsistencyId)
-                if (!cancelled) {
-                    setContext(inconsistencyContext)
-                }
-            } catch {
-                if (!cancelled) {
-                    setContext({
-                        inconsistencyId,
-                        vsumId,
-                        vsumName,
-                        note: 'Correspondences could not be loaded.',
-                        elements: [],
-                        correspondences: [],
-                    })
-                }
-            }
-        }
-
-        void loadContext()
-
-        return () => {
-            cancelled = true
-        }
-    }, [client, inconsistencyId, vsumId, vsumName])
 
     const treeNodes = useMemo(() => toReadOnlyTreeNodes(structuredResources), [structuredResources])
 

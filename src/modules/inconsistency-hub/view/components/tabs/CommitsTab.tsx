@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react'
-import { useOnChange } from '../../../../../common/hooks/useOnChange.ts'
 import { Box, List, ListItem, ListItemText, Typography } from '@mui/material'
+import { useAsyncData } from '../../../../../common/hooks/useAsyncData.ts'
 import type { VitruviusClient } from '../../../../model-editor/infra/vitruvius-client.ts'
 import { listInconsistencyViewUpdates } from '../../../api/inconsistency-api.ts'
 import type { ViewUpdateSummary } from '../../../types/open-inconsistency.ts'
@@ -10,32 +9,18 @@ type Props = {
     inconsistencyId: string
 }
 
+const NO_UPDATES: ViewUpdateSummary[] = []
+
 export function CommitsTab({ client, inconsistencyId }: Props) {
-    const [updates, setUpdates] = useState<ViewUpdateSummary[]>([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState<string | null>(null)
-
-    useOnChange([client, inconsistencyId], () => {
-        setLoading(true)
-        setError(null)
-    })
-
-    useEffect(() => {
-        let ignore = false
-        listInconsistencyViewUpdates(client, inconsistencyId)
-            .then((result) => {
-                if (!ignore) setUpdates(result)
-            })
-            .catch((err: unknown) => {
-                if (!ignore) setError(err instanceof Error ? err.message : String(err))
-            })
-            .finally(() => {
-                if (!ignore) setLoading(false)
-            })
-        return () => {
-            ignore = true
-        }
-    }, [client, inconsistencyId])
+    const {
+        data: updates,
+        loading,
+        error,
+    } = useAsyncData(
+        () => listInconsistencyViewUpdates(client, inconsistencyId),
+        [client, inconsistencyId],
+        NO_UPDATES,
+    )
 
     return (
         <Box>
