@@ -123,6 +123,45 @@ describe('InconsistencyHubPage', () => {
         expect(listInconsistencies).toHaveBeenCalledTimes(2)
     })
 
+    it('ignores a pending refresh once the filter changes', async () => {
+        const refreshed = deferred<OpenInconsistency[]>()
+        const resolved = deferred<OpenInconsistency[]>()
+        vi.mocked(listInconsistencies)
+            .mockResolvedValueOnce([inconsistency('o1', 'Open one', { state: 'OPEN' })])
+            .mockReturnValueOnce(refreshed.promise)
+            .mockReturnValueOnce(resolved.promise)
+
+        renderPage()
+        expect(await screen.findByText('Open one')).toBeTruthy()
+        fireEvent.click(screen.getByRole('button', { name: 'Refresh' }))
+        fireEvent.click(screen.getByText('Resolved'))
+
+        await act(async () => {
+            resolved.resolve([inconsistency('r1', 'Resolved one')])
+        })
+        await act(async () => {
+            refreshed.resolve([inconsistency('o2', 'Stale open two', { state: 'OPEN' })])
+        })
+
+        expect(screen.getByText('Resolved one')).toBeTruthy()
+        expect(screen.queryByText('Stale open two')).toBeNull()
+        expect(screen.queryByText('Loading…')).toBeNull()
+    })
+
+    it('keeps the selection on the reloaded copy of the selected item', async () => {
+        vi.mocked(listInconsistencies)
+            .mockResolvedValueOnce([inconsistency('a1b2', 'Old title')])
+            .mockResolvedValueOnce([inconsistency('a1b2', 'New title')])
+
+        renderPage()
+        fireEvent.click(await screen.findByText('Old title'))
+        expect(screen.getByText('Old title#a1b2')).toBeTruthy()
+
+        fireEvent.click(screen.getByRole('button', { name: 'Refresh' }))
+
+        expect(await screen.findByText('New title#a1b2')).toBeTruthy()
+    })
+
     it('drops the selection once it is no longer visible', async () => {
         vi.mocked(listInconsistencies).mockResolvedValue([
             inconsistency('a1b2', 'Amalthea issue', { involvedMetamodels: ['amalthea'] }),
