@@ -98,4 +98,36 @@ describe('CommentsTab', () => {
         })
         expect(listInconsistencyComments).toHaveBeenCalledTimes(2)
     })
+
+    it('ignores the reload after posting once another inconsistency is shown', async () => {
+        const reloadAfterPost = deferred<InconsistencyComment[]>()
+        const otherInconsistency = deferred<InconsistencyComment[]>()
+        vi.mocked(listInconsistencyComments)
+            .mockResolvedValueOnce([])
+            .mockReturnValueOnce(reloadAfterPost.promise)
+            .mockReturnValueOnce(otherInconsistency.promise)
+        vi.mocked(addInconsistencyComment).mockResolvedValue(comment('c1', 'Posted on inc-1'))
+
+        const { rerender } = render(
+            <CommentsTab client={client} inconsistencyId="inc-1" authorLabel="Bob" />,
+        )
+        await waitFor(() => expect(screen.queryByText('Loading comments…')).toBeNull())
+        fireEvent.change(screen.getByPlaceholderText('Leave a comment'), {
+            target: { value: 'Posted on inc-1' },
+        })
+        fireEvent.click(screen.getByRole('button', { name: 'Comment' }))
+        await waitFor(() => expect(listInconsistencyComments).toHaveBeenCalledTimes(2))
+
+        rerender(<CommentsTab client={client} inconsistencyId="inc-2" authorLabel="Bob" />)
+        await act(async () => {
+            otherInconsistency.resolve([comment('c2', 'Comment for inc-2')])
+        })
+        await act(async () => {
+            reloadAfterPost.resolve([comment('c1', 'Posted on inc-1')])
+        })
+
+        expect(screen.getByText('Comment for inc-2')).toBeTruthy()
+        expect(screen.queryByText('Posted on inc-1')).toBeNull()
+        expect(screen.queryByText('Loading comments…')).toBeNull()
+    })
 })
