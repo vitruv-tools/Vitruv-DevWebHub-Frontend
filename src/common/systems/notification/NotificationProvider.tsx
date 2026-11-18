@@ -1,5 +1,5 @@
 import { Button, Snackbar, SnackbarContent } from '@mui/material'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { isNotNil } from '../../utils/nil-utils.ts'
 import type { ChildrenProps } from '../../types.ts'
 import { NotificationContext, type NotificationColor as Color } from './useNotify.ts'
@@ -17,10 +17,12 @@ export function NotificationProvider({ children }: ChildrenProps) {
 
     const handleClose = () => setMessage(undefined)
 
-    function notify(message: string, color: Color) {
+    // Stable identity, so consumers can list `notify` as an effect dependency without re-running
+    // the effect every time a notification is shown or dismissed.
+    const notify = useCallback((message: string, color: Color) => {
         setMessage(message)
         setColor(color)
-    }
+    }, [])
 
     return (
         <NotificationContext.Provider value={notify}>
