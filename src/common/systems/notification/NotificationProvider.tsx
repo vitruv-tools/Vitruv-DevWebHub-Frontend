@@ -1,13 +1,8 @@
 import { Button, Snackbar, SnackbarContent } from '@mui/material'
-import { createContext, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { isNotNil } from '../../utils/nil-utils.ts'
 import type { ChildrenProps } from '../../types.ts'
-
-type Color = 'primary' | 'success' | 'warning' | 'error'
-
-export const NotificationContext = createContext<
-    ((message: string, color: Color) => void) | undefined
->(undefined)
+import { NotificationContext, type NotificationColor as Color } from './useNotify.ts'
 
 /**
  * A provider component for managing notifications within the application. It renders a context
@@ -22,10 +17,12 @@ export function NotificationProvider({ children }: ChildrenProps) {
 
     const handleClose = () => setMessage(undefined)
 
-    function notify(message: string, color: Color) {
+    // Stable identity, so consumers can list `notify` as an effect dependency without re-running
+    // the effect every time a notification is shown or dismissed.
+    const notify = useCallback((message: string, color: Color) => {
         setMessage(message)
         setColor(color)
-    }
+    }, [])
 
     return (
         <NotificationContext.Provider value={notify}>

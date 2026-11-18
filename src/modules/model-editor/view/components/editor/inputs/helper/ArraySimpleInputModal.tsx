@@ -1,6 +1,7 @@
 import { BaseFullscreenModal } from '../../../../../../../common/components/BaseFullscreenModal.tsx'
 import { ColumnLayout, RowLayout, Spacer } from '../../../../../../../common/components/flex.tsx'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useOnChange } from '../../../../../../../common/hooks/useOnChange.ts'
 import {
     Button,
     IconButton,
@@ -46,21 +47,27 @@ type SortableRowProps = {
  * @param {Function} props.onSubmit - Callback function triggered on submission. Receives the updated array and a success flag as arguments.
  * @param {string} [props.title] - An optional title for the modal.
  */
+function toEditableItems(value: Props['value']): EditableItem[] {
+    return (value ?? []).map((entry, index) => ({
+        id: `${index}-${crypto.randomUUID()}`,
+        value: entry,
+    }))
+}
+
 export function ArraySimpleInputModal({ open, close, value, onSubmit, title }: Props) {
-    const [items, setItems] = useState<EditableItem[]>([])
+    const [items, setItems] = useState<EditableItem[]>(() => toEditableItems(value))
     const [draft, setDraft] = useState('')
     const [editingId, setEditingId] = useState<string | null>(null)
 
-    useEffect(() => {
-        setItems(
-            (value ?? []).map((entry, index) => ({
-                id: `${index}-${crypto.randomUUID()}`,
-                value: entry,
-            })),
-        )
-        setDraft('')
-        setEditingId(null)
-    }, [value, open])
+    // Start from the current value each time the modal opens. Not on every `value` change:
+    // callers pass a freshly mapped array on each render, which would discard the user's edits.
+    useOnChange([open], () => {
+        if (open) {
+            setItems(toEditableItems(value))
+            setDraft('')
+            setEditingId(null)
+        }
+    })
 
     function handleAdd() {
         setItems((prev) => [...prev, { id: crypto.randomUUID(), value: draft }])

@@ -4,7 +4,9 @@ import {
     listInconsistencyComments,
 } from '../../../api/inconsistency-api.ts'
 import type { InconsistencyComment } from '../../../types/open-inconsistency.ts'
-import { useCallback, useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useAsyncData } from '../../../../../common/hooks/useAsyncData.ts'
+import { useOnChange } from '../../../../../common/hooks/useOnChange.ts'
 import { Avatar, Box, Button, Stack, TextField, Typography } from '@mui/material'
 
 type Props = {
@@ -21,6 +23,8 @@ function initialOf(name: string): string {
     return (name.trim().charAt(0) || '?').toUpperCase()
 }
 
+const NO_COMMENTS: InconsistencyComment[] = []
+
 export function CommentsTab({
     client,
     inconsistencyId,
@@ -29,43 +33,40 @@ export function CommentsTab({
     choosingDisabled = false,
     onChoose,
 }: Props) {
-    const [comments, setComments] = useState<InconsistencyComment[]>([])
+    const {
+        data: comments,
+        loading,
+        error: loadError,
+        reload,
+    } = useAsyncData(
+        () => listInconsistencyComments(client, inconsistencyId),
+        [client, inconsistencyId],
+        NO_COMMENTS,
+    )
     const [draft, setDraft] = useState('')
-    const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
-    const [error, setError] = useState<string | null>(null)
+    const [submitError, setSubmitError] = useState<string | null>(null)
+    const error = submitError ?? loadError
 
-    const refresh = useCallback(async () => {
-        setLoading(true)
-        setError(null)
-        try {
-            setComments(await listInconsistencyComments(client, inconsistencyId))
-        } catch (err) {
-            setError(err instanceof Error ? err.message : String(err))
-        } finally {
-            setLoading(false)
-        }
-    }, [client, inconsistencyId])
-
-    useEffect(() => {
-        void refresh()
-    }, [refresh])
+    useOnChange([client, inconsistencyId], () => {
+        setSubmitError(null)
+    })
 
     async function handleSubmit() {
         if (!draft.trim()) {
             return
         }
         setSubmitting(true)
-        setError(null)
+        setSubmitError(null)
         try {
             await addInconsistencyComment(client, inconsistencyId, {
                 author: authorLabel,
                 body: draft.trim(),
             })
             setDraft('')
-            await refresh()
+            reload()
         } catch (err) {
-            setError(err instanceof Error ? err.message : String(err))
+            setSubmitError(err instanceof Error ? err.message : String(err))
         } finally {
             setSubmitting(false)
         }

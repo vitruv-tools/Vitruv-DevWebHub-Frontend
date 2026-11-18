@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
+import { useOnChange } from '../../../../common/hooks/useOnChange.ts'
+import { useAsyncData } from '../../../../common/hooks/useAsyncData.ts'
 import {
     Alert,
     Box,
@@ -21,7 +23,7 @@ import FilterListIcon from '@mui/icons-material/FilterList'
 import CheckIcon from '@mui/icons-material/Check'
 import { ColumnLayout, RowLayout } from '../../../../common/components/flex.tsx'
 import { AppNavButton } from '../../../../common/components/AppNavButton.tsx'
-import { useAuth } from '../../../auth/context/AuthContext.tsx'
+import { useAuth } from '../../../auth/context/useAuth.ts'
 import { useNotify } from '../../../../common/systems/notification/useNotify.ts'
 import { VitruviusClientImpl } from '../../../model-editor/infra/vitruvius-client-impl.ts'
 import { UserInteractionModal } from '../../../model-editor/view/components/management/UserInteractionModal.tsx'
@@ -41,7 +43,7 @@ import { formatInconsistencyDescription } from '../../helpers/inconsistency-desc
 import { formatSourceTargetRelation } from '../../helpers/source-target-relation.ts'
 import { isRelevantToUser } from '../../helpers/relevant-to-user.ts'
 import { keepSelectedIfVisible } from '../../helpers/selected-if-visible.ts'
-import { useModelKnowledge } from '../../../users/context/ModelKnowledgeContext.tsx'
+import { useModelKnowledge } from '../../../users/context/useModelKnowledge.ts'
 import type {
     InconsistencyListFilter,
     OpenInconsistency,
@@ -51,6 +53,8 @@ import { CommentsTab } from './tabs/CommentsTab.tsx'
 import { CommitsTab } from './tabs/CommitsTab.tsx'
 import { FilesChangedTab } from './tabs/FilesChangedTab.tsx'
 import { ResolutionCommentDialog } from './ResolutionCommentDialog.tsx'
+
+const NO_ITEMS: OpenInconsistency[] = []
 
 type Props = {
     onBack: () => void
@@ -115,16 +119,17 @@ export function InconsistencyHubPage({ onBack }: Props) {
     const notify = useNotify()
     const { user, signOut } = useAuth()
     const { knownMetamodels, openSettings } = useModelKnowledge()
-    const clientRef = useRef(
-        new VitruviusClientImpl(VITRUVIUS_SERVER_BASE_URL, (message) => notify(message, 'error')),
+    const [client] = useState(
+        () =>
+            new VitruviusClientImpl(VITRUVIUS_SERVER_BASE_URL, (message) =>
+                notify(message, 'error'),
+            ),
     )
-    const client = clientRef.current
 
     const [filter, setFilter] = useState<InconsistencyListFilter>('OPEN')
     const [modelFilter, setModelFilter] = useState<string | 'ALL'>('ALL')
     const [relevantOnly, setRelevantOnly] = useState(false)
     const [modelFilterAnchor, setModelFilterAnchor] = useState<null | HTMLElement>(null)
-    const [items, setItems] = useState<OpenInconsistency[]>([])
     const [selected, setSelected] = useState<OpenInconsistency | null>(null)
     const [detailTab, setDetailTab] = useState<DetailTab>('comments')
     const [answerOpen, setAnswerOpen] = useState(false)
@@ -133,31 +138,27 @@ export function InconsistencyHubPage({ onBack }: Props) {
         responseJson: string
         choiceLabel: string
     } | null>(null)
-    const [loading, setLoading] = useState(true)
     const [resolving, setResolving] = useState(false)
     const [taskAlive, setTaskAlive] = useState<boolean | null>(null)
     const [statusMessage, setStatusMessage] = useState<string | undefined>()
 
     const authorLabel = user?.name || user?.username || user?.email || 'anonymous'
 
-    const refresh = useCallback(async () => {
-        setLoading(true)
-        try {
-            const listed = await listInconsistencies(client, filter)
-            setItems(listed)
-            setSelected((prev) =>
-                prev ? (listed.find((item) => item.id === prev.id) ?? null) : null,
-            )
-        } catch (error) {
-            notify(error instanceof Error ? error.message : String(error), 'error')
-        } finally {
-            setLoading(false)
-        }
-    }, [client, filter, notify])
+    // The previous list stays visible while the next one loads, so the selection survives a
+    // filter switch until the new list shows whether it is still there.
+    const {
+        data: items,
+        loading,
+        reload: reloadItems,
+    } = useAsyncData(() => listInconsistencies(client, filter), [client, filter], NO_ITEMS, {
+        keepPreviousData: true,
+        onError: (message) => notify(message, 'error'),
+    })
 
-    useEffect(() => {
-        void refresh()
-    }, [refresh])
+    // Point the selection at the freshly loaded copy of the selected item, or drop it.
+    useOnChange([items], () => {
+        setSelected((prev) => (prev ? (items.find((item) => item.id === prev.id) ?? null) : null))
+    })
 
     function withLiveInteraction(
         item: OpenInconsistency,
@@ -243,7 +244,7 @@ export function InconsistencyHubPage({ onBack }: Props) {
                 notify(status.error ?? 'Propagation failed', 'error')
                 setAnswerOpen(false)
                 setPendingAnswer(null)
-                await refresh()
+                reloadItems()
                 return
             }
 
@@ -251,7 +252,7 @@ export function InconsistencyHubPage({ onBack }: Props) {
                 notify('Task ended inconsistent without completing.', 'warning')
                 setAnswerOpen(false)
                 setPendingAnswer(null)
-                await refresh()
+                reloadItems()
                 return
             }
 
@@ -266,17 +267,11 @@ export function InconsistencyHubPage({ onBack }: Props) {
                 comment: comment?.trim() || undefined,
             })
 
+            // Switching the filter loads the resolved list; the selection then follows the
+            // resolved item. reload() covers the case where the filter was already RESOLVED.
             setFilter('RESOLVED')
             setDetailTab('comments')
-            await refresh()
-            const resolved = (await listInconsistencies(client, 'RESOLVED')).find(
-                (item) => item.id === current.id,
-            )
-            if (resolved) {
-                setSelected(resolved)
-            } else {
-                setSelected(null)
-            }
+            reloadItems()
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error)
             if (message.includes('not found')) {
@@ -319,15 +314,13 @@ export function InconsistencyHubPage({ onBack }: Props) {
         })
     }, [items, modelFilter, relevantOnly, knownMetamodels])
 
-    useEffect(() => {
-        if (keepSelectedIfVisible(selected, visibleItems) === selected) {
-            return
-        }
+    // Drop the selection during render once it is filtered out of the visible list.
+    if (keepSelectedIfVisible(selected, visibleItems) !== selected) {
         setSelected(null)
         setAnswerOpen(false)
         setCommentDialogOpen(false)
         setPendingAnswer(null)
-    }, [selected, visibleItems])
+    }
 
     const metaLine = useMemo(() => {
         if (!selected) {
@@ -367,13 +360,7 @@ export function InconsistencyHubPage({ onBack }: Props) {
                         flex: 1,
                     }}
                 >
-                    <Button
-                        size="small"
-                        onClick={() => {
-                            void refresh()
-                        }}
-                        disabled={loading}
-                    >
+                    <Button size="small" onClick={reloadItems} disabled={loading}>
                         Refresh
                     </Button>
                     {user && (

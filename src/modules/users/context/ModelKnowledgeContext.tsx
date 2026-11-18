@@ -1,13 +1,7 @@
-import {
-    createContext,
-    useCallback,
-    useContext,
-    useEffect,
-    useMemo,
-    useState,
-    type ReactNode,
-} from 'react'
-import { useAuth } from '../../auth/context/AuthContext.tsx'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useOnChange } from '../../../common/hooks/useOnChange.ts'
+import { ModelKnowledgeContext, type ModelKnowledgeContextValue } from './useModelKnowledge.ts'
+import { useAuth } from '../../auth/context/useAuth.ts'
 import {
     listKnowledgeMetamodels,
     persistProfileToken,
@@ -16,20 +10,6 @@ import {
     type KnowledgeMetamodel,
 } from '../api/user-api.ts'
 import { ModelKnowledgeDialog } from '../view/ModelKnowledgeDialog.tsx'
-
-type ModelKnowledgeContextValue = {
-    catalog: KnowledgeMetamodel[]
-    catalogLoading: boolean
-    catalogError: string | null
-    knownMetamodels: string[]
-    settingsOpen: boolean
-    openSettings: () => void
-    closeSettings: () => void
-    reloadCatalog: () => Promise<void>
-    saveMetamodels: (metamodels: string[]) => Promise<void>
-}
-
-const ModelKnowledgeContext = createContext<ModelKnowledgeContextValue | undefined>(undefined)
 
 type Props = {
     children: ReactNode
@@ -49,7 +29,7 @@ function errorMessage(error: unknown): string {
 export function ModelKnowledgeProvider({ children }: Props) {
     const { user } = useAuth()
     const [catalog, setCatalog] = useState<KnowledgeMetamodel[]>([])
-    const [catalogLoading, setCatalogLoading] = useState(true)
+    const [catalogLoading, setCatalogLoading] = useState(Boolean(user?.username))
     const [catalogError, setCatalogError] = useState<string | null>(null)
     const [knownMetamodels, setKnownMetamodels] = useState<string[]>([])
     const [settingsOpen, setSettingsOpen] = useState(false)
@@ -76,12 +56,17 @@ export function ModelKnowledgeProvider({ children }: Props) {
         }
     }, [])
 
+    // Drop the previous user's data whenever the user changes, not only on sign-out, so a newly
+    // signed-in user never sees someone else's metamodels while their own profile loads.
+    useOnChange([user?.username], () => {
+        setKnownMetamodels([])
+        setCatalog([])
+        setCatalogError(null)
+        setCatalogLoading(Boolean(user?.username))
+    })
+
     useEffect(() => {
         if (!user?.username) {
-            setKnownMetamodels([])
-            setCatalog([])
-            setCatalogError(null)
-            setCatalogLoading(false)
             return
         }
 
@@ -170,12 +155,4 @@ export function ModelKnowledgeProvider({ children }: Props) {
             />
         </ModelKnowledgeContext.Provider>
     )
-}
-
-export function useModelKnowledge(): ModelKnowledgeContextValue {
-    const context = useContext(ModelKnowledgeContext)
-    if (!context) {
-        throw new Error('useModelKnowledge must be used within a ModelKnowledgeProvider')
-    }
-    return context
 }

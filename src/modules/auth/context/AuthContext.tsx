@@ -1,29 +1,10 @@
-import {
-    createContext,
-    useCallback,
-    useContext,
-    useEffect,
-    useMemo,
-    useState,
-    type ReactNode,
-} from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { AuthContext, type AuthContextValue } from './useAuth.ts'
 import { fetchCurrentUserInfo } from '../services/auth-api-client.ts'
 import { AuthService } from '../services/auth-service.ts'
 import type { AuthUser, SignUpCredentials, SignUpResponse } from '../types/auth-types.ts'
 import { extractUserFromToken, parseJwtToken } from '../utils/jwt-parser.ts'
 import { useTokenRefresh } from '../hooks/useTokenRefresh.ts'
-
-type AuthContextValue = {
-    user: AuthUser | null
-    isAuthenticated: boolean
-    isLoading: boolean
-    signIn: (username: string, password: string) => Promise<AuthUser>
-    signUp: (credentials: SignUpCredentials) => Promise<SignUpResponse>
-    signOut: () => Promise<void>
-    refreshToken: () => Promise<unknown>
-}
-
-const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
 function userFromAccessToken(fallbackUsername: string): AuthUser {
     const accessToken = AuthService.getAccessToken()
@@ -232,12 +213,4 @@ export function AuthProvider({ children }: Props) {
     )
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
-
-export function useAuth(): AuthContextValue {
-    const context = useContext(AuthContext)
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider')
-    }
-    return context
 }

@@ -10,7 +10,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material'
-import { useAuth } from '../../context/AuthContext.tsx'
+import { useAuth } from '../../context/useAuth.ts'
 import { DEMO_PASSWORD, DEMO_USERNAME } from '../../demo-credentials.ts'
 
 type Props = {

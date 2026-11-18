@@ -10,7 +10,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material'
-import { useAuth } from '../../context/AuthContext.tsx'
+import { useAuth } from '../../context/useAuth.ts'
 import type { SignUpCredentials } from '../../types/auth-types.ts'
 import { isPasswordValid, passwordValidationMessage } from '../../utils/password-validation.ts'
 

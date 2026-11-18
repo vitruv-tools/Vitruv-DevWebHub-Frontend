@@ -8,22 +8,12 @@ import {
     useMediaQuery,
     useTheme,
 } from '@mui/material'
-import { createContext, type ReactNode, useCallback, useMemo, useState } from 'react'
-
-interface ConfirmDialogOptions {
-    title: string
-    text: string
-    confirmLabel: string
-    onConfirm: () => void
-    onCancel?: () => void
-}
-
-interface ConfirmDialogContextValue {
-    openConfirmDialog: (options: ConfirmDialogOptions) => void
-    closeConfirmDialog: () => void
-}
-
-export const ConfirmDialogContext = createContext<ConfirmDialogContextValue | null>(null)
+import { type ReactNode, useCallback, useMemo, useState } from 'react'
+import {
+    ConfirmDialogContext,
+    type ConfirmDialogContextValue,
+    type ConfirmDialogOptions,
+} from './useConfirmDialog.ts'
 
 interface ConfirmDialogProviderProps {
     children: ReactNode

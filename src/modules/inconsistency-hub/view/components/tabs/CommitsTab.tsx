@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react'
 import { Box, List, ListItem, ListItemText, Typography } from '@mui/material'
+import { useAsyncData } from '../../../../../common/hooks/useAsyncData.ts'
 import type { VitruviusClient } from '../../../../model-editor/infra/vitruvius-client.ts'
 import { listInconsistencyViewUpdates } from '../../../api/inconsistency-api.ts'
 import type { ViewUpdateSummary } from '../../../types/open-inconsistency.ts'
@@ -9,26 +9,18 @@ type Props = {
     inconsistencyId: string
 }
 
+const NO_UPDATES: ViewUpdateSummary[] = []
+
 export function CommitsTab({ client, inconsistencyId }: Props) {
-    const [updates, setUpdates] = useState<ViewUpdateSummary[]>([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState<string | null>(null)
-
-    const refresh = useCallback(async () => {
-        setLoading(true)
-        setError(null)
-        try {
-            setUpdates(await listInconsistencyViewUpdates(client, inconsistencyId))
-        } catch (err) {
-            setError(err instanceof Error ? err.message : String(err))
-        } finally {
-            setLoading(false)
-        }
-    }, [client, inconsistencyId])
-
-    useEffect(() => {
-        void refresh()
-    }, [refresh])
+    const {
+        data: updates,
+        loading,
+        error,
+    } = useAsyncData(
+        () => listInconsistencyViewUpdates(client, inconsistencyId),
+        [client, inconsistencyId],
+        NO_UPDATES,
+    )
 
     return (
         <Box>

@@ -141,7 +141,7 @@ export function editViewReducer(state: ReducerType, action: EditViewAction): Red
                     parentId: ownerRes.id,
                 }
 
-                let newValue = undefined
+                let newValue
                 if (isNil(editCref.value)) {
                     if (editCref.info.isArray) {
                         newValue = [newChild]
