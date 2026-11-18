@@ -56,13 +56,13 @@ export function ModelKnowledgeProvider({ children }: Props) {
         }
     }, [])
 
+    // Drop the previous user's data whenever the user changes, not only on sign-out, so a newly
+    // signed-in user never sees someone else's metamodels while their own profile loads.
     useOnChange([user?.username], () => {
-        if (!user?.username) {
-            setKnownMetamodels([])
-            setCatalog([])
-            setCatalogError(null)
-            setCatalogLoading(false)
-        }
+        setKnownMetamodels([])
+        setCatalog([])
+        setCatalogError(null)
+        setCatalogLoading(Boolean(user?.username))
     })
 
     useEffect(() => {
