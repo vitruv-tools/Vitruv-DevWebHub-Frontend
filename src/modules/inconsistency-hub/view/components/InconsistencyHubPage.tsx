@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useOnChange } from '../../../../common/hooks/useOnChange.ts'
+import { useAsyncData } from '../../../../common/hooks/useAsyncData.ts'
 import {
     Alert,
     Box,
@@ -52,6 +53,8 @@ import { CommentsTab } from './tabs/CommentsTab.tsx'
 import { CommitsTab } from './tabs/CommitsTab.tsx'
 import { FilesChangedTab } from './tabs/FilesChangedTab.tsx'
 import { ResolutionCommentDialog } from './ResolutionCommentDialog.tsx'
+
+const NO_ITEMS: OpenInconsistency[] = []
 
 type Props = {
     onBack: () => void
@@ -127,7 +130,6 @@ export function InconsistencyHubPage({ onBack }: Props) {
     const [modelFilter, setModelFilter] = useState<string | 'ALL'>('ALL')
     const [relevantOnly, setRelevantOnly] = useState(false)
     const [modelFilterAnchor, setModelFilterAnchor] = useState<null | HTMLElement>(null)
-    const [items, setItems] = useState<OpenInconsistency[]>([])
     const [selected, setSelected] = useState<OpenInconsistency | null>(null)
     const [detailTab, setDetailTab] = useState<DetailTab>('comments')
     const [answerOpen, setAnswerOpen] = useState(false)
@@ -136,49 +138,27 @@ export function InconsistencyHubPage({ onBack }: Props) {
         responseJson: string
         choiceLabel: string
     } | null>(null)
-    const [loading, setLoading] = useState(true)
     const [resolving, setResolving] = useState(false)
     const [taskAlive, setTaskAlive] = useState<boolean | null>(null)
     const [statusMessage, setStatusMessage] = useState<string | undefined>()
 
     const authorLabel = user?.name || user?.username || user?.email || 'anonymous'
 
-    const applyListed = useCallback((listed: OpenInconsistency[]) => {
-        setItems(listed)
-        setSelected((prev) => (prev ? (listed.find((item) => item.id === prev.id) ?? null) : null))
-    }, [])
-
-    const refresh = useCallback(async () => {
-        setLoading(true)
-        try {
-            applyListed(await listInconsistencies(client, filter))
-        } catch (error) {
-            notify(error instanceof Error ? error.message : String(error), 'error')
-        } finally {
-            setLoading(false)
-        }
-    }, [applyListed, client, filter, notify])
-
-    useOnChange([client, filter], () => {
-        setLoading(true)
+    // The previous list stays visible while the next one loads, so the selection survives a
+    // filter switch until the new list shows whether it is still there.
+    const {
+        data: items,
+        loading,
+        reload: reloadItems,
+    } = useAsyncData(() => listInconsistencies(client, filter), [client, filter], NO_ITEMS, {
+        keepPreviousData: true,
+        onError: (message) => notify(message, 'error'),
     })
 
-    useEffect(() => {
-        let ignore = false
-        listInconsistencies(client, filter)
-            .then((listed) => {
-                if (!ignore) applyListed(listed)
-            })
-            .catch((error: unknown) => {
-                if (!ignore) notify(error instanceof Error ? error.message : String(error), 'error')
-            })
-            .finally(() => {
-                if (!ignore) setLoading(false)
-            })
-        return () => {
-            ignore = true
-        }
-    }, [applyListed, client, filter, notify])
+    // Point the selection at the freshly loaded copy of the selected item, or drop it.
+    useOnChange([items], () => {
+        setSelected((prev) => (prev ? (items.find((item) => item.id === prev.id) ?? null) : null))
+    })
 
     function withLiveInteraction(
         item: OpenInconsistency,
@@ -264,7 +244,7 @@ export function InconsistencyHubPage({ onBack }: Props) {
                 notify(status.error ?? 'Propagation failed', 'error')
                 setAnswerOpen(false)
                 setPendingAnswer(null)
-                await refresh()
+                reloadItems()
                 return
             }
 
@@ -272,7 +252,7 @@ export function InconsistencyHubPage({ onBack }: Props) {
                 notify('Task ended inconsistent without completing.', 'warning')
                 setAnswerOpen(false)
                 setPendingAnswer(null)
-                await refresh()
+                reloadItems()
                 return
             }
 
@@ -287,17 +267,11 @@ export function InconsistencyHubPage({ onBack }: Props) {
                 comment: comment?.trim() || undefined,
             })
 
+            // Switching the filter loads the resolved list; the selection then follows the
+            // resolved item. reload() covers the case where the filter was already RESOLVED.
             setFilter('RESOLVED')
             setDetailTab('comments')
-            await refresh()
-            const resolved = (await listInconsistencies(client, 'RESOLVED')).find(
-                (item) => item.id === current.id,
-            )
-            if (resolved) {
-                setSelected(resolved)
-            } else {
-                setSelected(null)
-            }
+            reloadItems()
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error)
             if (message.includes('not found')) {
@@ -386,13 +360,7 @@ export function InconsistencyHubPage({ onBack }: Props) {
                         flex: 1,
                     }}
                 >
-                    <Button
-                        size="small"
-                        onClick={() => {
-                            void refresh()
-                        }}
-                        disabled={loading}
-                    >
+                    <Button size="small" onClick={reloadItems} disabled={loading}>
                         Refresh
                     </Button>
                     {user && (
