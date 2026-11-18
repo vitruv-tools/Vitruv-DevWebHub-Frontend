@@ -88,6 +88,19 @@ describe('useOpenView', () => {
         expect(vsumApi.loadMetamodels).not.toHaveBeenCalled()
     })
 
+    it('shows the loading state instead of the old picker when reopened with a cached view', async () => {
+        const { result, rerender, onSubmit } = renderOpenView(true)
+        await waitFor(() => expect(result.current.vsums).toEqual([vsum]))
+        expect(result.current.mode).toBe('select')
+
+        rerender({ open: false })
+        storeCache({ vsumId: 'vsum-1', viewType: 'TreeView', selectedObjectsEClasses: ['Entity'] })
+        rerender({ open: true })
+
+        expect(result.current.mode).toBe('loading')
+        await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(vsum, 'selector-1', ['obj-2']))
+    })
+
     it('falls back to the picker and clears the cache when the cached VSUM is gone', async () => {
         storeCache({ vsumId: 'missing', viewType: 'TreeView', selectedObjectsEClasses: [] })
 
