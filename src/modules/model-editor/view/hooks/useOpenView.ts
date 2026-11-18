@@ -51,9 +51,10 @@ export function useOpenView(
     const [mode, setMode] = useState<'loading' | 'select'>(() =>
         shouldShowPicker() ? 'select' : 'loading',
     )
+    // On each opening, show the picker or, while a cached view is restored, the loading state.
     useOnChange([open], () => {
-        if (shouldShowPicker()) {
-            setMode('select')
+        if (open) {
+            setMode(shouldShowPicker() ? 'select' : 'loading')
         }
     })
 
